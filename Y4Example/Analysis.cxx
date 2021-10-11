@@ -69,6 +69,30 @@ int main(int argc, char* argv[]) {
 		}
 
 
+		if ( r->jet_pt->size() >= 2)
+		{
+
+			std::cout << "New Events" << std::endl;
+			std::vector<float> jet_pt_dummy = r->jet_pt;
+
+			int p = sizeof(jet_pt_dummy)/sizeof(jet_pt_dummy[0]);
+			sort(jet_pt_dummy, jet_pt_dummy + 1);
+
+			cout << "Array after sorting : \n" ;
+
+			for (int k=0; k< p; k++);{_
+				cout << jet_pt_dummy[k] << " ";
+ 
+				return 0;
+			}
+
+
+			//for (int i = 0; i < r->jet_pt->size(); ++i)
+			//{
+			//	std::cout << r->jet_pt->at(i)*1e-3 << std::endl;
+			//}
+
+		}
 
 	} // Event Loop
 
