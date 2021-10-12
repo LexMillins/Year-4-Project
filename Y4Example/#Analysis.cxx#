@@ -73,15 +73,15 @@ int main(int argc, char* argv[]) {
 		{
 
 			std::cout << "New Events" << std::endl;
-			std::vector<float> jet_pt_dummy = *(r->jet_pt);
+			std::vector<float> jet_pt_dummy = r->jet_pt;
 
 			int p = sizeof(jet_pt_dummy)/sizeof(jet_pt_dummy[0]);
-			sort(*jet_pt_dummy, *jet_pt_dummy + p);
+			sort(jet_pt_dummy, jet_pt_dummy + p);
 
 			cout << "Array after sorting : \n" ;
 
 			for (int k=0; k< p; k++) {
-				cout << *jet_pt_dummy[k] << "";
+				cout << jet_pt_dummy[k] << "";
  
 				return 0;
 			}
