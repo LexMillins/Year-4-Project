@@ -1,4 +1,12 @@
 #include "Analysis.h"
+#include <algorithm>
+
+void print_vect_float(std::vector <float> const &a) {
+   std::cout << "The vector elements are : ";
+
+   for(int i=0; i < a.size(); i++)
+   std::cout << a.at(i) << std::endl;
+}
 
 
 int main(int argc, char* argv[]) {
@@ -41,58 +49,65 @@ int main(int argc, char* argv[]) {
 
 		r->GetEntry(n);
 
-		if( r->mu_pt->size() == 2) {
+		//if( r->mu_pt->size() == 2) {
 
 
-			TLorentzVector muon1, muon2;
+			//TLorentzVector muon1, muon2;
 
-			muon1.SetPtEtaPhiM(r->mu_pt->at(0)*1e-3,r->mu_eta->at(0),r->mu_phi->at(0),105.67e-3);
-			muon2.SetPtEtaPhiM(r->mu_pt->at(1)*1e-3,r->mu_eta->at(1),r->mu_phi->at(1),105.67e-3);
+			//muon1.SetPtEtaPhiM(r->mu_pt->at(0)*1e-3,r->mu_eta->at(0),r->mu_phi->at(0),105.67e-3);
+			//muon2.SetPtEtaPhiM(r->mu_pt->at(1)*1e-3,r->mu_eta->at(1),r->mu_phi->at(1),105.67e-3);
 
-			TLorentzVector dimuon = muon1 + muon2;
+			//TLorentzVector dimuon = muon1 + muon2;
 
-			h_DiMuon_Mass->Fill(dimuon.M());
+			//h_DiMuon_Mass->Fill(dimuon.M());
 
-		}
+		//}
 
-		else if ( r->el_pt->size() == 2)
-		{
-			TLorentzVector elec1, elec2;
+		//else if ( r->el_pt->size() == 2)
+		//{
+			//TLorentzVector elec1, elec2;
 
-			elec1.SetPtEtaPhiM(r->el_pt->at(0)*1e-3,r->el_eta->at(0),r->el_phi->at(0),0.511e-3);
-			elec2.SetPtEtaPhiM(r->el_pt->at(1)*1e-3,r->el_eta->at(1),r->el_phi->at(1),0.511e-3);
+			//elec1.SetPtEtaPhiM(r->el_pt->at(0)*1e-3,r->el_eta->at(0),r->el_phi->at(0),0.511e-3);
+			//elec2.SetPtEtaPhiM(r->el_pt->at(1)*1e-3,r->el_eta->at(1),r->el_phi->at(1),0.511e-3);
 
-			TLorentzVector dieelectron = elec1 + elec2;
+			//TLorentzVector dieelectron = elec1 + elec2;
 
-			h_DiElectron_Mass->Fill(dieelectron.M());
+			//h_DiElectron_Mass->Fill(dieelectron.M());
 
-		}
+		//}
 
+		//if( r->mu_pt->size()>2){
+		//	std::vector<float> muon_vector = *(r->mu_pt);
+		//	print_vect_float(muon_vector);
+
+
+		//}
 
 		if ( r->jet_pt->size() >= 2)
 		{
 
-			std::cout << "New Events" << std::endl;
+			std::cout << "New Event" << std::endl;
 			std::vector<float> jet_pt_dummy = *(r->jet_pt);
+			//print_vect_float(jet_pt_dummy);
+		
+			int p = r->jet_pt->size();
+			std::sort(jet_pt_dummy.begin(), jet_pt_dummy.begin()+p);
 
-			int p = sizeof(jet_pt_dummy)/sizeof(jet_pt_dummy[0]);
-			sort(*jet_pt_dummy, *jet_pt_dummy + p);
+			std::cout << "Array after sorting : \n" ;
+			print_vect_float(jet_pt_dummy);
+		}
 
-			cout << "Array after sorting : \n" ;
 
-			for (int k=0; k< p; k++) {
-				cout << *jet_pt_dummy[k] << "";
- 
-				return 0;
+			//return 0;
+			
+
+
+			for (int i = 0; i < r->jet_pt->size(); ++i)
+			{
+				std::cout << r->jet_pt->at(i)*1e-3 << std::endl;
 			}
 
-
-			//for (int i = 0; i < r->jet_pt->size(); ++i)
-			//{
-			//	std::cout << r->jet_pt->at(i)*1e-3 << std::endl;
-			//}
-
-		}
+		//}
 
 	} // Event Loop
 
@@ -117,4 +132,3 @@ int main(int argc, char* argv[]) {
 
 	return 0;
 }
-
