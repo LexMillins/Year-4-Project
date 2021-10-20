@@ -9,6 +9,7 @@ void print_vect_float(std::vector <float> const &a) {
 }
 
 
+
 int main(int argc, char* argv[]) {
 
 	std::cout << "Starting Analysis!" << std::endl;
@@ -89,7 +90,7 @@ int main(int argc, char* argv[]) {
 			std::cout << "New Event" << std::endl;
 			std::vector<float> jet_pt_dummy = *(r->jet_pt);
 			//print_vect_float(jet_pt_dummy);
-		
+
 			int p = r->jet_pt->size();
 			std::sort(jet_pt_dummy.begin(), jet_pt_dummy.begin()+p);
 
@@ -99,13 +100,34 @@ int main(int argc, char* argv[]) {
 
 
 			//return 0;
-			
+
+		std::vector<vector<double>> jets_total;
 
 
-			for (int i = 0; i < r->jet_pt->size(); ++i)
-			{
-				std::cout << r->jet_pt->at(i)*1e-3 << std::endl;
+			for( int j = 0; j <(r->jet_pt->size()); ++j){
+
+				TLorentzVector jetj;
+
+				jetj.SetPtEtaPhiE(r->jet_pt->at(j)*1e-3, r->jet_eta->at(j), r->jet_phi->at(j), r->jet_e->at(j)*1e-3);
+
+				std::vector<double> jet_vector;
+
+				std::vector<vector<double>> jets_total;
+
+					
+				for (int L=0; L<4; L++){
+        			jet_vector.push_back(jetj(L));					
+				}
+
+				jets_total.push_back(jet_vector);
+
+			bool sortby_jet_pt(jet_vector &lhs, jet_vector &rhs){
+				return lhs.jet_vector(0) > rhs.jet_vector(0);
+
 			}
+
+			}
+
 
 		//}
 
@@ -131,4 +153,4 @@ int main(int argc, char* argv[]) {
 	std::cout << "Done Analysis!" << std::endl;
 
 	return 0;
-}
+} 
