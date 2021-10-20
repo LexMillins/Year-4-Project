@@ -4,11 +4,15 @@
 void print_vect_float(std::vector <float> const &a) {
    std::cout << "The vector elements are : ";
 
-   for(int i=0; i < a.size(); i++)
+   for(int i=0; i < a.size(); i++){
    std::cout << a.at(i) << std::endl;
+   }
 }
 
+bool sortby_jet_pt(std::vector<double> &lhs, std::vector<double> &rhs){
+	return lhs.at(0) > rhs.at(0);
 
+	}
 
 int main(int argc, char* argv[]) {
 
@@ -35,6 +39,8 @@ int main(int argc, char* argv[]) {
 	TH1D* h_DiMuon_Mass = new TH1D("h_DiMuon_Mass","; Mass [GeV]; Events / GeV",100,50,150);
 
 	TH1D* h_DiElectron_Mass = new TH1D("h_DiElectron_mass","; Mass [GeV]; Events / GeV",100,50,150);
+
+	TH1D* h_Dijet_mass = new TH1D("h_Dijet_Mass", "Mass [GeV]; Events/GeV",100,50,150);
 
 	// Event loop
 
@@ -96,40 +102,58 @@ int main(int argc, char* argv[]) {
 
 			std::cout << "Array after sorting : \n" ;
 			print_vect_float(jet_pt_dummy);
-		}
-
+		
 
 			//return 0;
 
-		std::vector<vector<double>> jets_total;
+			std::vector<vector<double>> jets_total;
+			std::vector<vector<double>> biggest_jets;
 
 
-			for( int j = 0; j <(r->jet_pt->size()); ++j){
+				for( int j = 0; j <(r->jet_pt->size()); ++j){
 
-				TLorentzVector jetj;
+					TLorentzVector jetj;
 
-				jetj.SetPtEtaPhiE(r->jet_pt->at(j)*1e-3, r->jet_eta->at(j), r->jet_phi->at(j), r->jet_e->at(j)*1e-3);
+					jetj.SetPtEtaPhiE(r->jet_pt->at(j)*1e-3, r->jet_eta->at(j), r->jet_phi->at(j), r->jet_e->at(j)*1e-3);
 
-				std::vector<double> jet_vector;
+					std::vector<double> jet_vector;
 
-				std::vector<vector<double>> jets_total;
+					std::vector<vector<double>> jets_total;
 
-					
-				for (int L=0; L<4; L++){
-        			jet_vector.push_back(jetj(L));					
+						
+					for (int L=0; L<4; L++){
+	        			jet_vector.push_back(jetj(L));					
+					}
+
+					jets_total.push_back(jet_vector);
+
+				for(int a = 0; a < p; ++a){
+
+					std::vector<double> v = jets_total.at(a);
+					std::vector<double> c = jets_total.at(a+1);
+
+					if (sortby_jet_pt(v, c) == 1){
+						biggest_jets.push_back(v);
+
+					}
 				}
 
-				jets_total.push_back(jet_vector);
-
-			bool sortby_jet_pt(jet_vector &lhs, jet_vector &rhs){
-				return lhs.jet_vector(0) > rhs.jet_vector(0);
-
 			}
 
-			}
+			//TLorentzVector bigjet_1 = biggest_jets.at(0);
+			//TLorentzVector bigjet_2 = biggest_jets.at(1);
+
+			//TLorentzVector dijet = bigjet_1 + bigjet_2;
+			//h_Dijet_mass->Fill(dijet.M());
 
 
-		//}
+
+			
+
+	
+
+
+		}
 
 	} // Event Loop
 
@@ -141,6 +165,7 @@ int main(int argc, char* argv[]) {
 
 	h_DiMuon_Mass->Write();
 	h_DiElectron_Mass->Write();
+	//h_Dijet_mass->Write();
 
 	outputFile->Close();
 
