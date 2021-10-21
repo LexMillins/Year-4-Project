@@ -9,10 +9,25 @@ void print_vect_float(std::vector <float> const &a) {
    }
 }
 
-bool sortby_jet_pt(std::vector<double> &lhs, std::vector<double> &rhs){
-	return lhs.at(0) > rhs.at(0);
+void print_vect_TLor(std::vector <TLorentzVector> const &b) {
+   std::cout << "The vector elements are : ";
 
-	}
+   for(int i=0; i < b.size(); i++){
+   std::cout << b.at(i).Pt() << std::endl;
+   }
+}
+//bool sortby_jet_pt(std::vector<double> &lhs, std::vector<double> &rhs){
+//	return lhs.at(0) > rhs.at(0);
+//}
+
+//bool sortby_jet_pt(std::vector<TLorentzVector> &lhs, std::vector<TLorentzVector> &rhs){
+//	return lhs.at(0).Pt() > rhs.at(0).Pt();
+//}
+
+bool sortby_jet_pt(const TLorentzVector &lhs, const TLorentzVector &rhs){
+	return lhs.Pt() > rhs.Pt();
+}
+
 
 int main(int argc, char* argv[]) {
 
@@ -56,6 +71,46 @@ int main(int argc, char* argv[]) {
 
 		r->GetEntry(n);
 
+
+		std::vector<TLorentzVector> my_jets;
+
+
+
+		for( int j = 0; j <(r->jet_pt->size()); ++j){
+
+			TLorentzVector jetj;
+
+			jetj.SetPtEtaPhiE(r->jet_pt->at(j)*1e-3, r->jet_eta->at(j), r->jet_phi->at(j), r->jet_e->at(j)*1e-3);
+
+			my_jets.push_back(jetj);
+
+		}
+
+
+		std::sort(my_jets.begin(), my_jets.end(),sortby_jet_pt);
+
+		print_vect_TLor(my_jets);
+
+		if(my_jets.size() >= 2){
+		std::vector<TLorentzVector> biggest_jets;
+		biggest_jets.push_back(my_jets.at(0));
+		biggest_jets.push_back(my_jets.at(1));
+		
+		TLorentzVector dijet = my_jets.at(0) + my_jets.at(1);
+
+		h_Dijet_mass->Fill(dijet.M());
+
+
+
+		}
+		//std::vector<TLorentzVector> biggest_jets;
+		//biggest_jets.push_back(my_jets.at(0));
+		//biggest_jets.push_back(my_jets.at(1));
+		
+		//TLorentzVector dijet = my_jets.at(0) + my_jets.at(1);
+
+		//h_Dijet_mass->Fill(dijet.M());
+
 		//if( r->mu_pt->size() == 2) {
 
 
@@ -89,7 +144,7 @@ int main(int argc, char* argv[]) {
 
 
 		//}
-
+/*
 		if ( r->jet_pt->size() >= 2)
 		{
 
@@ -123,9 +178,10 @@ int main(int argc, char* argv[]) {
 						
 					for (int L=0; L<4; L++){
 	        			jet_vector.push_back(jetj(L));					
-					}
+					
 
-					jets_total.push_back(jet_vector);
+						jets_total.push_back(jet_vector);
+					}
 
 				for(int a = 0; a < p; ++a){
 
@@ -140,11 +196,12 @@ int main(int argc, char* argv[]) {
 
 			}
 
-			//TLorentzVector bigjet_1 = biggest_jets.at(0);
-			//TLorentzVector bigjet_2 = biggest_jets.at(1);
+			//std::vector<double> jet1 = biggest_jets.at(0);
+			//std::vector<double> jet2 = biggest_jets.at(1);
 
-			//TLorentzVector dijet = bigjet_1 + bigjet_2;
-			//h_Dijet_mass->Fill(dijet.M());
+			//float inv_mass__squared_Z = 2*jet1.at(0)*jet2.at(0)*(cosh(jet1.at(1) - jet2.at(1)) - cos(jet1.at(2) - jet2.at(2)));
+			//float inv_mass_z = sqrt(inv_mass__squared_Z);
+			//h_Dijet_mass->Fill(inv_mass_z);
 
 
 
@@ -154,7 +211,7 @@ int main(int argc, char* argv[]) {
 
 
 		}
-
+*/
 	} // Event Loop
 
 
@@ -165,7 +222,7 @@ int main(int argc, char* argv[]) {
 
 	h_DiMuon_Mass->Write();
 	h_DiElectron_Mass->Write();
-	//h_Dijet_mass->Write();
+	h_Dijet_mass->Write();
 
 	outputFile->Close();
 
