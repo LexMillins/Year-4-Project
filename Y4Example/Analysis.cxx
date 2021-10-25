@@ -53,9 +53,13 @@ int main(int argc, char* argv[]) {
 
 	TH1D* h_DiElectron_Mass = new TH1D("h_DiElectron_mass","; Mass [GeV]; Events / GeV",100,50,150);
 
-	TH1D* h_Dijet_mass = new TH1D("h_Dijet_Mass", "Mass [GeV]; Events/GeV",100,0,300);
+	TH1D* h_Dijet_mass = new TH1D("h_Dijet_Mass", ";Mass [GeV]; Events/GeV",100,0,300);
 
 	TH1D* h_DiZ_mass = new TH1D("h_DiZ_Mass", "; Mass [GeV]; Events /GeV", 100, 50, 750);
+
+	TH1D* h_Z_pt_lep = new TH1D("h_Z_pt_lep", ";pt [GeV]; Events /GeV", 100, 20, 500);
+
+	TH1D* h_Z_jets_pt = new TH1D("h_Z_jets_pt", ";pt [GeV]; Events /GeV", 100, 20, 500);
 
 	// Event loop
 
@@ -74,12 +78,12 @@ int main(int argc, char* argv[]) {
 
 		std::vector<TLorentzVector> my_jets;
 		TLorentzVector dijet;
+		TLorentzVector jetj;
 
 
 
 		for( int j = 0; j <(r->jet_pt->size()); ++j){
 
-			TLorentzVector jetj;
 
 			jetj.SetPtEtaPhiE(r->jet_pt->at(j)*1e-3, r->jet_eta->at(j), r->jet_phi->at(j), r->jet_e->at(j)*1e-3);
 
@@ -103,7 +107,7 @@ int main(int argc, char* argv[]) {
 		}
 		std::vector<TLorentzVector> muon_vector;
 		std::vector<TLorentzVector> electron_vector;
-		TLorentzVector dieelectron;
+		TLorentzVector dielectron;
 		TLorentzVector dimuon;
 
 		if( r->mu_pt->size() >= 2) {
@@ -137,12 +141,15 @@ int main(int argc, char* argv[]) {
 
 			std::sort(electron_vector.begin(), electron_vector.end(), sortby_pt);
 			
-			dieelectron = electron_vector.at(0) + electron_vector.at(1);
+			dielectron = electron_vector.at(0) + electron_vector.at(1);
 
-			h_DiElectron_Mass->Fill(dieelectron.M());
+			h_DiElectron_Mass->Fill(dielectron.M());
 
 		}
 
+		h_Z_pt_lep->Fill(dimuon.Pt());
+		h_Z_pt_lep->Fill(dielectron.Pt());
+		h_Z_jets_pt->Fill(dijet.Pt());
 
 
 		TLorentzVector diZ;
@@ -152,13 +159,14 @@ int main(int argc, char* argv[]) {
 				diZ = dijet + dimuon;
 			}
 
-			else if (dieelectron.Pt() !=0){
+			else if (dielectron.Pt() !=0){
 
-				diZ = dijet + dieelectron;
+				diZ = dijet + dielectron;
 			}
 
-		h_DiZ_mass->Fill(diZ.M());
 		}
+
+		h_DiZ_mass->Fill(diZ.M());
 
 
 	} // Event Loop
@@ -173,6 +181,8 @@ int main(int argc, char* argv[]) {
 	h_DiElectron_Mass->Write();
 	h_Dijet_mass->Write();
 	h_DiZ_mass->Write();
+	h_Z_pt_lep->Write();
+	h_Z_jets_pt->Write();
 
 	outputFile->Close();
 
