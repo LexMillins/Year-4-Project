@@ -1,7 +1,10 @@
 void plot(){
 
- 	TFile* inputFile = TFile::Open("output.root");
+ 	TFile *inputFile = new TFile("output.root");
+ 	inputFile->ls();
 
+ 	TH1F * h1 = (TH1F*)inputFile->Get("h_Dimuon_Mass");
+ 	h1->Draw();
 
 
 }
