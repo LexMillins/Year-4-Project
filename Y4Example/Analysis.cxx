@@ -36,7 +36,7 @@ int main(int argc, char* argv[]) {
 
 	// Open the file and setup the reader class
 
-	TFile* inputFile = TFile::Open("ZZ.root");
+	TFile* inputFile = TFile::Open("WZ.root");
 
 	TTree* tree = (TTree*) inputFile->Get("nominal");
 
@@ -59,7 +59,11 @@ int main(int argc, char* argv[]) {
 
 	TH1D* h_Z_pt_lep = new TH1D("h_Z_pt_lep", ";pt [GeV]; Events /GeV", 100, 20, 500);
 
-	TH1D* h_Z_jets_pt = new TH1D("h_Z_jets_pt", ";pt [GeV]; Events /GeV", 100, 20, 500);
+	TH1D* h_Z_jets_pt = new TH1D("h_Z_jets_pt", ";pt [GeV]; Events /GeV", 100, 10, 500);
+
+	TH1D* h_DiZ_Pt = new TH1D("h_DiZ_Pt", ";pt [GeV]; Events /GeV", 100, 20, 500);
+
+
 
 	// Event loop
 
@@ -167,6 +171,7 @@ int main(int argc, char* argv[]) {
 		}
 
 		h_DiZ_mass->Fill(diZ.M());
+		h_DiZ_Pt->Fill(diZ.Pt());
 
 
 	} // Event Loop
@@ -183,6 +188,7 @@ int main(int argc, char* argv[]) {
 	h_DiZ_mass->Write();
 	h_Z_pt_lep->Write();
 	h_Z_jets_pt->Write();
+	h_DiZ_Pt->Write();
 
 	outputFile->Close();
 
