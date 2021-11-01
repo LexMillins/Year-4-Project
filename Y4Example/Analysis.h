@@ -16,8 +16,13 @@
 #include <cmath>
 #include <iostream>
 
+#include <map>
+
 #include "Reader.h"
 
+#include "WeightReader.h"
+
+std::map<int,double> crossSection; 
 
 int main(int argc, char* argv[]);
 

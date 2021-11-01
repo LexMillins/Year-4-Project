@@ -1,5 +1,5 @@
 Target  = Analysis
-Objects = Reader.o
+Objects = Reader.o WeightReader.o
 ROOTFLAGS = $(shell root-config --cflags)
 ROOTLIBS  = $(shell root-config --libs)
 
@@ -10,6 +10,9 @@ Analysis: Analysis.cxx Analysis.h  $(Objects)
 
 Reader.o: Reader.C Reader.h
 	g++ -o $@ Reader.C -c $(ROOTFLAGS) 
+
+WeightReader.o: WeightReader.C WeightReader.h
+	g++ -o $@ WeightReader.C -c $(ROOTFLAGS) 
 
 clean:
 	rm -f Analysis *.o

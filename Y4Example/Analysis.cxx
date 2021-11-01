@@ -29,23 +29,64 @@ bool sortby_pt(const TLorentzVector &lhs, const TLorentzVector &rhs){
 
 int main(int argc, char* argv[]) {
 
+
+	// DSID -> cross-section [pb]
+
+  	crossSection[364100] =  1588.66746389;
+   crossSection[364101] =  219.465881813;
+   crossSection[364102] =  126.881010892;
+   crossSection[364103] =  73.4175295308;
+   crossSection[364104] =  20.6122362812;
+   crossSection[364105] =  12.5960346435;
+   crossSection[364106] =  23.7652919679;
+   crossSection[364107] =  9.14987883537;
+   crossSection[364108] =  6.12043965702;
+   crossSection[364109] =  4.65594981299;
+   crossSection[364110] =  2.21715064245;
+   crossSection[364111] =  1.46733700049;
+   crossSection[364112] =  1.74182113;
+   crossSection[364113] =  0.143963764;
+
+
 	std::cout << "Starting Analysis!" << std::endl;
 
+	// Input Analysis, File Name, DSID
 
+	TString inputFileName = argv[1];
+	TString dsidName = argv[2];
+
+	int dsid_int = dsidName.Atoi();
+
+	std::cout << "Opening: " << inputFileName  << std::endl;
+	std::cout << "DSID: " << dsidName  << std::endl;
+	std::cout << "Cross-section = " << crossSection[dsid_int]  << " pb " << std::endl;
 
 
 	// Open the file and setup the reader class
 
-	TFile* inputFile = TFile::Open("WZ.root");
+	TFile* inputFile = TFile::Open(inputFileName);
 
+
+	// Get event tree
 	TTree* tree = (TTree*) inputFile->Get("nominal");
 
 	Reader* r = new Reader(tree);
 
+	// Get weight tree
+	TTree* tree_w = (TTree*) inputFile->Get("sumWeights");
+
+	WeightReader* r_w = new WeightReader(tree_w);
+
 
 	// Setup an output ROOT file to store histograms
 
-	TFile* outputFile = new TFile("output.root","recreate");
+	TString outputFileName = "Output_";
+	outputFileName += dsidName;
+	outputFileName += ".root";;
+
+	std::cout << "outputFileName = " << outputFileName << std::endl;
+
+	TFile* outputFile = new TFile(outputFileName,"recreate");
 
 	outputFile->cd();
 
@@ -55,14 +96,41 @@ int main(int argc, char* argv[]) {
 
 	TH1D* h_Dijet_mass = new TH1D("h_Dijet_Mass", ";Mass [GeV]; Events/GeV",100,0,300);
 
-	TH1D* h_DiZ_mass = new TH1D("h_DiZ_Mass", "; Mass [GeV]; Events /GeV", 100, 50, 750);
+	TH1D* h_Di_Boson_Mass = new TH1D("h_Di_Boson_Mass", "; Mass [GeV]; Events /GeV", 100, 50, 750);
 
 	TH1D* h_Z_pt_lep = new TH1D("h_Z_pt_lep", ";pt [GeV]; Events /GeV", 100, 20, 500);
 
-	TH1D* h_Z_jets_pt = new TH1D("h_Z_jets_pt", ";pt [GeV]; Events /GeV", 100, 10, 500);
+	TH1D* h_Boson_jets_pt = new TH1D("h_Boson_jets_pt", ";pt [GeV]; Events /GeV", 100, 10, 500);
 
-	TH1D* h_DiZ_Pt = new TH1D("h_DiZ_Pt", ";pt [GeV]; Events /GeV", 100, 20, 500);
+	TH1D* h_DiBoson_Pt = new TH1D("h_DiBoson_Pt", ";pt [GeV]; Events /GeV", 100, 20, 500);
 
+
+	// Work out our normalisation factor "S"
+
+
+	const double lumi = 36.1e3; // pb^-1
+	const double xs = crossSection[dsid_int]; // pb
+
+	double sumW = 0.0;
+
+	for(unsigned int i = 0; i < tree_w->GetEntries(); ++i) {
+
+
+		r_w->GetEntry(i);
+
+		sumW += r_w->totalEventsWeighted;
+
+
+	}
+
+	std::cout << "Normalisation ingredients..."  << std::endl;
+	std::cout << "Lumi = " << lumi  << std::endl;
+	std::cout << "sigma = " << xs  << std::endl;
+	std::cout << "sumW = " << sumW  << std::endl;
+
+	const double S = lumi*xs/sumW;
+
+	std::cout << "Scale Factor = " << S  << std::endl;
 
 
 	// Event loop
@@ -78,6 +146,13 @@ int main(int argc, char* argv[]) {
 
 
 		r->GetEntry(n);
+
+		// Find Scale Factor for each event
+
+		const double weight_mc = r->weight_mc;
+
+
+		const double weight = weight_mc * S;
 
 
 		std::vector<TLorentzVector> my_jets;
@@ -104,9 +179,9 @@ int main(int argc, char* argv[]) {
 			
 			dijet = my_jets.at(0) + my_jets.at(1);
 
-			h_Dijet_mass->Fill(dijet.M());
+			h_Dijet_mass->Fill(dijet.M(),weight);
 
-
+			// Fill histogram with weighted values
 
 		}
 		std::vector<TLorentzVector> muon_vector;
@@ -127,7 +202,7 @@ int main(int argc, char* argv[]) {
 			std::sort(muon_vector.begin(), muon_vector.end(), sortby_pt);
 
 			dimuon = muon_vector.at(0) + muon_vector.at(1);
-			h_DiMuon_Mass->Fill(dimuon.M());
+			h_DiMuon_Mass->Fill(dimuon.M(),weight);
 
 
 		}
@@ -147,13 +222,13 @@ int main(int argc, char* argv[]) {
 			
 			dielectron = electron_vector.at(0) + electron_vector.at(1);
 
-			h_DiElectron_Mass->Fill(dielectron.M());
+			h_DiElectron_Mass->Fill(dielectron.M(),weight);
 
 		}
 
-		h_Z_pt_lep->Fill(dimuon.Pt());
-		h_Z_pt_lep->Fill(dielectron.Pt());
-		h_Z_jets_pt->Fill(dijet.Pt());
+		h_Z_pt_lep->Fill(dimuon.Pt(),weight);
+		h_Z_pt_lep->Fill(dielectron.Pt(),weight);
+		h_Boson_jets_pt->Fill(dijet.Pt(),weight);
 
 
 		TLorentzVector diZ;
@@ -170,8 +245,8 @@ int main(int argc, char* argv[]) {
 
 		}
 
-		h_DiZ_mass->Fill(diZ.M());
-		h_DiZ_Pt->Fill(diZ.Pt());
+		h_Di_Boson_Mass->Fill(diZ.M(),weight);
+		h_DiBoson_Pt->Fill(diZ.Pt(),weight);
 
 
 	} // Event Loop
@@ -185,10 +260,10 @@ int main(int argc, char* argv[]) {
 	h_DiMuon_Mass->Write();
 	h_DiElectron_Mass->Write();
 	h_Dijet_mass->Write();
-	h_DiZ_mass->Write();
+	h_Di_Boson_Mass->Write();
 	h_Z_pt_lep->Write();
-	h_Z_jets_pt->Write();
-	h_DiZ_Pt->Write();
+	h_Boson_jets_pt->Write();
+	h_DiBoson_Pt->Write();
 
 	outputFile->Close();
 
