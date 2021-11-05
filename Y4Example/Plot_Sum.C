@@ -2,7 +2,69 @@
 
 void Plot_Sum() {
 
+	TString histName = "h_Dijet_Mass";
 
+	std::map<int,TFile*>map_file;
+	std::map<int, TH1D*> map_hist;
+	std::map<int,TFile*>map_file_sig;
+	std::map<int, TH1D*> map_hist_sig;
+
+
+	map_file[364100] = TFile::Open("Output_364100.root");
+	map_file[364101] = TFile::Open("Output_364101.root");
+	map_file[364102] = TFile::Open("Output_364102.root");
+	map_file[364103] = TFile::Open("Output_364103.root");
+	map_file[364104] = TFile::Open("Output_364104.root");
+	map_file[364105] = TFile::Open("Output_364105.root");
+	map_file[364106] = TFile::Open("Output_364106.root");
+	map_file[364107] = TFile::Open("Output_364107.root");
+	map_file[364108] = TFile::Open("Output_364108.root");
+	map_file[364109] = TFile::Open("Output_364109.root");
+	map_file[364110] = TFile::Open("Output_364110.root");
+
+	map_file[364111] = TFile::Open("Output_364111.root");
+	map_file[364112] = TFile::Open("Output_364112.root");
+	map_file[364113] = TFile::Open("Output_364113.root");
+	map_file[364114] = TFile::Open("Output_364113.root");
+	map_file[364115] = TFile::Open("Output_364113.root");
+	map_file[364116] = TFile::Open("Output_364113.root");
+	map_file[364117] = TFile::Open("Output_364113.root");
+	map_file[364118] = TFile::Open("Output_364113.root");
+	map_file[364119] = TFile::Open("Output_364113.root");
+	map_file[364120] = TFile::Open("Output_364113.root");
+
+	map_file[364121] = TFile::Open("Output_364113.root");
+	map_file[364122] = TFile::Open("Output_364113.root");
+	map_file[364123] = TFile::Open("Output_364113.root");
+	map_file[364124] = TFile::Open("Output_364113.root");
+	map_file[364125] = TFile::Open("Output_364113.root");
+	map_file[364126] = TFile::Open("Output_364113.root");
+	map_file[364127] = TFile::Open("Output_364113.root");
+	map_file[364128] = TFile::Open("Output_364113.root");
+	map_file[364129] = TFile::Open("Output_364113.root");
+	map_file[364130] = TFile::Open("Output_364113.root");
+
+	map_file[364131] = TFile::Open("Output_364113.root");
+	map_file[364132] = TFile::Open("Output_364113.root");
+	map_file[364133] = TFile::Open("Output_364113.root");
+	map_file[364134] = TFile::Open("Output_364113.root");
+	map_file[364135] = TFile::Open("Output_364113.root");
+	map_file[364136] = TFile::Open("Output_364113.root");
+	map_file[364137] = TFile::Open("Output_364113.root");
+	map_file[364138] = TFile::Open("Output_364113.root");
+	map_file[364139] = TFile::Open("Output_364113.root");
+	map_file[364140] = TFile::Open("Output_364113.root");
+
+	map_file[364141] = TFile::Open("Output_364113.root");
+
+	map_file[410472] = TFile::Open("Output_410472.root");
+
+
+
+
+	map_file_sig[363356] = TFile::Open("Output_363356.root");
+	map_file_sig[363358] = TFile::Open("Output_363358.root");
+/*
 	TFile* file_1 = TFile::Open("Output_364100.root");
 	TFile* file_2 = TFile::Open("Output_364101.root");
 	TFile* file_3 = TFile::Open("Output_364102.root");
@@ -10,8 +72,62 @@ void Plot_Sum() {
 	TFile* file_5 = TFile::Open("Output_364104.root");
 	TFile* file_6 = TFile::Open("Output_364105.root");
 	TFile* file_7 = TFile::Open("Output_363356.root");
+*/
 
-	TH1D* h_1 = (TH1D*) file_1->Get("h_Z_pt_lep");
+
+for (std::map<int, TFile*>::iterator it = map_file.begin(); it != map_file.end(); it++){
+
+	std::cout<< it->first << ':' << it->second << std::endl;
+
+	map_hist[it->first] = (TH1D*) (it->second)->Get(histName);
+
+	std::cout << map_hist[it->first] << std::endl;
+
+
+}
+
+
+for (std::map<int, TFile*>::iterator it=map_file_sig.begin(); it != map_file_sig.end(); it++){
+
+	std::cout<< it->first << ':' << it->second << std::endl;
+
+	map_hist_sig[it->first] = (TH1D*) (it->second)->Get(histName);
+
+	std::cout << map_hist_sig[it->first] << std::endl;
+
+
+} 
+
+
+	TH1D* h_Sum = (TH1D*) map_hist[364100]->Clone("h_Sum");
+	h_Sum->Reset();
+
+for (std::map < int, TH1D*>::iterator it=map_hist.begin(); it != map_hist.end(); it++){
+	h_Sum->Add(map_hist[it->first]);
+
+
+
+}
+
+
+	TCanvas* c = new TCanvas("c","c",800,600);
+
+	h_Sum->Draw();
+
+
+map_hist_sig[363356]->Draw("SAME");
+map_hist_sig[363358]->Draw("SAME");
+
+map_hist_sig[363356]->SetLineColor(kRed);
+map_hist_sig[363358]->SetLineColor(kBlue);
+
+
+map_hist_sig[363356]->Scale(100);
+map_hist_sig[363358]->Scale(100);
+
+return 0;
+
+	/* TH1D* h_1 = (TH1D*) file_1->Get("h_Z_pt_lep");
 	TH1D* h_2 = (TH1D*) file_2->Get("h_Z_pt_lep");
 	TH1D* h_3 = (TH1D*) file_3->Get("h_Z_pt_lep");
 	TH1D* h_4 = (TH1D*) file_4->Get("h_Z_pt_lep");
@@ -44,6 +160,8 @@ void Plot_Sum() {
 	h_Sum->Add(h_7);
 
 	h_Sum->Draw();
+
+ */
 
 
 

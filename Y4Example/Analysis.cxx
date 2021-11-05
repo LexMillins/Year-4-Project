@@ -1,6 +1,6 @@
 #include "Analysis.h"
 #include <algorithm>
-
+#include <dirent.h>
 
 //print function for vectors of float
 void print_vect_float(std::vector <float> const &a) {
@@ -164,13 +164,11 @@ int main(int argc, char* argv[]) {
 	// Input Analysis, File Name, DSID
 
 	TString inputFileName = argv[1];
-	TString dsidName = argv[2];
+	//TString dsidName = argv[2];
 
-	int dsid_int = dsidName.Atoi();
+	//int dsid_int = dsidName.Atoi();
 
 	std::cout << "Opening: " << inputFileName  << std::endl;
-	std::cout << "DSID: " << dsidName  << std::endl;
-	std::cout << "Cross-section = " << crossSection[dsid_int]  << " pb " << std::endl;
 
 
 	// Open the file and setup the reader class
@@ -189,10 +187,58 @@ int main(int argc, char* argv[]) {
 	WeightReader* r_w = new WeightReader(tree_w);
 
 
+
+	// Work out our normalisation factor "S"
+
+
+	int dsid_temp = 0;
+
+
+	double sumW = 0.0;
+
+	for(unsigned int i = 0; i < tree_w->GetEntries(); ++i) {
+
+
+		r_w->GetEntry(i);
+
+		sumW += r_w->totalEventsWeighted;
+
+		if(i == 0) dsid_temp = r_w->dsid;
+
+
+	}
+
+	const double lumi = 36.1e3; // pb^-1
+	const double xs = crossSection[dsid_temp]; // pb
+
+
+	std::cout << "DSID: " << dsid_temp  << std::endl;
+	std::cout << "Cross-section = " << crossSection[dsid_temp]  << " pb " << std::endl;
+
+
+
+	std::cout << "Normalisation ingredients..."  << std::endl;
+	std::cout << "Lumi = " << lumi  << std::endl;
+	std::cout << "sigma = " << xs  << std::endl;
+	std::cout << "sumW = " << sumW  << std::endl;
+
+	const double S = lumi*xs/sumW;
+
+	std::cout << "Scale Factor = " << S  << std::endl;
+
+
+
+
+
+
+
+
+
+
 	// Setup an output ROOT file to store histograms
 
 	TString outputFileName = "Output_";
-	outputFileName += dsidName;
+	outputFileName += dsid_temp;
 	outputFileName += ".root";;
 
 	std::cout << "outputFileName = " << outputFileName << std::endl;
@@ -215,33 +261,6 @@ int main(int argc, char* argv[]) {
 
 	TH1D* h_DiBoson_Pt = new TH1D("h_DiBoson_Pt", ";pt [GeV]; Events /GeV", 100, 20, 500);
 
-
-	// Work out our normalisation factor "S"
-
-
-	const double lumi = 36.1e3; // pb^-1
-	const double xs = crossSection[dsid_int]; // pb
-
-	double sumW = 0.0;
-
-	for(unsigned int i = 0; i < tree_w->GetEntries(); ++i) {
-
-
-		r_w->GetEntry(i);
-
-		sumW += r_w->totalEventsWeighted;
-
-
-	}
-
-	std::cout << "Normalisation ingredients..."  << std::endl;
-	std::cout << "Lumi = " << lumi  << std::endl;
-	std::cout << "sigma = " << xs  << std::endl;
-	std::cout << "sumW = " << sumW  << std::endl;
-
-	const double S = lumi*xs/sumW;
-
-	std::cout << "Scale Factor = " << S  << std::endl;
 
 
 	// Event loop
