@@ -1,8 +1,18 @@
+float fig_of_merit(int &s, int &b){
+	// a function that returns the Number of signal events
+	//over the square root of the number of background events
+	//provides a figure of merit for cuts
+
+	float f;
+	f = s/sqrt(b);
+	return f;
+
+}
 
 
 void Plot_Sum() {
 
-	TString histName = "h_Dijet_Mass";
+	TString histName = "h_jet_psedorap";
 
 	std::map<int,TFile*>map_file;
 	std::map<int, TH1D*> map_hist;
@@ -25,37 +35,37 @@ void Plot_Sum() {
 	map_file[364111] = TFile::Open("Output_364111.root");
 	map_file[364112] = TFile::Open("Output_364112.root");
 	map_file[364113] = TFile::Open("Output_364113.root");
-	map_file[364114] = TFile::Open("Output_364113.root");
-	map_file[364115] = TFile::Open("Output_364113.root");
-	map_file[364116] = TFile::Open("Output_364113.root");
-	map_file[364117] = TFile::Open("Output_364113.root");
-	map_file[364118] = TFile::Open("Output_364113.root");
-	map_file[364119] = TFile::Open("Output_364113.root");
-	map_file[364120] = TFile::Open("Output_364113.root");
+	map_file[364114] = TFile::Open("Output_364114.root");
+	map_file[364115] = TFile::Open("Output_364115.root");
+	map_file[364116] = TFile::Open("Output_364116.root");
+	map_file[364117] = TFile::Open("Output_364117.root");
+	map_file[364118] = TFile::Open("Output_364118.root");
+	map_file[364119] = TFile::Open("Output_364119.root");
+	map_file[364120] = TFile::Open("Output_364120.root");
 
-	map_file[364121] = TFile::Open("Output_364113.root");
-	map_file[364122] = TFile::Open("Output_364113.root");
-	map_file[364123] = TFile::Open("Output_364113.root");
-	map_file[364124] = TFile::Open("Output_364113.root");
-	map_file[364125] = TFile::Open("Output_364113.root");
-	map_file[364126] = TFile::Open("Output_364113.root");
-	map_file[364127] = TFile::Open("Output_364113.root");
-	map_file[364128] = TFile::Open("Output_364113.root");
-	map_file[364129] = TFile::Open("Output_364113.root");
-	map_file[364130] = TFile::Open("Output_364113.root");
+	map_file[364121] = TFile::Open("Output_364121.root");
+	map_file[364122] = TFile::Open("Output_364122.root");
+	map_file[364123] = TFile::Open("Output_364123.root");
+	map_file[364124] = TFile::Open("Output_364124.root");
+	map_file[364125] = TFile::Open("Output_364125.root");
+	map_file[364126] = TFile::Open("Output_364126.root");
+	map_file[364127] = TFile::Open("Output_364127.root");
+	map_file[364128] = TFile::Open("Output_364128.root");
+	map_file[364129] = TFile::Open("Output_364129.root");
+	map_file[364130] = TFile::Open("Output_364130.root");
 
-	map_file[364131] = TFile::Open("Output_364113.root");
-	map_file[364132] = TFile::Open("Output_364113.root");
-	map_file[364133] = TFile::Open("Output_364113.root");
-	map_file[364134] = TFile::Open("Output_364113.root");
-	map_file[364135] = TFile::Open("Output_364113.root");
-	map_file[364136] = TFile::Open("Output_364113.root");
-	map_file[364137] = TFile::Open("Output_364113.root");
-	map_file[364138] = TFile::Open("Output_364113.root");
-	map_file[364139] = TFile::Open("Output_364113.root");
-	map_file[364140] = TFile::Open("Output_364113.root");
+	map_file[364131] = TFile::Open("Output_364131.root");
+	map_file[364132] = TFile::Open("Output_364132.root");
+	map_file[364133] = TFile::Open("Output_364133.root");
+	map_file[364134] = TFile::Open("Output_364134.root");
+	map_file[364135] = TFile::Open("Output_364135.root");
+	map_file[364136] = TFile::Open("Output_364136.root");
+	map_file[364137] = TFile::Open("Output_364137.root");
+	map_file[364138] = TFile::Open("Output_364138.root");
+	map_file[364139] = TFile::Open("Output_364139.root");
+	map_file[364140] = TFile::Open("Output_364140.root");
 
-	map_file[364141] = TFile::Open("Output_364113.root");
+	map_file[364141] = TFile::Open("Output_364141.root");
 
 	map_file[410472] = TFile::Open("Output_410472.root");
 
@@ -119,11 +129,22 @@ map_hist_sig[363356]->Draw("SAME");
 map_hist_sig[363358]->Draw("SAME");
 
 map_hist_sig[363356]->SetLineColor(kRed);
-map_hist_sig[363358]->SetLineColor(kBlue);
+map_hist_sig[363358]->SetLineColor(kGreen);
 
 
-map_hist_sig[363356]->Scale(100);
-map_hist_sig[363358]->Scale(100);
+//map_hist_sig[363356]->Scale(100);
+//map_hist_sig[363358]->Scale(100);
+
+int b = h_Sum->GetEntries();
+std::cout<< "number of background events =" << b << std::endl;
+int s = map_hist_sig[363356]->GetEntries() + map_hist_sig[363358]->GetEntries();
+std::cout<< "number of signal events = " << s << std::endl;
+float F = fig_of_merit(s, b);
+std::cout<< "F= " << F << std::endl;
+
+
+
+
 
 return 0;
 

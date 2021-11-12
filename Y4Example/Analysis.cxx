@@ -21,6 +21,8 @@ void print_vect_TLor(std::vector <TLorentzVector> const &b) {
    }
 }
 
+
+
 //function to sort TLorentzVectors by transverse momentum
 bool sortby_pt(const TLorentzVector &lhs, const TLorentzVector &rhs){
 	return lhs.Pt() > rhs.Pt();
@@ -255,12 +257,27 @@ int main(int argc, char* argv[]) {
 
 	TH1D* h_Di_Boson_Mass = new TH1D("h_Di_Boson_Mass", "; Mass [GeV]; Events /GeV", 100, 50, 750);
 
-	TH1D* h_Z_pt_lep = new TH1D("h_Z_pt_lep", ";pt [GeV]; Events /GeV", 100, 20, 500);
+	TH1D* h_Z_pt_lep = new TH1D("h_Z_pt_lep", ";pt [GeV]; Events /GeV", 100, 0, 500);
 
-	TH1D* h_Boson_jets_pt = new TH1D("h_Boson_jets_pt", ";pt [GeV]; Events /GeV", 100, 10, 500);
+	TH1D* h_Boson_jets_pt = new TH1D("h_Boson_jets_pt", ";pt [GeV]; Events /GeV", 100, 0, 500);
 
-	TH1D* h_DiBoson_Pt = new TH1D("h_DiBoson_Pt", ";pt [GeV]; Events /GeV", 100, 20, 500);
+	TH1D* h_DiBoson_Pt = new TH1D("h_DiBoson_Pt", ";pt [GeV]; Events /GeV", 100, 0, 500);
 
+	//TH1D* h_Boson_pseudorap = new TH1D("h_Boson_psuedorap", "psuedorapidity; Events /GeV", 100, 0, 500);
+
+	//TH1D* h_Boson_phi = new TH1D("h_Boson_phi", "phi; Events /GeV", 100, 0, 500);
+
+	TH1D* h_lep_pseudorap = new TH1D("h_lep_pseudorap", "psuedorapidity; Events /GeV", 100, 0, 50);
+
+	TH1D* h_jet_pseudorap = new TH1D("h_jet_psedorap", "psuedorapidity; Events/GeV", 100, 0, 50);
+
+	TH1D* h_lep_phi = new TH1D("h_lep_phi", "phi [rad]; Events/GeV", 100, 0, 10);
+
+	TH1D* h_jet_phi = new TH1D("h_jet_phi", "phi [rad]; Events/GeV", 100, 0, 10);
+
+	//TH1D* h_angle_between_lep = new TH1D("h_angle_between_lep", "phi [rad]; Events/GeV", 100, 0 , 300);
+
+	//TH1D* h_angle_between_jets = new TH1D("h_angle_between_jets", "phi [rad]; Events/GeV", 100, 0, 300); 
 
 
 	// Event loop
@@ -284,12 +301,14 @@ int main(int argc, char* argv[]) {
 
 		const double weight = weight_mc * S;
 
+		if (r->jet_pt->size() <2 ){
+
+			continue;
+		}
 
 		std::vector<TLorentzVector> my_jets;
 		TLorentzVector dijet;
 		TLorentzVector jetj;
-
-
 
 		for( int j = 0; j <(r->jet_pt->size()); ++j){
 
@@ -308,8 +327,14 @@ int main(int argc, char* argv[]) {
 		if(my_jets.size() >= 2){
 			
 			dijet = my_jets.at(0) + my_jets.at(1);
+			if( dijet.M() < 35){
+				continue;
+			}
 
 			h_Dijet_mass->Fill(dijet.M(),weight);
+			h_Boson_jets_pt->Fill(dijet.Pt(),weight);
+			h_jet_pseudorap->Fill(dijet.Eta(), weight);
+			h_jet_phi->Fill(dijet.Phi(), weight);
 
 			// Fill histogram with weighted values
 
@@ -333,6 +358,9 @@ int main(int argc, char* argv[]) {
 
 			dimuon = muon_vector.at(0) + muon_vector.at(1);
 			h_DiMuon_Mass->Fill(dimuon.M(),weight);
+			h_Z_pt_lep->Fill(dimuon.Pt(),weight);
+			h_lep_pseudorap->Fill(dimuon.Eta(), weight);
+			h_lep_phi->Fill(dimuon.Phi(), weight);
 
 
 		}
@@ -353,19 +381,20 @@ int main(int argc, char* argv[]) {
 			dielectron = electron_vector.at(0) + electron_vector.at(1);
 
 			h_DiElectron_Mass->Fill(dielectron.M(),weight);
+			h_Z_pt_lep->Fill(dielectron.Pt(),weight);
+			h_lep_pseudorap->Fill(dielectron.Eta(), weight);
+			h_lep_phi->Fill(dielectron.Phi(), weight);
 
 		}
 
-		h_Z_pt_lep->Fill(dimuon.Pt(),weight);
-		h_Z_pt_lep->Fill(dielectron.Pt(),weight);
-		h_Boson_jets_pt->Fill(dijet.Pt(),weight);
+		
 
 
 		TLorentzVector diZ;
 		if( dijet.Pt() != 0){
 
 			if (dimuon.Pt() !=0){
-				diZ = dijet + dimuon;
+				diZ = dijet + dimuon;     	
 			}
 
 			else if (dielectron.Pt() !=0){
@@ -374,10 +403,10 @@ int main(int argc, char* argv[]) {
 			}
 
 		}
-
 		h_Di_Boson_Mass->Fill(diZ.M(),weight);
 		h_DiBoson_Pt->Fill(diZ.Pt(),weight);
-
+		//h_Boson_pseudorap->Fill(diZ.Eta());
+		//h_Boson_phi->Fill(diZ.Phi());
 
 	} // Event Loop
 
@@ -394,6 +423,12 @@ int main(int argc, char* argv[]) {
 	h_Z_pt_lep->Write();
 	h_Boson_jets_pt->Write();
 	h_DiBoson_Pt->Write();
+	//h_Boson_pseudorap->Write();
+	//h_Boson_phi->Write();
+	h_lep_pseudorap->Write();
+	h_lep_phi->Write();
+	h_jet_pseudorap->Write();
+	h_jet_phi->Write();
 
 	outputFile->Close();
 
