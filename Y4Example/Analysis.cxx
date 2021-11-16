@@ -253,31 +253,31 @@ int main(int argc, char* argv[]) {
 
 	TH1D* h_DiElectron_Mass = new TH1D("h_DiElectron_mass","; Mass [GeV]; Events / GeV",100,50,150);
 
-	TH1D* h_Dijet_mass = new TH1D("h_Dijet_Mass", ";Mass [GeV]; Events/GeV",100,0,300);
+	TH1D* h_Dijet_mass = new TH1D("h_Dijet_Mass", ";Mass [GeV]; Events/GeV",30,0,300);
 
-	TH1D* h_Di_Boson_Mass = new TH1D("h_Di_Boson_Mass", "; Mass [GeV]; Events /GeV", 100, 50, 750);
+	TH1D* h_Di_Boson_Mass = new TH1D("h_Di_Boson_Mass", "; Mass [GeV]; Events /GeV", 70, 50, 750);
 
-	TH1D* h_Z_pt_lep = new TH1D("h_Z_pt_lep", ";pt [GeV]; Events /GeV", 100, 0, 500);
+	TH1D* h_Z_pt_lep = new TH1D("h_Z_pt_lep", ";pt [GeV]; Events /GeV", 16, 0, 500);
 
-	TH1D* h_Boson_jets_pt = new TH1D("h_Boson_jets_pt", ";pt [GeV]; Events /GeV", 100, 0, 500);
+	TH1D* h_Boson_jets_pt = new TH1D("h_Boson_jets_pt", ";pt [GeV]; Events /GeV", 25, 0, 500);
 
-	TH1D* h_DiBoson_Pt = new TH1D("h_DiBoson_Pt", ";pt [GeV]; Events /GeV", 100, 0, 500);
+	TH1D* h_DiBoson_Pt = new TH1D("h_DiBoson_Pt", ";pt [GeV]; Events /GeV", 25, 0, 500);
 
 	//TH1D* h_Boson_pseudorap = new TH1D("h_Boson_psuedorap", "psuedorapidity; Events /GeV", 100, 0, 500);
 
 	//TH1D* h_Boson_phi = new TH1D("h_Boson_phi", "phi; Events /GeV", 100, 0, 500);
 
-	TH1D* h_lep_pseudorap = new TH1D("h_lep_pseudorap", "psuedorapidity; Events /GeV", 100, 0, 50);
+	TH1D* h_lep_pseudorap = new TH1D("h_lep_pseudorap", "psuedorapidity; Events /GeV", 40, 0, 50);
 
-	TH1D* h_jet_pseudorap = new TH1D("h_jet_psedorap", "psuedorapidity; Events/GeV", 100, 0, 50);
+	TH1D* h_jet_pseudorap = new TH1D("h_jet_psedorap", "psuedorapidity; Events/GeV", 60, 0, 50);
 
-	TH1D* h_lep_phi = new TH1D("h_lep_phi", "phi [rad]; Events/GeV", 100, 0, 10);
+	TH1D* h_lep_phi = new TH1D("h_lep_phi", "phi [rad]; Events/GeV", 25, 0, 10);
 
-	TH1D* h_jet_phi = new TH1D("h_jet_phi", "phi [rad]; Events/GeV", 100, 0, 10);
+	TH1D* h_jet_phi = new TH1D("h_jet_phi", "phi [rad]; Events/GeV", 25, 0, 10);
 
-	//TH1D* h_angle_between_lep = new TH1D("h_angle_between_lep", "phi [rad]; Events/GeV", 100, 0 , 300);
+	TH1D* h_angle_between_lep = new TH1D("h_angle_between_lep", "phi [rad]; Events/GeV", 100, 0 , 300);
 
-	//TH1D* h_angle_between_jets = new TH1D("h_angle_between_jets", "phi [rad]; Events/GeV", 100, 0, 300); 
+	TH1D* h_angle_between_jets = new TH1D("h_angle_between_jets", "phi [rad]; Events/GeV", 100, 0, 300); 
 
 
 	// Event loop
@@ -321,6 +321,9 @@ int main(int argc, char* argv[]) {
 
 
 		std::sort(my_jets.begin(), my_jets.end(),sortby_pt);
+		float angle_between_jets;
+		TLorentzVector jet1;
+		TLorentzVector jet2;
 
 		//print_vect_TLor(my_jets);
 
@@ -331,6 +334,13 @@ int main(int argc, char* argv[]) {
 				continue;
 			}
 
+			jet1 = my_jets.at(0);
+			jet2 = my_jets.at(1);
+
+			angle_between_jets = jet1.Phi() - jet2.Phi();   //this doesnt work
+
+
+			h_angle_between_jets->Fill(angle_between_jets, weight);
 			h_Dijet_mass->Fill(dijet.M(),weight);
 			h_Boson_jets_pt->Fill(dijet.Pt(),weight);
 			h_jet_pseudorap->Fill(dijet.Eta(), weight);

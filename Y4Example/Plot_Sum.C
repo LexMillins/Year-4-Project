@@ -1,4 +1,8 @@
-float fig_of_merit(int &s, int &b){
+#include <stdio.h>
+#include <math.h>
+
+
+float fig_of_merit(float &s, float &b){
 	// a function that returns the Number of signal events
 	//over the square root of the number of background events
 	//provides a figure of merit for cuts
@@ -12,7 +16,7 @@ float fig_of_merit(int &s, int &b){
 
 void Plot_Sum() {
 
-	TString histName = "h_jet_psedorap";
+	TString histName = "h_angle_between_jets";
 
 	std::map<int,TFile*>map_file;
 	std::map<int, TH1D*> map_hist;
@@ -74,15 +78,7 @@ void Plot_Sum() {
 
 	map_file_sig[363356] = TFile::Open("Output_363356.root");
 	map_file_sig[363358] = TFile::Open("Output_363358.root");
-/*
-	TFile* file_1 = TFile::Open("Output_364100.root");
-	TFile* file_2 = TFile::Open("Output_364101.root");
-	TFile* file_3 = TFile::Open("Output_364102.root");
-	TFile* file_4 = TFile::Open("Output_364103.root");
-	TFile* file_5 = TFile::Open("Output_364104.root");
-	TFile* file_6 = TFile::Open("Output_364105.root");
-	TFile* file_7 = TFile::Open("Output_363356.root");
-*/
+
 
 
 for (std::map<int, TFile*>::iterator it = map_file.begin(); it != map_file.end(); it++){
@@ -132,59 +128,35 @@ map_hist_sig[363356]->SetLineColor(kRed);
 map_hist_sig[363358]->SetLineColor(kGreen);
 
 
-//map_hist_sig[363356]->Scale(100);
-//map_hist_sig[363358]->Scale(100);
+const double mass_peak = 91.2; // [GeV]
+const double mass_sigma = 18.0; // 1 sigma [GeV]
 
-int b = h_Sum->GetEntries();
+
+int bin_low = map_hist_sig[363356]->FindBin(mass_peak - 2.0*mass_sigma);
+int bin_high = map_hist_sig[363356]->FindBin(mass_peak + 2.0*mass_sigma);
+
+
+std::cout<< "bin_low =" << bin_low << std::endl;
+std::cout<< "bin_high =" << bin_high << std::endl;
+
+
+float b = h_Sum->Integral(bin_low,bin_high);
+float sz = map_hist_sig[363356]->Integral(bin_low,bin_high);
+float sw = map_hist_sig[363358]->Integral(bin_low,bin_high);
+
 std::cout<< "number of background events =" << b << std::endl;
-int s = map_hist_sig[363356]->GetEntries() + map_hist_sig[363358]->GetEntries();
-std::cout<< "number of signal events = " << s << std::endl;
-float F = fig_of_merit(s, b);
-std::cout<< "F= " << F << std::endl;
+std::cout<< "number of Z signal events = " << sz << std::endl;
+std::cout<< "number of w signal events = " << sw << std::endl;
+
+float Fz = fig_of_merit(sz, b);
+float Fw = fig_of_merit(sw, b);
+std::cout<< "Fz = " << Fz << std::endl;
+std::cout<< "Fw = " << Fw << std::endl;
 
 
 
 
 
 return 0;
-
-	/* TH1D* h_1 = (TH1D*) file_1->Get("h_Z_pt_lep");
-	TH1D* h_2 = (TH1D*) file_2->Get("h_Z_pt_lep");
-	TH1D* h_3 = (TH1D*) file_3->Get("h_Z_pt_lep");
-	TH1D* h_4 = (TH1D*) file_4->Get("h_Z_pt_lep");
-	TH1D* h_5 = (TH1D*) file_5->Get("h_Z_pt_lep");
-	TH1D* h_6 = (TH1D*) file_6->Get("h_Z_pt_lep");
-	TH1D* h_7 = (TH1D*) file_7->Get("h_Z_pt_lep");
-
-	TCanvas* c = new TCanvas("c","c",800,600);
-
-
-
-	h_1->Draw();
-	h_2->Draw("SAME");
-	h_3->Draw("SAME");
-	h_4->Draw("SAME");
-	h_5->Draw("SAME");
-	h_6->Draw("SAME");
-	h_7->Draw("SAME");
-
-
-	TH1D* h_Sum = (TH1D*) h_1->Clone("h_Sum");
-	h_Sum->Reset();
-
-	h_Sum->Add(h_1);
-	h_Sum->Add(h_2);
-	h_Sum->Add(h_3);
-	h_Sum->Add(h_4);
-	h_Sum->Add(h_5);
-	h_Sum->Add(h_6);
-	h_Sum->Add(h_7);
-
-	h_Sum->Draw();
-
- */
-
-
-
 
 }
