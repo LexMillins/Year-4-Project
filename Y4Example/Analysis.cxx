@@ -275,9 +275,9 @@ int main(int argc, char* argv[]) {
 
 	TH1D* h_jet_phi = new TH1D("h_jet_phi", "phi [rad]; Events/GeV", 25, 0, 10);
 
-	TH1D* h_angle_between_lep = new TH1D("h_angle_between_lep", "phi [rad]; Events/GeV", 100, 0 , 300);
+	TH1D* h_angle_between_lep = new TH1D("h_angle_between_lep", "phi [rad]; Events/GeV", 20, 0 , 10);
 
-	TH1D* h_angle_between_jets = new TH1D("h_angle_between_jets", "phi [rad]; Events/GeV", 100, 0, 300); 
+	TH1D* h_angle_between_jets = new TH1D("h_angle_between_jets", "phi [rad]; Events/GeV", 20, 0, 10); 
 
 
 	// Event loop
@@ -321,13 +321,14 @@ int main(int argc, char* argv[]) {
 
 
 		std::sort(my_jets.begin(), my_jets.end(),sortby_pt);
-		float angle_between_jets;
+		double angle_between_jets;
 		TLorentzVector jet1;
 		TLorentzVector jet2;
 
 		//print_vect_TLor(my_jets);
 
 		if(my_jets.size() >= 2){
+
 			
 			dijet = my_jets.at(0) + my_jets.at(1);
 			if( dijet.M() < 35){
@@ -353,6 +354,12 @@ int main(int argc, char* argv[]) {
 		std::vector<TLorentzVector> electron_vector;
 		TLorentzVector dielectron;
 		TLorentzVector dimuon;
+		double angle_between_muons;
+		double angle_between_electrons;
+		TLorentzVector muon1;
+		TLorentzVector muon2;
+		TLorentzVector elec1;
+		TLorentzVector elec2;
 
 		if( r->mu_pt->size() >= 2) {
 
@@ -367,6 +374,12 @@ int main(int argc, char* argv[]) {
 			std::sort(muon_vector.begin(), muon_vector.end(), sortby_pt);
 
 			dimuon = muon_vector.at(0) + muon_vector.at(1);
+
+			muon1 = muon_vector.at(0);
+			muon2 = muon_vector.at(1);
+			angle_between_muons = muon1.Phi() - muon2.Phi();
+
+			h_angle_between_lep->Fill(angle_between_muons, weight);
 			h_DiMuon_Mass->Fill(dimuon.M(),weight);
 			h_Z_pt_lep->Fill(dimuon.Pt(),weight);
 			h_lep_pseudorap->Fill(dimuon.Eta(), weight);
@@ -389,6 +402,12 @@ int main(int argc, char* argv[]) {
 			std::sort(electron_vector.begin(), electron_vector.end(), sortby_pt);
 			
 			dielectron = electron_vector.at(0) + electron_vector.at(1);
+
+			elec1 = electron_vector.at(0);
+			elec2 = electron_vector.at(1);
+			angle_between_electrons = elec1.Phi() - elec2.Phi();
+
+			h_angle_between_lep->Fill(angle_between_electrons, weight);
 
 			h_DiElectron_Mass->Fill(dielectron.M(),weight);
 			h_Z_pt_lep->Fill(dielectron.Pt(),weight);
@@ -439,6 +458,8 @@ int main(int argc, char* argv[]) {
 	h_lep_phi->Write();
 	h_jet_pseudorap->Write();
 	h_jet_phi->Write();
+	h_angle_between_jets->Write();
+	h_angle_between_lep->Write();
 
 	outputFile->Close();
 
