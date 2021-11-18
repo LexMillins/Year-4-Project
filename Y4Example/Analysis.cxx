@@ -267,18 +267,21 @@ int main(int argc, char* argv[]) {
 
 	//TH1D* h_Boson_phi = new TH1D("h_Boson_phi", "phi; Events /GeV", 100, 0, 500);
 
-	TH1D* h_lep_pseudorap = new TH1D("h_lep_pseudorap", "psuedorapidity; Events /GeV", 40, 0, 50);
+	TH1D* h_lep_pseudorap = new TH1D("h_lep_pseudorap", ";psuedorapidity; Events /GeV", 40, 0, 50);
 
-	TH1D* h_jet_pseudorap = new TH1D("h_jet_psedorap", "psuedorapidity; Events/GeV", 60, 0, 50);
+	TH1D* h_jet_pseudorap = new TH1D("h_jet_psedorap", ";psuedorapidity; Events/GeV", 60, 0, 50);
 
-	TH1D* h_lep_phi = new TH1D("h_lep_phi", "phi [rad]; Events/GeV", 25, 0, 10);
+	TH1D* h_lep_phi = new TH1D("h_lep_phi", ";phi [rad]; Events/GeV", 25, 0, 10);
 
-	TH1D* h_jet_phi = new TH1D("h_jet_phi", "phi [rad]; Events/GeV", 25, 0, 10);
+	TH1D* h_jet_phi = new TH1D("h_jet_phi", ";phi [rad]; Events/GeV", 25, 0, 10);
 
-	TH1D* h_angle_between_lep = new TH1D("h_angle_between_lep", "phi [rad]; Events/GeV", 20, 0 , 10);
+	TH1D* h_angle_between_lep = new TH1D("h_angle_between_lep", ";phi [rad]; Events/GeV", 20, 0 , 10);
 
-	TH1D* h_angle_between_jets = new TH1D("h_angle_between_jets", "phi [rad]; Events/GeV", 20, 0, 10); 
+	TH1D* h_angle_between_jets = new TH1D("h_angle_between_jets", ";phi [rad]; Events/GeV", 20, 0, 10); 
 
+	TH1D * h_jet_rapidity = new TH1D("h_jet_rapidity", ";Rapidity, y; Events/GeV", 20, 0, 5);
+
+	TH1D* h_lep_rapidity = new TH1D("h_lep_rapidity", ";Rapidity, y; Events/GeV", 30, 0, 5);
 
 	// Event loop
 
@@ -324,6 +327,8 @@ int main(int argc, char* argv[]) {
 		double angle_between_jets;
 		TLorentzVector jet1;
 		TLorentzVector jet2;
+		double jet1_rapidity;
+		double jet2_rapidity;
 
 		//print_vect_TLor(my_jets);
 
@@ -334,13 +339,21 @@ int main(int argc, char* argv[]) {
 			if( dijet.M() < 35){
 				continue;
 			}
+			if(dijet.M() > 150){
+				continue;
+			}
 
 			jet1 = my_jets.at(0);
 			jet2 = my_jets.at(1);
 
-			angle_between_jets = jet1.Phi() - jet2.Phi();   //this doesnt work
+			angle_between_jets = jet1.Phi() - jet2.Phi(); 
+
+			jet1_rapidity = jet1.Rapidity();
+			jet2_rapidity = jet2.Rapidity();
 
 
+			h_jet_rapidity->Fill(jet1_rapidity, weight);
+			h_jet_rapidity->Fill(jet2_rapidity, weight);
 			h_angle_between_jets->Fill(angle_between_jets, weight);
 			h_Dijet_mass->Fill(dijet.M(),weight);
 			h_Boson_jets_pt->Fill(dijet.Pt(),weight);
@@ -373,12 +386,26 @@ int main(int argc, char* argv[]) {
 			}
 			std::sort(muon_vector.begin(), muon_vector.end(), sortby_pt);
 
+
 			dimuon = muon_vector.at(0) + muon_vector.at(1);
 
 			muon1 = muon_vector.at(0);
 			muon2 = muon_vector.at(1);
+
+			if(muon1.Pt() < 25){
+
+				continue;
+			}
+
 			angle_between_muons = muon1.Phi() - muon2.Phi();
 
+			if(angle_between_muons > 5){
+				continue;
+			}
+
+
+			h_lep_rapidity->Fill(muon1.Rapidity(), weight);
+			h_lep_rapidity->Fill(muon2.Rapidity(), weight);
 			h_angle_between_lep->Fill(angle_between_muons, weight);
 			h_DiMuon_Mass->Fill(dimuon.M(),weight);
 			h_Z_pt_lep->Fill(dimuon.Pt(),weight);
@@ -400,15 +427,31 @@ int main(int argc, char* argv[]) {
 			}
 
 			std::sort(electron_vector.begin(), electron_vector.end(), sortby_pt);
+
+
 			
 			dielectron = electron_vector.at(0) + electron_vector.at(1);
 
 			elec1 = electron_vector.at(0);
+
+			if(elec1.Pt() < 25){
+
+				continue;
+			}
+
 			elec2 = electron_vector.at(1);
 			angle_between_electrons = elec1.Phi() - elec2.Phi();
 
+			if(angle_between_electrons > 5){
+
+				continue;
+			}
+
 			h_angle_between_lep->Fill(angle_between_electrons, weight);
 
+
+			h_lep_rapidity->Fill(elec1.Rapidity(), weight);
+			h_lep_rapidity->Fill(elec2.Rapidity(), weight);
 			h_DiElectron_Mass->Fill(dielectron.M(),weight);
 			h_Z_pt_lep->Fill(dielectron.Pt(),weight);
 			h_lep_pseudorap->Fill(dielectron.Eta(), weight);
@@ -460,6 +503,9 @@ int main(int argc, char* argv[]) {
 	h_jet_phi->Write();
 	h_angle_between_jets->Write();
 	h_angle_between_lep->Write();
+	h_jet_rapidity->Write();
+	h_lep_rapidity->Write();
+
 
 	outputFile->Close();
 

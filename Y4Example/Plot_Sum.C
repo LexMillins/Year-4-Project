@@ -16,7 +16,7 @@ float fig_of_merit(float &s, float &b){
 
 void Plot_Sum() {
 
-	TString histName = "h_angle_between_jets";
+	TString histName = "h_lep_rapidity";
 
 	std::map<int,TFile*>map_file;
 	std::map<int, TH1D*> map_hist;
@@ -74,6 +74,8 @@ void Plot_Sum() {
 	map_file[410472] = TFile::Open("Output_410472.root");
 
 
+	//map_file[363356] = TFile::Open("Output_363356.root");
+	//map_file[363358] = TFile::Open("Output_363358.root");
 
 
 	map_file_sig[363356] = TFile::Open("Output_363356.root");
