@@ -16,7 +16,7 @@ float fig_of_merit(float &s, float &b){
 
 void Plot_Sum() {
 
-	TString histName = "h_lep_rapidity";
+	TString histName = "h_Dijet_Mass";
 
 	std::map<int,TFile*>map_file;
 	std::map<int, TH1D*> map_hist;
