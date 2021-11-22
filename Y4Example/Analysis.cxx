@@ -275,9 +275,9 @@ int main(int argc, char* argv[]) {
 
 	TH1D* h_jet_phi = new TH1D("h_jet_phi", ";phi [rad]; Events/GeV", 25, 0, 10);
 
-	TH1D* h_angle_between_lep = new TH1D("h_angle_between_lep", ";Theta [rad]; Events/GeV", 20, 0 , 10);
+	TH1D* h_angle_between_lep = new TH1D("h_angle_between_lep", ";Theta [rad]; Events/GeV", 100, 0 , 10);
 
-	TH1D* h_angle_between_jets = new TH1D("h_angle_between_jets", ";Theta [rad]; Events/GeV", 20, 0, 10); 
+	TH1D* h_angle_between_jets = new TH1D("h_angle_between_jets", ";Theta [rad]; Events/GeV", 50, 0, 10); 
 
 	TH1D * h_jet_rapidity = new TH1D("h_jet_rapidity", ";Rapidity, y; Events/GeV", 20, 0, 5);
 
@@ -336,6 +336,7 @@ int main(int argc, char* argv[]) {
 
 		if(my_jets.size() >= 2){
 
+
 			
 			dijet = my_jets.at(0) + my_jets.at(1);
 			
@@ -354,7 +355,12 @@ int main(int argc, char* argv[]) {
 			continue;
 			}
 
-			//angle_between_jets = jet1.Dot(jet2); 
+			angle_between_jets = jet1.Angle(jet2.Vect()); 
+
+			if(angle_between_jets > 2.1){
+
+				continue;
+			}
 
 			jet1_rapidity = jet1.Rapidity();
 			jet2_rapidity = jet2.Rapidity();
@@ -363,7 +369,7 @@ int main(int argc, char* argv[]) {
 			h_jet2_pt->Fill(jet2.Pt(),weight);
 			h_jet_rapidity->Fill(jet1_rapidity, weight);
 			h_jet_rapidity->Fill(jet2_rapidity, weight);
-			//h_angle_between_jets->Fill(angle_between_jets, weight);
+			h_angle_between_jets->Fill(angle_between_jets, weight);
 			h_Dijet_mass->Fill(dijet.M(),weight);
 			h_Boson_jets_pt->Fill(dijet.Pt(),weight);
 			h_jet_pseudorap->Fill(dijet.Eta(), weight);
@@ -376,12 +382,14 @@ int main(int argc, char* argv[]) {
 		std::vector<TLorentzVector> electron_vector;
 		TLorentzVector dielectron;
 		TLorentzVector dimuon;
-		double angle_between_muons;
-		double angle_between_electrons;
+		Double_t angle_between_muons;
+		Double_t angle_between_electrons;
 		TLorentzVector muon1;
 		TLorentzVector muon2;
 		TLorentzVector elec1;
 		TLorentzVector elec2;
+
+
 
 		if( r->mu_pt->size() >= 2) {
 
@@ -406,8 +414,13 @@ int main(int argc, char* argv[]) {
 				continue;
 			}
 
-			angle_between_muons = muon1.Dot(muon2);
+			angle_between_muons = muon1.Angle(muon2.Vect());
 
+			/*if(angle_between_muons < 1){
+
+				continue;
+			}
+*/
 			//if(angle_between_muons > 5){
 			//	continue;
 			//}
@@ -426,8 +439,7 @@ int main(int argc, char* argv[]) {
 			h_DiMuon_Mass->Fill(dimuon.M(),weight);
 			h_Z_pt_lep->Fill(dimuon.Pt(),weight);
 			h_lep_pseudorap->Fill(dimuon.Eta(), weight);
-			h_lep_phi->Fill(dimuon.Phi(), weight);
-
+			h_lep_phi->Fill(dimuon.Phi(), weight); 
 
 		}
 
@@ -456,8 +468,13 @@ int main(int argc, char* argv[]) {
 			}
 
 			elec2 = electron_vector.at(1);
-			angle_between_electrons = elec1.Dot(elec2);
+			angle_between_electrons = elec2.Angle(elec1.Vect());
 
+		/*	if(angle_between_electrons < 1){
+
+				continue;
+			}
+*/
 			//if(angle_between_electrons > 5){
 
 				//continue;
