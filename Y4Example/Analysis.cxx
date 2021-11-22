@@ -350,17 +350,17 @@ int main(int argc, char* argv[]) {
 			jet1 = my_jets.at(0);
 			jet2 = my_jets.at(1);
 
-			if( jet2.Pt() > 80){
+			//if( jet2.Pt() > 80){
 
-			continue;
-			}
+			//continue;
+			//}
 
 			angle_between_jets = jet1.Angle(jet2.Vect()); 
 
-			if(angle_between_jets > 2.1){
+			//if(angle_between_jets > 2.2){
 
-				continue;
-			}
+			//	continue;
+			//}
 
 			jet1_rapidity = jet1.Rapidity();
 			jet2_rapidity = jet2.Rapidity();
