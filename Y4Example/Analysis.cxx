@@ -362,6 +362,12 @@ int main(int argc, char* argv[]) {
 			//	continue;
 			//}
 
+			if( (jet1.Pt() < 40) && (jet2.Pt() < 35)){
+
+				continue;
+			}
+
+
 			jet1_rapidity = jet1.Rapidity();
 			jet2_rapidity = jet2.Rapidity();
 
