@@ -29,6 +29,7 @@ bool sortby_pt(const TLorentzVector &lhs, const TLorentzVector &rhs){
 }
 
 
+
 int main(int argc, char* argv[]) {
 
 
@@ -285,6 +286,14 @@ int main(int argc, char* argv[]) {
 
 	TH1D* h_jet2_pt = new TH1D("h_jet2_pt", ";pT [GeV]; Events/GeV", 100, 0, 500);
 
+	TH1D* h_CosThetaHel = new TH1D("h_CosThetaHel", ";cos(#theta_{Hel.}); Events/", 100, -1.0, 1.0);
+
+	TH1D* h_nJet = new TH1D("h_nJet", "; n. Jet; Events/", 10,0,10);
+
+	TH1D* h_LeptonAsymmetry = new TH1D("h_LeptonAsymmetry", "; [p_{T}^{l1}-p_{T}^{l2}]/[p_{T}^{l1}+p_{T}^{l2}]; Events/", 100,0,1.0);
+	TH1D* h_JetAsymmetry = new TH1D("h_JetAsymmetry", "; [p_{T}^{l1}-p_{T}^{l2}]/[p_{T}^{l1}+p_{T}^{l2}]; Events/", 100,0,1.0);
+
+
 	// Event loop
 
 	const int nEvents = r->fChain->GetEntries();
@@ -340,10 +349,10 @@ int main(int argc, char* argv[]) {
 			
 			dijet = my_jets.at(0) + my_jets.at(1);
 			
-			if( dijet.M() < 35){
+			if( dijet.M() < 50){
 				continue;
 			}
-			if(dijet.M() > 150){
+			if(dijet.M() > 160){
 				continue;
 			}
 
@@ -362,7 +371,7 @@ int main(int argc, char* argv[]) {
 			//	continue;
 			//}
 
-			if( (jet1.Pt() < 40) && (jet2.Pt() < 35)){
+			if( (jet1.Pt() < 40) && (jet2.Pt() < 33)){
 
 				continue;
 			}
@@ -395,6 +404,8 @@ int main(int argc, char* argv[]) {
 		TLorentzVector elec1;
 		TLorentzVector elec2;
 
+		TLorentzVector lepton1;
+		TLorentzVector lepton2;
 
 
 		if( r->mu_pt->size() >= 2) {
@@ -431,13 +442,16 @@ int main(int argc, char* argv[]) {
 			//	continue;
 			//}
 
-			if(muon1.Rapidity() > 2.5){
+			if(fabs(muon1.Rapidity()) > 2.5){
 				continue;
 			}
 			
-			if(muon2.Rapidity() > 2.5){
+			if(fabs(muon2.Rapidity()) > 2.5){
 				continue;
 			}
+
+			lepton1 = muon1;
+			lepton2 = muon2;
 
 			h_lep_rapidity->Fill(muon1.Rapidity(), weight);
 			h_lep_rapidity->Fill(muon2.Rapidity(), weight);
@@ -487,13 +501,16 @@ int main(int argc, char* argv[]) {
 			//}
 
 
-			if(elec1.Rapidity() > 2.5){
+			if(fabs(elec1.Rapidity()) > 2.5){
 				continue;
 			}
 
-			if(elec2.Rapidity() > 2.5){
+			if(fabs(elec2.Rapidity()) > 2.5){
 				continue;
 			}
+
+			lepton1 = elec1;
+			lepton2 = elec2;
 
 
 			h_angle_between_lep->Fill(angle_between_electrons, weight);
@@ -509,6 +526,24 @@ int main(int argc, char* argv[]) {
 		}
 
 		
+		TLorentzVector dilepton = lepton1 + lepton2;
+
+		// Copy lepton 4-vectors
+		TLorentzVector lepton1_rest = lepton1;
+		TLorentzVector lepton2_rest = lepton2;
+
+		// Boost into di-lepton (Z) rest frameh_CosThetaHel-
+		lepton1_rest.Boost( -1.0*dilepton.BoostVector() );
+		lepton2_rest.Boost( -1.0*dilepton.BoostVector() );
+
+		// Helicity angle
+		double cosThetaHel = cos( lepton1_rest.Angle(dijet.Vect()) );
+
+		h_CosThetaHel->Fill(cosThetaHel,weight);
+
+		const double asym_lep =  ( lepton1.Pt() - lepton2.Pt() ) / ( lepton1.Pt() + lepton2.Pt() );
+		const double asym_jet =  ( jet1.Pt() - jet2.Pt() ) / ( jet1.Pt() + jet2.Pt() );
+
 
 
 		TLorentzVector diZ;
@@ -524,10 +559,17 @@ int main(int argc, char* argv[]) {
 			}
 
 		}
+
+
 		h_Di_Boson_Mass->Fill(diZ.M(),weight);
 		h_DiBoson_Pt->Fill(diZ.Pt(),weight);
 		//h_Boson_pseudorap->Fill(diZ.Eta());
 		//h_Boson_phi->Fill(diZ.Phi());
+
+		h_nJet->Fill(r->jet_pt->size(),weight);
+
+		h_LeptonAsymmetry->Fill(asym_lep,weight);
+		h_JetAsymmetry->Fill(asym_jet,weight);
 
 	} // Event Loop
 
@@ -555,6 +597,11 @@ int main(int argc, char* argv[]) {
 	h_jet_rapidity->Write();
 	h_lep_rapidity->Write();
 	h_jet2_pt->Write();
+
+	h_CosThetaHel->Write();
+	h_nJet->Write();
+	h_LeptonAsymmetry->Write();
+	h_JetAsymmetry->Write();
 
 
 	outputFile->Close();

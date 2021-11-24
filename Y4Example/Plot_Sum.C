@@ -16,7 +16,17 @@ float fig_of_merit(float &s, float &b){
 
 void Plot_Sum() {
 
-	TString histName = "h_Dijet_Mass";
+//h_CosThetaHel
+//h_nJet
+//h_LeptonAsymmetry
+//h_JetAsymmetry
+
+//	TString histName = "h_CosThetaHel";
+//	TString histName = "h_nJet";
+
+///TString histName = "h_LeptonAsymmetry";
+	TString histName = "h_JetAsymmetry";
+
 
 	std::map<int,TFile*>map_file;
 	std::map<int, TH1D*> map_hist;
@@ -128,6 +138,9 @@ map_hist_sig[363358]->Draw("SAME");
 
 map_hist_sig[363356]->SetLineColor(kRed);
 map_hist_sig[363358]->SetLineColor(kGreen);
+
+map_hist_sig[363356]->Scale(165);
+map_hist_sig[363358]->Scale(165);
 
 
 const double mass_peak = 91.2; // [GeV]
