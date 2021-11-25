@@ -288,9 +288,12 @@ int main(int argc, char* argv[]) {
 
 	TH1D* h_CosThetaHel = new TH1D("h_CosThetaHel", ";cos(#theta_{Hel.}); Events/", 100, -1.0, 1.0);
 
+	TH1D* h_CosThetaHel2 = new TH1D("h_CosThetaHel2", ";cos(#theta_{Hel.}); Events/", 100, -1.0, 1.0);
+
 	TH1D* h_nJet = new TH1D("h_nJet", "; n. Jet; Events/", 10,0,10);
 
 	TH1D* h_LeptonAsymmetry = new TH1D("h_LeptonAsymmetry", "; [p_{T}^{l1}-p_{T}^{l2}]/[p_{T}^{l1}+p_{T}^{l2}]; Events/", 100,0,1.0);
+
 	TH1D* h_JetAsymmetry = new TH1D("h_JetAsymmetry", "; [p_{T}^{l1}-p_{T}^{l2}]/[p_{T}^{l1}+p_{T}^{l2}]; Events/", 100,0,1.0);
 
 
@@ -532,14 +535,20 @@ int main(int argc, char* argv[]) {
 		TLorentzVector lepton1_rest = lepton1;
 		TLorentzVector lepton2_rest = lepton2;
 
+		TLorentzVector dijet_rest = dijet;
+
 		// Boost into di-lepton (Z) rest frameh_CosThetaHel-
 		lepton1_rest.Boost( -1.0*dilepton.BoostVector() );
 		lepton2_rest.Boost( -1.0*dilepton.BoostVector() );
+		dijet_rest.Boost( -1.0*dilepton.BoostVector() );
 
 		// Helicity angle
-		double cosThetaHel = cos( lepton1_rest.Angle(dijet.Vect()) );
+		double cosThetaHel = cos( lepton1_rest.Angle(dijet_rest.Vect()) );
+
+		double cosThetaHel2 = cos( lepton1_rest.Angle(dilepton.Vect()) );
 
 		h_CosThetaHel->Fill(cosThetaHel,weight);
+		h_CosThetaHel2->Fill(cosThetaHel2,weight);
 
 		const double asym_lep =  ( lepton1.Pt() - lepton2.Pt() ) / ( lepton1.Pt() + lepton2.Pt() );
 		const double asym_jet =  ( jet1.Pt() - jet2.Pt() ) / ( jet1.Pt() + jet2.Pt() );
@@ -599,6 +608,8 @@ int main(int argc, char* argv[]) {
 	h_jet2_pt->Write();
 
 	h_CosThetaHel->Write();
+	h_CosThetaHel2->Write();
+
 	h_nJet->Write();
 	h_LeptonAsymmetry->Write();
 	h_JetAsymmetry->Write();
