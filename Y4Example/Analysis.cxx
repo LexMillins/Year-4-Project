@@ -296,6 +296,10 @@ int main(int argc, char* argv[]) {
 
 	TH1D* h_JetAsymmetry = new TH1D("h_JetAsymmetry", "; [p_{T}^{l1}-p_{T}^{l2}]/[p_{T}^{l1}+p_{T}^{l2}]; Events/", 100,0,1.0);
 
+	TH1D* h_CosThetaHel_had = new TH1D("h_CosThetaHel_had", ";cos(#theta_{Hel.}); Events/", 100, -1.0, 0.5);
+
+	TH1D* h_CosThetaHel2_had = new TH1D("h_CosThetaHel2_had", ";cos(#theta_{Hel.}); Events/", 100, -1.0, 0.0);
+
 
 	// Event loop
 
@@ -534,13 +538,25 @@ int main(int argc, char* argv[]) {
 		// Copy lepton 4-vectors
 		TLorentzVector lepton1_rest = lepton1;
 		TLorentzVector lepton2_rest = lepton2;
+		TLorentzVector jet2_rest = lepton2;
+		TLorentzVector jet1_rest = lepton1;
+		TLorentzVector dilepton_rest = dilepton;
 
 		TLorentzVector dijet_rest = dijet;
 
-		// Boost into di-lepton (Z) rest frameh_CosThetaHel-
+		// Boost into di-lepton (Z) rest frame
 		lepton1_rest.Boost( -1.0*dilepton.BoostVector() );
 		lepton2_rest.Boost( -1.0*dilepton.BoostVector() );
 		dijet_rest.Boost( -1.0*dilepton.BoostVector() );
+
+		// Boost into hadronic V rest frame
+		jet1_rest.Boost( -1.0*dijet.BoostVector() );
+		jet2_rest.Boost( -1.0*dijet.BoostVector() );
+		dilepton_rest.Boost( -1.0*dijet.BoostVector() );
+
+		double cosThetaHel_had = cos( jet1_rest.Angle(dilepton_rest.Vect()) );
+
+		double cosThetaHel2_had = cos( jet1_rest.Angle(dijet_rest.Vect()) );
 
 		// Helicity angle
 		double cosThetaHel = cos( lepton1_rest.Angle(dijet_rest.Vect()) );
@@ -549,6 +565,8 @@ int main(int argc, char* argv[]) {
 
 		h_CosThetaHel->Fill(cosThetaHel,weight);
 		h_CosThetaHel2->Fill(cosThetaHel2,weight);
+		h_CosThetaHel_had->Fill(cosThetaHel_had, weight);
+		h_CosThetaHel2_had->Fill(cosThetaHel2_had, weight);
 
 		const double asym_lep =  ( lepton1.Pt() - lepton2.Pt() ) / ( lepton1.Pt() + lepton2.Pt() );
 		const double asym_jet =  ( jet1.Pt() - jet2.Pt() ) / ( jet1.Pt() + jet2.Pt() );
@@ -609,6 +627,10 @@ int main(int argc, char* argv[]) {
 
 	h_CosThetaHel->Write();
 	h_CosThetaHel2->Write();
+
+	h_CosThetaHel2_had->Write();
+	h_CosThetaHel_had->Write();
+
 
 	h_nJet->Write();
 	h_LeptonAsymmetry->Write();

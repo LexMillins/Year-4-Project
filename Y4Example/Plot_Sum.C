@@ -25,7 +25,7 @@ void Plot_Sum() {
 //	TString histName = "h_nJet";
 
 ///TString histName = "h_LeptonAsymmetry";
-	TString histName = "h_CosThetaHel2";
+	TString histName = "h_CosThetaHel2_had";
 
 
 	std::map<int,TFile*>map_file;
