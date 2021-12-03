@@ -264,9 +264,9 @@ int main(int argc, char* argv[]) {
 
 	TH1D* h_DiBoson_Pt = new TH1D("h_DiBoson_Pt", ";pt [GeV]; Events /GeV", 25, 0, 500);
 
-	//TH1D* h_Boson_pseudorap = new TH1D("h_Boson_psuedorap", "psuedorapidity; Events /GeV", 100, 0, 500);
+	TH1D* h_Boson_pseudorap = new TH1D("h_Boson_psuedorap", "psuedorapidity; Events /GeV", 100, 0, 500);
 
-	//TH1D* h_Boson_phi = new TH1D("h_Boson_phi", "phi; Events /GeV", 100, 0, 500);
+	TH1D* h_Boson_phi = new TH1D("h_Boson_phi", "phi; Events /GeV", 100, 0, 500);
 
 	TH1D* h_lep_pseudorap = new TH1D("h_lep_pseudorap", ";psuedorapidity; Events /GeV", 40, 0, 50);
 
@@ -327,6 +327,11 @@ int main(int argc, char* argv[]) {
 			continue;
 		}
 
+		if (r->el_pt->size() < 2 && r->mu_pt->size() < 2) {
+			continue;
+		}
+
+
 		std::vector<TLorentzVector> my_jets;
 		TLorentzVector dijet;
 		TLorentzVector jetj;
@@ -350,56 +355,40 @@ int main(int argc, char* argv[]) {
 
 		//print_vect_TLor(my_jets);
 
-		if(my_jets.size() >= 2){
-
+	
 
 			
-			dijet = my_jets.at(0) + my_jets.at(1);
+		dijet = my_jets.at(0) + my_jets.at(1);
 			
-			if( dijet.M() < 50){
-				continue;
-			}
-			if(dijet.M() > 160){
-				continue;
-			}
-
-			jet1 = my_jets.at(0);
-			jet2 = my_jets.at(1);
-
-			//if( jet2.Pt() > 80){
-
-			//continue;
-			//}
-
-			angle_between_jets = jet1.Angle(jet2.Vect()); 
-
-			//if(angle_between_jets > 2.2){
-
-			//	continue;
-			//}
-
-			if( (jet1.Pt() < 40) && (jet2.Pt() < 33)){
-
-				continue;
-			}
-
-
-			jet1_rapidity = jet1.Rapidity();
-			jet2_rapidity = jet2.Rapidity();
-
-
-			h_jet2_pt->Fill(jet2.Pt(),weight);
-			h_jet_rapidity->Fill(jet1_rapidity, weight);
-			h_jet_rapidity->Fill(jet2_rapidity, weight);
-			h_angle_between_jets->Fill(angle_between_jets, weight);
-			h_Dijet_mass->Fill(dijet.M(),weight);
-			h_Boson_jets_pt->Fill(dijet.Pt(),weight);
-			h_jet_pseudorap->Fill(dijet.Eta(), weight);
-			h_jet_phi->Fill(dijet.Phi(), weight);
-
-			// Fill histogram with weighted values
-
+		if( dijet.M() < 40){
+			continue;
 		}
+		if(dijet.M() > 160){
+			continue;
+		}
+
+		jet1 = my_jets.at(0);
+		jet2 = my_jets.at(1);
+
+
+		angle_between_jets = jet1.Angle(jet2.Vect()); 
+
+		//if(angle_between_jets > 2.2){
+
+		//	continue;
+		//}
+
+		//if( (jet1.Pt() < 40) && (jet2.Pt() < 33)){
+		//	continue;
+		//}
+
+
+		jet1_rapidity = jet1.Rapidity();
+		jet2_rapidity = jet2.Rapidity();
+
+
+
+
 		std::vector<TLorentzVector> muon_vector;
 		std::vector<TLorentzVector> electron_vector;
 		TLorentzVector dielectron;
@@ -411,8 +400,11 @@ int main(int argc, char* argv[]) {
 		TLorentzVector elec1;
 		TLorentzVector elec2;
 
+		TLorentzVector dilepton;
+
 		TLorentzVector lepton1;
 		TLorentzVector lepton2;
+		Double_t angle_between_lep;
 
 
 		if( r->mu_pt->size() >= 2) {
@@ -429,16 +421,14 @@ int main(int argc, char* argv[]) {
 
 
 			dimuon = muon_vector.at(0) + muon_vector.at(1);
+			dilepton = dimuon;
 
 			muon1 = muon_vector.at(0);
 			muon2 = muon_vector.at(1);
 
-			if(muon1.Pt() < 25){
-
-				continue;
-			}
 
 			angle_between_muons = muon1.Angle(muon2.Vect());
+			angle_between_lep = angle_between_muons;
 
 			/*if(angle_between_muons < 1){
 
@@ -449,24 +439,17 @@ int main(int argc, char* argv[]) {
 			//	continue;
 			//}
 
-			if(fabs(muon1.Rapidity()) > 2.5){
-				continue;
-			}
+			//if(fabs(muon1.Rapidity()) > 2.5){
+				//continue;
+			//}
 			
-			if(fabs(muon2.Rapidity()) > 2.5){
-				continue;
-			}
+			//if(fabs(muon2.Rapidity()) > 2.5){
+				//continue;
+			//}
 
 			lepton1 = muon1;
 			lepton2 = muon2;
 
-			h_lep_rapidity->Fill(muon1.Rapidity(), weight);
-			h_lep_rapidity->Fill(muon2.Rapidity(), weight);
-			h_angle_between_lep->Fill(angle_between_muons, weight);
-			h_DiMuon_Mass->Fill(dimuon.M(),weight);
-			h_Z_pt_lep->Fill(dimuon.Pt(),weight);
-			h_lep_pseudorap->Fill(dimuon.Eta(), weight);
-			h_lep_phi->Fill(dimuon.Phi(), weight); 
 
 		}
 
@@ -486,16 +469,13 @@ int main(int argc, char* argv[]) {
 
 			
 			dielectron = electron_vector.at(0) + electron_vector.at(1);
+			dilepton = dielectron;
 
 			elec1 = electron_vector.at(0);
-
-			if(elec1.Pt() < 25){
-
-				continue;
-			}
-
 			elec2 = electron_vector.at(1);
 			angle_between_electrons = elec2.Angle(elec1.Vect());
+			angle_between_lep = angle_between_electrons;
+
 
 		/*	if(angle_between_electrons < 1){
 
@@ -508,38 +488,45 @@ int main(int argc, char* argv[]) {
 			//}
 
 
-			if(fabs(elec1.Rapidity()) > 2.5){
-				continue;
-			}
+			//if(fabs(elec1.Rapidity()) > 2.5){
+			//	continue;
+			//}
 
-			if(fabs(elec2.Rapidity()) > 2.5){
-				continue;
-			}
+			//if(fabs(elec2.Rapidity()) > 2.5){
+			//	continue;
+			//}
 
 			lepton1 = elec1;
 			lepton2 = elec2;
 
 
-			h_angle_between_lep->Fill(angle_between_electrons, weight);
-
-
-			h_lep_rapidity->Fill(elec1.Rapidity(), weight);
-			h_lep_rapidity->Fill(elec2.Rapidity(), weight);
-			h_DiElectron_Mass->Fill(dielectron.M(),weight);
-			h_Z_pt_lep->Fill(dielectron.Pt(),weight);
-			h_lep_pseudorap->Fill(dielectron.Eta(), weight);
-			h_lep_phi->Fill(dielectron.Phi(), weight);
 
 		}
 
-		
-		TLorentzVector dilepton = lepton1 + lepton2;
 
-		// Copy lepton 4-vectors
+		if(lepton1.Pt() < 37){
+			continue;
+		}
+		
+		if(jet1.Pt() < 37){
+			continue;
+		}
+
+		if(jet2.Pt() < 30){
+			continue;
+		}
+
+		if(angle_between_jets > 2.7){
+
+			continue;
+		}
+
+
+
 		TLorentzVector lepton1_rest = lepton1;
 		TLorentzVector lepton2_rest = lepton2;
-		TLorentzVector jet2_rest = lepton2;
-		TLorentzVector jet1_rest = lepton1;
+		TLorentzVector jet2_rest = jet2;
+		TLorentzVector jet1_rest = jet1;
 		TLorentzVector dilepton_rest = dilepton;
 
 		TLorentzVector dijet_rest = dijet;
@@ -556,20 +543,26 @@ int main(int argc, char* argv[]) {
 
 		double cosThetaHel_had = cos( jet1_rest.Angle(dilepton_rest.Vect()) );
 
-		double cosThetaHel2_had = cos( jet1_rest.Angle(dijet_rest.Vect()) );
+		double cosThetaHel2_had = cos( jet1_rest.Angle(dijet.Vect()) );
 
 		// Helicity angle
 		double cosThetaHel = cos( lepton1_rest.Angle(dijet_rest.Vect()) );
 
 		double cosThetaHel2 = cos( lepton1_rest.Angle(dilepton.Vect()) );
 
-		h_CosThetaHel->Fill(cosThetaHel,weight);
-		h_CosThetaHel2->Fill(cosThetaHel2,weight);
-		h_CosThetaHel_had->Fill(cosThetaHel_had, weight);
-		h_CosThetaHel2_had->Fill(cosThetaHel2_had, weight);
 
 		const double asym_lep =  ( lepton1.Pt() - lepton2.Pt() ) / ( lepton1.Pt() + lepton2.Pt() );
 		const double asym_jet =  ( jet1.Pt() - jet2.Pt() ) / ( jet1.Pt() + jet2.Pt() );
+
+		if(asym_jet > 2){
+			continue;
+		}
+		
+
+		// If here, we keep the event
+
+		// Copy lepton 4-vectors
+
 
 
 
@@ -590,13 +583,35 @@ int main(int argc, char* argv[]) {
 
 		h_Di_Boson_Mass->Fill(diZ.M(),weight);
 		h_DiBoson_Pt->Fill(diZ.Pt(),weight);
-		//h_Boson_pseudorap->Fill(diZ.Eta());
-		//h_Boson_phi->Fill(diZ.Phi());
+		h_Boson_pseudorap->Fill(diZ.Eta());
+		h_Boson_phi->Fill(diZ.Phi());
+
+		h_lep_rapidity->Fill(lepton1.Rapidity(), weight);
+		h_lep_rapidity->Fill(lepton2.Rapidity(), weight);
+		h_angle_between_lep->Fill(angle_between_muons, weight);
+		h_DiMuon_Mass->Fill(dimuon.M(),weight);
+		h_Z_pt_lep->Fill(dilepton.Pt(),weight);
+		h_lep_pseudorap->Fill(dilepton.Eta(), weight);
+		h_lep_phi->Fill(dilepton.Phi(), weight); 
+		h_DiElectron_Mass->Fill(dielectron.M(),weight);
 
 		h_nJet->Fill(r->jet_pt->size(),weight);
 
 		h_LeptonAsymmetry->Fill(asym_lep,weight);
 		h_JetAsymmetry->Fill(asym_jet,weight);
+		h_jet2_pt->Fill(jet2.Pt(),weight);
+		h_jet_rapidity->Fill(jet1_rapidity, weight);
+		h_jet_rapidity->Fill(jet2_rapidity, weight);
+		h_angle_between_jets->Fill(angle_between_jets, weight);
+		h_Dijet_mass->Fill(dijet.M(),weight);
+		h_Boson_jets_pt->Fill(dijet.Pt(),weight);
+		h_jet_pseudorap->Fill(dijet.Eta(), weight);
+		h_jet_phi->Fill(dijet.Phi(), weight);
+
+		h_CosThetaHel->Fill(cosThetaHel,weight);
+		h_CosThetaHel2->Fill(cosThetaHel2,weight);
+		h_CosThetaHel_had->Fill(cosThetaHel_had, weight);
+		h_CosThetaHel2_had->Fill(cosThetaHel2_had, weight);
 
 	} // Event Loop
 
@@ -613,8 +628,8 @@ int main(int argc, char* argv[]) {
 	h_Z_pt_lep->Write();
 	h_Boson_jets_pt->Write();
 	h_DiBoson_Pt->Write();
-	//h_Boson_pseudorap->Write();
-	//h_Boson_phi->Write();
+	h_Boson_pseudorap->Write();
+	h_Boson_phi->Write();
 	h_lep_pseudorap->Write();
 	h_lep_phi->Write();
 	h_jet_pseudorap->Write();
