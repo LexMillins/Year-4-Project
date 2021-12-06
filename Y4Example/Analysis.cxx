@@ -286,9 +286,13 @@ int main(int argc, char* argv[]) {
 
 	TH1D* h_jet2_pt = new TH1D("h_jet2_pt", ";pT [GeV]; Events/GeV", 100, 0, 500);
 
-	TH1D* h_CosThetaHel = new TH1D("h_CosThetaHel", ";cos(#theta_{Hel.}); Events/", 100, -1.0, 1.0);
+	TH1D* h_CosThetaHel_lep_1 = new TH1D("h_CosThetaHel_lep_1", ";cos(#theta_{Hel.}); Events/", 100, -1.0, 1.0);
 
-	TH1D* h_CosThetaHel2 = new TH1D("h_CosThetaHel2", ";cos(#theta_{Hel.}); Events/", 100, -1.0, 1.0);
+	TH1D* h_CosThetaHel2_lep_1 = new TH1D("h_CosThetaHel2_lep_1", ";cos(#theta_{Hel.}); Events/", 100, -1.0, 1.0);
+
+	TH1D* h_CosThetaHel_lep_2 = new TH1D("h_CosThetaHel_lep_2", ";cos(#theta_{Hel.}); Events/", 100, -1.0, 1.0);
+
+	TH1D* h_CosThetaHel2_lep_2 = new TH1D("h_CosThetaHel2_lep_2", ";cos(#theta_{Hel.}); Events/", 100, -1.0, 1.0);
 
 	TH1D* h_nJet = new TH1D("h_nJet", "; n. Jet; Events/", 10,0,10);
 
@@ -296,9 +300,14 @@ int main(int argc, char* argv[]) {
 
 	TH1D* h_JetAsymmetry = new TH1D("h_JetAsymmetry", "; [p_{T}^{l1}-p_{T}^{l2}]/[p_{T}^{l1}+p_{T}^{l2}]; Events/", 100,0,1.0);
 
-	TH1D* h_CosThetaHel_had = new TH1D("h_CosThetaHel_had", ";cos(#theta_{Hel.}); Events/", 100, -1.0, 0.5);
+	TH1D* h_CosThetaHel_had_1 = new TH1D("h_CosThetaHel_had_1", ";cos(#theta_{Hel.}); Events/", 100, -1.0, 0.5);
 
-	TH1D* h_CosThetaHel2_had = new TH1D("h_CosThetaHel2_had", ";cos(#theta_{Hel.}); Events/", 100, -1.0, 0.0);
+	TH1D* h_CosThetaHel2_had_1 = new TH1D("h_CosThetaHel2_had_1", ";cos(#theta_{Hel.}); Events/", 100, -1.0, 0.0);
+
+	TH1D* h_CosThetaHel_had_2 = new TH1D("h_CosThetaHel_had_2", ";cos(#theta_{Hel.}); Events/", 100, -1.0, 0.5);
+
+	TH1D* h_CosThetaHel2_had_2 = new TH1D("h_CosThetaHel2_had_2", ";cos(#theta_{Hel.}); Events/", 100, -1.0, 0.0);
+
 
 
 	// Event loop
@@ -541,15 +550,22 @@ int main(int argc, char* argv[]) {
 		jet2_rest.Boost( -1.0*dijet.BoostVector() );
 		dilepton_rest.Boost( -1.0*dijet.BoostVector() );
 
-		double cosThetaHel_had = cos( jet1_rest.Angle(dilepton_rest.Vect()) );
+		double cosThetaHel_had_1 = cos( jet1_rest.Angle(dilepton_rest.Vect()) );
 
-		double cosThetaHel2_had = cos( jet1_rest.Angle(dijet.Vect()) );
+		double cosThetaHel2_had_1 = cos( jet1_rest.Angle(dijet.Vect()) );
+
+		double cosThetaHel_had_2 = cos( jet2_rest.Angle(dilepton_rest.Vect()) );
+
+		double cosThetaHel2_had_2 = cos( jet2_rest.Angle(dijet.Vect()) );
 
 		// Helicity angle
-		double cosThetaHel = cos( lepton1_rest.Angle(dijet_rest.Vect()) );
+		double cosThetaHel_lep_1 = cos( lepton1_rest.Angle(dijet_rest.Vect()) );
 
-		double cosThetaHel2 = cos( lepton1_rest.Angle(dilepton.Vect()) );
+		double cosThetaHel2_lep_1 = cos( lepton1_rest.Angle(dilepton.Vect()) );
 
+		double cosThetaHel_lep_2 = cos( lepton2_rest.Angle(dijet_rest.Vect()) );
+
+		double cosThetaHel2_lep_2 = cos( lepton2_rest.Angle(dilepton.Vect()) );
 
 		const double asym_lep =  ( lepton1.Pt() - lepton2.Pt() ) / ( lepton1.Pt() + lepton2.Pt() );
 		const double asym_jet =  ( jet1.Pt() - jet2.Pt() ) / ( jet1.Pt() + jet2.Pt() );
@@ -608,12 +624,20 @@ int main(int argc, char* argv[]) {
 		h_jet_pseudorap->Fill(dijet.Eta(), weight);
 		h_jet_phi->Fill(dijet.Phi(), weight);
 
-		h_CosThetaHel->Fill(cosThetaHel,weight);
-		h_CosThetaHel2->Fill(cosThetaHel2,weight);
-		h_CosThetaHel_had->Fill(cosThetaHel_had, weight);
-		h_CosThetaHel2_had->Fill(cosThetaHel2_had, weight);
+		h_CosThetaHel_lep_1->Fill(cosThetaHel_lep_1,weight);
+		h_CosThetaHel2_lep_1->Fill(cosThetaHel2_lep_1,weight);
+		h_CosThetaHel_had_1->Fill(cosThetaHel_had_1, weight);
+		h_CosThetaHel2_had_1->Fill(cosThetaHel2_had_1, weight);
 
-	} // Event Loop
+
+		h_CosThetaHel_lep_2->Fill(cosThetaHel_lep_2,weight);
+		h_CosThetaHel2_lep_2->Fill(cosThetaHel2_lep_2,weight);
+		h_CosThetaHel_had_2->Fill(cosThetaHel_had_2, weight);
+		h_CosThetaHel2_had_2->Fill(cosThetaHel2_had_2, weight);
+
+	} 
+
+	// Event Loop
 
 
 
@@ -640,11 +664,17 @@ int main(int argc, char* argv[]) {
 	h_lep_rapidity->Write();
 	h_jet2_pt->Write();
 
-	h_CosThetaHel->Write();
-	h_CosThetaHel2->Write();
+	h_CosThetaHel_lep_1->Write();
+	h_CosThetaHel2_lep_1->Write();
 
-	h_CosThetaHel2_had->Write();
-	h_CosThetaHel_had->Write();
+	h_CosThetaHel_lep_2->Write();
+	h_CosThetaHel2_lep_2->Write();
+
+	h_CosThetaHel2_had_1->Write();
+	h_CosThetaHel_had_1->Write();
+
+	h_CosThetaHel2_had_2->Write();
+	h_CosThetaHel_had_2->Write();
 
 
 	h_nJet->Write();

@@ -25,7 +25,7 @@ void Plot_Sum() {
 //	TString histName = "h_nJet";
 
 ///TString histName = "h_LeptonAsymmetry";
-	TString histName = "h_Dijet_Mass";
+	TString histName = "h_CosThetaHel2_lep_2";
 
 
 	std::map<int,TFile*>map_file;
@@ -139,8 +139,8 @@ map_hist_sig[363358]->Draw("SAME");
 map_hist_sig[363356]->SetLineColor(kRed);
 map_hist_sig[363358]->SetLineColor(kGreen);
 
-//map_hist_sig[363356]->Scale(150);
-//map_hist_sig[363358]->Scale(150);
+map_hist_sig[363356]->Scale(130);
+map_hist_sig[363358]->Scale(120);
 
 
 const double mass_peak = 91.2; // [GeV]
