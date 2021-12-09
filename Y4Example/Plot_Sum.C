@@ -21,11 +21,11 @@ void Plot_Sum() {
 //h_LeptonAsymmetry
 //h_JetAsymmetry
 
-//	TString histName = "h_CosThetaHel";
+	//TString histName = "h_CosThetaHel";
 //	TString histName = "h_nJet";
 
 ///TString histName = "h_LeptonAsymmetry";
-	TString histName = "h_CosThetaHel2_lep_2";
+	TString histName = "h_Boson_Mass";
 
 
 	std::map<int,TFile*>map_file;
@@ -84,12 +84,12 @@ void Plot_Sum() {
 	map_file[410472] = TFile::Open("Output_410472.root");
 
 
-	//map_file[363356] = TFile::Open("Output_363356.root");
-	//map_file[363358] = TFile::Open("Output_363358.root");
+	map_file[363356] = TFile::Open("Output_363356.root");
+	map_file[363358] = TFile::Open("Output_363358.root");
 
 
-	map_file_sig[363356] = TFile::Open("Output_363356.root");
-	map_file_sig[363358] = TFile::Open("Output_363358.root");
+	//map_file_sig[363356] = TFile::Open("Output_363356.root");
+	//map_file_sig[363358] = TFile::Open("Output_363358.root");
 
 
 
@@ -104,7 +104,7 @@ for (std::map<int, TFile*>::iterator it = map_file.begin(); it != map_file.end()
 
 }
 
-
+/*
 for (std::map<int, TFile*>::iterator it=map_file_sig.begin(); it != map_file_sig.end(); it++){
 
 	std::cout<< it->first << ':' << it->second << std::endl;
@@ -116,7 +116,7 @@ for (std::map<int, TFile*>::iterator it=map_file_sig.begin(); it != map_file_sig
 
 } 
 
-
+*/
 	TH1D* h_Sum = (TH1D*) map_hist[364100]->Clone("h_Sum");
 	h_Sum->Reset();
 
@@ -128,19 +128,22 @@ for (std::map < int, TH1D*>::iterator it=map_hist.begin(); it != map_hist.end();
 }
 
 
+
 	TCanvas* c = new TCanvas("c","c",800,600);
+
+	h_Sum->SetTitle("Invariant Mass of Reconstructed W or Z boson");
 
 	h_Sum->Draw();
 
 
-map_hist_sig[363356]->Draw("SAME");
-map_hist_sig[363358]->Draw("SAME");
+//map_hist_sig[363356]->Draw("SAME");
+//map_hist_sig[363358]->Draw("SAME");
 
-map_hist_sig[363356]->SetLineColor(kRed);
-map_hist_sig[363358]->SetLineColor(kGreen);
+//map_hist_sig[363356]->SetLineColor(kRed);
+//map_hist_sig[363358]->SetLineColor(kGreen);
 
-map_hist_sig[363356]->Scale(130);
-map_hist_sig[363358]->Scale(120);
+//map_hist_sig[363356]->Scale(120);
+//map_hist_sig[363358]->Scale(120);
 
 
 const double mass_peak = 91.2; // [GeV]

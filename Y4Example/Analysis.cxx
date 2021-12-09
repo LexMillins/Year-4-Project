@@ -254,6 +254,8 @@ int main(int argc, char* argv[]) {
 
 	TH1D* h_DiElectron_Mass = new TH1D("h_DiElectron_mass","; Mass [GeV]; Events / GeV",100,50,150);
 
+	TH1D* h_DiLepton_Mass = new TH1D("h_DiLepton_mass","; Mass [GeV]; Events / GeV",100,50,150);
+
 	TH1D* h_Dijet_mass = new TH1D("h_Dijet_Mass", ";Mass [GeV]; Events/GeV",30,0,300);
 
 	TH1D* h_Di_Boson_Mass = new TH1D("h_Di_Boson_Mass", "; Mass [GeV]; Events /GeV", 70, 50, 750);
@@ -263,6 +265,8 @@ int main(int argc, char* argv[]) {
 	TH1D* h_Boson_jets_pt = new TH1D("h_Boson_jets_pt", ";pt [GeV]; Events /GeV", 25, 0, 500);
 
 	TH1D* h_DiBoson_Pt = new TH1D("h_DiBoson_Pt", ";pt [GeV]; Events /GeV", 25, 0, 500);
+
+	TH1D* h_Boson_mass = new TH1D("h_Boson_Mass", ";Mass [GeV]; Events/GeV",30,0,300);
 
 	TH1D* h_Boson_pseudorap = new TH1D("h_Boson_psuedorap", "psuedorapidity; Events /GeV", 100, 0, 500);
 
@@ -307,6 +311,7 @@ int main(int argc, char* argv[]) {
 	TH1D* h_CosThetaHel_had_2 = new TH1D("h_CosThetaHel_had_2", ";cos(#theta_{Hel.}); Events/", 100, -1.0, 0.5);
 
 	TH1D* h_CosThetaHel2_had_2 = new TH1D("h_CosThetaHel2_had_2", ";cos(#theta_{Hel.}); Events/", 100, -1.0, 0.0);
+
 
 
 
@@ -369,16 +374,19 @@ int main(int argc, char* argv[]) {
 			
 		dijet = my_jets.at(0) + my_jets.at(1);
 			
-		if( dijet.M() < 40){
+		/*if( dijet.M() < 40){
 			continue;
 		}
 		if(dijet.M() > 160){
 			continue;
 		}
 
+		*/
+		
 		jet1 = my_jets.at(0);
 		jet2 = my_jets.at(1);
 
+		
 
 		angle_between_jets = jet1.Angle(jet2.Vect()); 
 
@@ -596,11 +604,18 @@ int main(int argc, char* argv[]) {
 
 		}
 
+		if( dilepton.M() != 0){
+			h_Boson_mass->Fill(dilepton.M(), weight);
+		}
+
+		h_Boson_mass->Fill(dijet.M(), weight);
 
 		h_Di_Boson_Mass->Fill(diZ.M(),weight);
 		h_DiBoson_Pt->Fill(diZ.Pt(),weight);
 		h_Boson_pseudorap->Fill(diZ.Eta());
 		h_Boson_phi->Fill(diZ.Phi());
+
+		h_DiLepton_Mass->Fill(dilepton.M(), weight);
 
 		h_lep_rapidity->Fill(lepton1.Rapidity(), weight);
 		h_lep_rapidity->Fill(lepton2.Rapidity(), weight);
@@ -663,6 +678,9 @@ int main(int argc, char* argv[]) {
 	h_jet_rapidity->Write();
 	h_lep_rapidity->Write();
 	h_jet2_pt->Write();
+
+	h_DiLepton_Mass->Write();
+	h_Boson_mass->Write();
 
 	h_CosThetaHel_lep_1->Write();
 	h_CosThetaHel2_lep_1->Write();
