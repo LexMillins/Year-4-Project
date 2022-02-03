@@ -266,7 +266,7 @@ int main(int argc, char* argv[]) {
 
 	TH1D* h_DiBoson_Pt = new TH1D("h_DiBoson_Pt", ";pt [GeV]; Events /GeV", 25, 0, 500);
 
-	TH1D* h_Boson_mass = new TH1D("h_Boson_Mass", ";Mass [GeV]; Events/GeV",30,0,300);
+	TH1D* h_Boson_mass = new TH1D("h_Boson_Mass", ";Mass [GeV]; Events/GeV",50,0,300);
 
 	TH1D* h_Boson_pseudorap = new TH1D("h_Boson_psuedorap", "psuedorapidity; Events /GeV", 100, 0, 500);
 
@@ -312,6 +312,18 @@ int main(int argc, char* argv[]) {
 
 	TH1D* h_CosThetaHel2_had_2 = new TH1D("h_CosThetaHel2_had_2", ";cos(#theta_{Hel.}); Events/", 100, -1.0, 0.0);
 
+	TH1D* h_light_light = new TH1D("h_light_light", ";Mass [GeV]; Events/Gev", 30, 0, 300);
+
+	TH1D* h_light_b = new TH1D("h_light_b", ";Mass [GeV]; Events/Gev", 30, 0, 300);
+
+	TH1D* h_light_c = new TH1D("h_light_c", ";Mass [GeV]; Events/Gev", 30, 0, 300);
+
+	TH1D* h_b_b = new TH1D("h_b_b", ";Mass [GeV]; Events/Gev", 30, 0, 300);
+
+	TH1D* h_b_c = new TH1D("h_b_c", ";Mass [GeV]; Events/Gev", 30, 0, 300);
+
+	TH1D* h_c_c = new TH1D("h_c_c", ";Mass [GeV]; Events/Gev", 30, 0, 300);
+
 
 
 
@@ -349,30 +361,125 @@ int main(int argc, char* argv[]) {
 		std::vector<TLorentzVector> my_jets;
 		TLorentzVector dijet;
 		TLorentzVector jetj;
+		float DL1;
+		int flavour;
+		vector<TLorentzVector> light_jets;
+		vector<TLorentzVector> b_jets;
+		vector<TLorentzVector> c_jets;
+		vector<TLorentzVector> taus;
+
+
 
 		for( int j = 0; j <(r->jet_pt->size()); ++j){
 
 
 			jetj.SetPtEtaPhiE(r->jet_pt->at(j)*1e-3, r->jet_eta->at(j), r->jet_phi->at(j), r->jet_e->at(j)*1e-3);
 
+			DL1 = r->jet_DL1->at(j);
+			flavour = r->jet_truthflav->at(j);
+
+			if (flavour=0){
+
+				light_jets.push_back(jetj);
+			}
+
+			if (flavour=4){
+
+				c_jets.push_back(jetj);
+			}
+
+
+			if(flavour = 5){
+
+				b_jets.push_back(jetj);
+			}
+
+			if (flavour=15){
+
+				taus.push_back(jetj);
+			}
+
 			my_jets.push_back(jetj);
 
 		}
 
 
-		std::sort(my_jets.begin(), my_jets.end(),sortby_pt);
-		double angle_between_jets;
-		TLorentzVector jet1;
-		TLorentzVector jet2;
-		double jet1_rapidity;
-		double jet2_rapidity;
+	std::sort(my_jets.begin(), my_jets.end(),sortby_pt);
+	double angle_between_jets;
+	TLorentzVector jet1;
+	TLorentzVector jet2;
+	double jet1_rapidity;
+	double jet2_rapidity;
+	int jet1_flavour;
+	int jet2_flavour;
+	vector<int> flavour_list;
+	const int b_jet=5;
+	const int c_jet=4;
+	const int light_jet=1;
+	const int tau=15;
+
+
+
+	dijet = my_jets.at(0) + my_jets.at(1);
+
+	for(int i=0; i<(my_jets.size()); ++i){
+
+		TLorentzVector dijet = my_jets.at(0) + my_jets.at(1);
+
+		jet1_flavour = r->jet_truthflav->at(0);
+		jet2_flavour = r->jet_truthflav->at(1);
+
+
+		if(jet1_flavour == light_jet && jet2_flavour == light_jet){
+
+			h_light_light->Fill(dijet.M, weight);
+		}
+
+
+		if(jet1_flavour == light_jet && jet2_flavour == b_jet){
+
+			h_light_b->Fill(dijet.M, weight);
+		}
+
+		if(jet1_flavour == b_jet && jet2_flavour == light_jet){
+
+			h_light_b->Fill(dijet.M, weight);
+		}
+
+		if(jet1_flavour == light_jet && jet2_flavour == c_jet){
+
+			h_light_c->Fill(dijet.M, weight);
+		}
+
+		if(jet1_flavour == c_jet && jet2_flavour == light_jet){
+
+			h_light_c->Fill(dijet.M, weight);
+		}
+
+		if(jet1_flavour == b_jet && jet2_flavour == b_jet){
+
+			h_b_b->Fill(dijet.M, weight);
+		}
+
+		if(jet1_flavour == b_jet && jet2_flavour == c_jet){
+
+			h_b_c->Fill(dijet.M, weight);
+		}
+
+		if(jet1_flavour == c_jet && jet2_flavour == b_jet){
+
+			h_b_c->Fill(dijet.M, weight);
+		}
+
+		if(jet1_flavour == c_jet && jet2_flavour == c_jet){
+
+			h_c_c->Fill(dijet.M, weight);
+		}
+
+		}
 
 		//print_vect_TLor(my_jets);
-
-	
-
-			
-		dijet = my_jets.at(0) + my_jets.at(1);
+		
 			
 		/*if( dijet.M() < 40){
 			continue;
@@ -388,6 +495,12 @@ int main(int argc, char* argv[]) {
 
 		
 
+
+
+
+
+
+
 		angle_between_jets = jet1.Angle(jet2.Vect()); 
 
 		//if(angle_between_jets > 2.2){
@@ -402,6 +515,7 @@ int main(int argc, char* argv[]) {
 
 		jet1_rapidity = jet1.Rapidity();
 		jet2_rapidity = jet2.Rapidity();
+
 
 
 
@@ -633,6 +747,8 @@ int main(int argc, char* argv[]) {
 		h_jet2_pt->Fill(jet2.Pt(),weight);
 		h_jet_rapidity->Fill(jet1_rapidity, weight);
 		h_jet_rapidity->Fill(jet2_rapidity, weight);
+
+
 		h_angle_between_jets->Fill(angle_between_jets, weight);
 		h_Dijet_mass->Fill(dijet.M(),weight);
 		h_Boson_jets_pt->Fill(dijet.Pt(),weight);
@@ -679,6 +795,8 @@ int main(int argc, char* argv[]) {
 	h_lep_rapidity->Write();
 	h_jet2_pt->Write();
 
+
+
 	h_DiLepton_Mass->Write();
 	h_Boson_mass->Write();
 
@@ -699,6 +817,13 @@ int main(int argc, char* argv[]) {
 	h_LeptonAsymmetry->Write();
 	h_JetAsymmetry->Write();
 
+
+	h_light_light->Write();
+	h_light_b->Write();
+	h_light_c->Write(); 
+	h_b_b->Write(); 
+	h_b_c->Write(); 
+	h_c_c->Write();
 
 	outputFile->Close();
 

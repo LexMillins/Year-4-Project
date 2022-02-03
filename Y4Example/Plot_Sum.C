@@ -13,6 +13,21 @@ float fig_of_merit(float &s, float &b){
 
 }
 
+/*Double_t background(Double_t *x, Double_t *par){
+    return par[0] + par[1]*x[0] + par[2]*x[0]*x[0];
+}
+
+Double_t lorentzianPeak(Double_t *x, Double_t *par){
+    return (0.5*par[0]*par[1]/TMath::Pi()) / TMath::Max(1.e-10,
+    (x[0]-par[2])*(x[0]-par[2])+ .25*par[1]*par[1]);
+}
+
+Double_t fitFunction(Double_t background, Double_t lorentzianPeak){
+
+	background(x, par) + lorentzianPeak(x,&par[3]);
+
+}
+*/
 
 void Plot_Sum() {
 
@@ -22,10 +37,10 @@ void Plot_Sum() {
 //h_JetAsymmetry
 
 	//TString histName = "h_CosThetaHel";
-//	TString histName = "h_nJet";
+	TString histName = "h_nJet";
 
 ///TString histName = "h_LeptonAsymmetry";
-	TString histName = "h_Boson_Mass";
+
 
 
 	std::map<int,TFile*>map_file;
@@ -88,8 +103,8 @@ void Plot_Sum() {
 	map_file[363358] = TFile::Open("Output_363358.root");
 
 
-	//map_file_sig[363356] = TFile::Open("Output_363356.root");
-	//map_file_sig[363358] = TFile::Open("Output_363358.root");
+	map_file_sig[363356] = TFile::Open("Output_363356.root");
+	map_file_sig[363358] = TFile::Open("Output_363358.root");
 
 
 
@@ -104,7 +119,7 @@ for (std::map<int, TFile*>::iterator it = map_file.begin(); it != map_file.end()
 
 }
 
-/*
+
 for (std::map<int, TFile*>::iterator it=map_file_sig.begin(); it != map_file_sig.end(); it++){
 
 	std::cout<< it->first << ':' << it->second << std::endl;
@@ -116,7 +131,7 @@ for (std::map<int, TFile*>::iterator it=map_file_sig.begin(); it != map_file_sig
 
 } 
 
-*/
+
 	TH1D* h_Sum = (TH1D*) map_hist[364100]->Clone("h_Sum");
 	h_Sum->Reset();
 
@@ -127,24 +142,27 @@ for (std::map < int, TH1D*>::iterator it=map_hist.begin(); it != map_hist.end();
 
 }
 
-
+	//TF1 *fitFcn = new TF1("fitFcn",fitFunction,0,3,6);
 
 	TCanvas* c = new TCanvas("c","c",800,600);
 
 	h_Sum->SetTitle("Invariant Mass of Reconstructed W or Z boson");
 
+	//h_Sum->Fit(fitFunction);
+
 	h_Sum->Draw();
 
 
-//map_hist_sig[363356]->Draw("SAME");
-//map_hist_sig[363358]->Draw("SAME");
+/*
+map_hist_sig[363356]->Draw("SAME");
+map_hist_sig[363358]->Draw("SAME");
 
-//map_hist_sig[363356]->SetLineColor(kRed);
-//map_hist_sig[363358]->SetLineColor(kGreen);
+map_hist_sig[363356]->SetLineColor(kRed);
+map_hist_sig[363358]->SetLineColor(kGreen);
 
 //map_hist_sig[363356]->Scale(120);
 //map_hist_sig[363358]->Scale(120);
-
+*/
 
 const double mass_peak = 91.2; // [GeV]
 const double mass_sigma = 18.0; // 1 sigma [GeV]
