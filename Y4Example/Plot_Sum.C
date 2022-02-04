@@ -37,7 +37,7 @@ void Plot_Sum() {
 //h_JetAsymmetry
 
 	//TString histName = "h_CosThetaHel";
-	TString histName = "h_nJet";
+	TString histName = "h_light_b";
 
 ///TString histName = "h_LeptonAsymmetry";
 
@@ -146,14 +146,14 @@ for (std::map < int, TH1D*>::iterator it=map_hist.begin(); it != map_hist.end();
 
 	TCanvas* c = new TCanvas("c","c",800,600);
 
-	h_Sum->SetTitle("Invariant Mass of Reconstructed W or Z boson");
+	h_Sum->SetTitle("jets");
 
 	//h_Sum->Fit(fitFunction);
 
 	h_Sum->Draw();
 
 
-/*
+
 map_hist_sig[363356]->Draw("SAME");
 map_hist_sig[363358]->Draw("SAME");
 
@@ -162,7 +162,7 @@ map_hist_sig[363358]->SetLineColor(kGreen);
 
 //map_hist_sig[363356]->Scale(120);
 //map_hist_sig[363358]->Scale(120);
-*/
+
 
 const double mass_peak = 91.2; // [GeV]
 const double mass_sigma = 18.0; // 1 sigma [GeV]

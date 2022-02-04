@@ -413,11 +413,7 @@ int main(int argc, char* argv[]) {
 	int jet1_flavour;
 	int jet2_flavour;
 	vector<int> flavour_list;
-	const int b_jet=5;
-	const int c_jet=4;
-	const int light_jet=1;
-	const int tau=15;
-
+	double dijet_mass;
 
 
 	dijet = my_jets.at(0) + my_jets.at(1);
@@ -430,53 +426,56 @@ int main(int argc, char* argv[]) {
 		jet2_flavour = r->jet_truthflav->at(1);
 
 
-		if(jet1_flavour == light_jet && jet2_flavour == light_jet){
 
-			h_light_light->Fill(dijet.M, weight);
+
+		if(jet1_flavour == 0 && jet2_flavour == 0){
+
+			h_light_light->Fill(dijet.M(), weight);
 		}
 
 
-		if(jet1_flavour == light_jet && jet2_flavour == b_jet){
+		if(jet1_flavour == 0 && jet2_flavour == 5){
 
-			h_light_b->Fill(dijet.M, weight);
+			h_light_b->Fill(dijet.M(), weight);
 		}
 
-		if(jet1_flavour == b_jet && jet2_flavour == light_jet){
+		if(jet1_flavour == 5 && jet2_flavour == 0){
 
-			h_light_b->Fill(dijet.M, weight);
+			h_light_b->Fill(dijet.M(), weight);
 		}
 
-		if(jet1_flavour == light_jet && jet2_flavour == c_jet){
+		if(jet1_flavour == 0 && jet2_flavour == 4){
 
-			h_light_c->Fill(dijet.M, weight);
+			h_light_c->Fill(dijet.M(), weight);
 		}
 
-		if(jet1_flavour == c_jet && jet2_flavour == light_jet){
+		if(jet1_flavour == 4 && jet2_flavour == 0){
 
-			h_light_c->Fill(dijet.M, weight);
+			h_light_c->Fill(dijet.M(), weight);
 		}
 
-		if(jet1_flavour == b_jet && jet2_flavour == b_jet){
+		if(jet1_flavour == 5 && jet2_flavour == 5){
 
-			h_b_b->Fill(dijet.M, weight);
+			h_b_b->Fill(dijet.M(), weight);
 		}
 
-		if(jet1_flavour == b_jet && jet2_flavour == c_jet){
+		if(jet1_flavour == 5 && jet2_flavour == 4){
 
-			h_b_c->Fill(dijet.M, weight);
+			h_b_c->Fill(dijet.M(), weight);
 		}
 
-		if(jet1_flavour == c_jet && jet2_flavour == b_jet){
+		if(jet1_flavour == 4 && jet2_flavour == 5){
 
-			h_b_c->Fill(dijet.M, weight);
+			h_b_c->Fill(dijet.M(), weight);
 		}
 
-		if(jet1_flavour == c_jet && jet2_flavour == c_jet){
+		if(jet1_flavour == 4 && jet2_flavour == 4){
 
-			h_c_c->Fill(dijet.M, weight);
+			h_c_c->Fill(dijet.M(), weight);
 		}
 
 		}
+
 
 		//print_vect_TLor(my_jets);
 		
