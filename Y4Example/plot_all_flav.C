@@ -211,7 +211,7 @@ for (std::map<int, TFile*>::iterator it=map_file_sig.begin(); it != map_file_sig
 		}
 
 		h_Stack->Draw("HIST");
-		h_Stack->SetTitle("Z to jets without tagging");
+		h_Stack->SetTitle("Z to jets with loose b tagging");
 		h_Stack->GetXaxis()->SetTitle("Dijet Mass [GeV]");
  		h_Stack->GetYaxis()->SetTitle("Events / [GeV]");
 
