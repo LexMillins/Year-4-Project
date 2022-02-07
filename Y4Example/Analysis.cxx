@@ -281,8 +281,7 @@ int main(int argc, char* argv[]) {
 
 	flav_combs.push_back("bl");
 	flav_combs.push_back("bc");
-	flav_combs.push_back("bb");
-
+	
 	//map
 
 	std::map<TString, TH1D*> h_Coll_Dijet_Mass;
@@ -429,7 +428,6 @@ int main(int argc, char* argv[]) {
 	if(jet2_flavour == 0 || jet2_flavour == 15) { flav_pair += "l"; }
 	if(jet2_flavour == 4) { flav_pair += "c"; }
 	if(jet2_flavour == 5) { flav_pair += "b"; }
-
 
 
 

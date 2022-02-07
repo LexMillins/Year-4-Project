@@ -29,18 +29,12 @@ Double_t fitFunction(Double_t background, Double_t lorentzianPeak){
 }
 */
 
-void Plot_Sum() {
+void plot_all_flav() {
 
-//h_CosThetaHel
-//h_nJet
-//h_LeptonAsymmetry
-//h_JetAsymmetry
 
-	//TString histName = "h_CosThetaHel";
+
+
 	TString histName = "h_Dijet_Mass";
-
-///TString histName = "h_LeptonAsymmetry";
-
 
 
 	std::map<int,TFile*>map_file;
@@ -164,13 +158,16 @@ for (std::map<int, TFile*>::iterator it=map_file_sig.begin(); it != map_file_sig
 
 	for (std::map<int, TFile*>::iterator it = map_file.begin(); it != map_file.end(); it++){
 	
-		//h_Sum->Add(map_hist[it->first]);
+		std::cout<< it->first << ':' << it->second << std::endl;
 
 		for(int f=0; f<flav_combs.size(); ++f){
 
-			TH1D* h_Contrib = (TH1D*) (it->second)->Get(histName+flav_combs.at(f));
+			TH1D* h_Contrib = (TH1D*) (it->second)->Get(histName+"_"+flav_combs.at(f));
 
-			h_Sum_Flavs[flav_combs.at(f)]->Add(h_Contrib)
+
+			std::cout << h_Contrib << std::endl;
+
+			h_Sum_Flavs[flav_combs.at(f)]->Add(h_Contrib);
 
 		}
 
@@ -181,11 +178,64 @@ for (std::map<int, TFile*>::iterator it=map_file_sig.begin(); it != map_file_sig
 
 	TCanvas* c = new TCanvas("c","c",800,600);
 
-	h_Sum->SetTitle("jets");
+	//h_Sum->SetTitle("jets");
 
 	//h_Sum->Fit(fitFunction);
 
-	h_Sum_Flavs["ll"]->Draw();
+	//h_Sum_Flavs["ll"]->Draw();
+
+	 h_Sum_Flavs["ll"]->SetFillColor(kGray);
+
+	 h_Sum_Flavs["lc"]->SetFillColor(kOrange);
+
+	 h_Sum_Flavs["lb"]->SetFillColor(kBlue);
+
+	 h_Sum_Flavs["cl"]->SetFillColor(kOrange+1);
+
+	 h_Sum_Flavs["cc"]->SetFillColor(kOrange+2);
+
+	 h_Sum_Flavs["cb"]->SetFillColor(kBlue-1);
+	 h_Sum_Flavs["bl"]->SetFillColor(kBlue+2);
+	 h_Sum_Flavs["bc"]->SetFillColor(kBlue+3);
+	 h_Sum_Flavs["bb"]->SetFillColor(kBlue-4);
+
+
+	 THStack *h_Stack = new THStack("h_Stack","");
+
+
+		for(int f=0; f<flav_combs.size(); ++f){
+
+			h_Sum_Flavs[flav_combs.at(f)]->SetFillStyle(1001);
+
+			h_Stack->Add(h_Sum_Flavs[flav_combs.at(f)]);
+		}
+
+		h_Stack->Draw("HIST");
+		h_Stack->SetTitle("Z to jets without tagging");
+		h_Stack->GetXaxis()->SetTitle("Dijet Mass [GeV]");
+ 		h_Stack->GetYaxis()->SetTitle("Events / [GeV]");
+
+
+		auto legend = new TLegend(2.5, 1);
+	   legend->SetHeader("Z Flavour combinations","C"); // option "C" allows to center the header
+	   legend->AddEntry(h_Sum_Flavs["ll"],"light light jets","f");
+	   legend->AddEntry(h_Sum_Flavs["lc"],"light charm jets","f");
+	   legend->AddEntry(h_Sum_Flavs["lb"],"light bottom jets","f");
+
+	   legend->AddEntry(h_Sum_Flavs["cl"],"charm light jets","f");
+	   legend->AddEntry(h_Sum_Flavs["cc"],"charm charm jets","f");
+	   legend->AddEntry(h_Sum_Flavs["cb"],"charm bottom jets","f");
+
+	   legend->AddEntry(h_Sum_Flavs["bl"],"bottom light jets","f");
+	   legend->AddEntry(h_Sum_Flavs["bc"],"bottom charm jets","f");
+	   legend->AddEntry(h_Sum_Flavs["bb"],"bottom bottom jets","f");
+
+	   
+
+
+
+
+	   legend->Draw();
 
 /*
 
