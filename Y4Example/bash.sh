@@ -5,7 +5,15 @@
  #filenameuser.achishol.data15_13TeV.periodD.physics_Main.PhysCont.DAOD_FTAG2.grp15_v01_p3802.ATop.PFlowVR.v16_output.root
 
 ./Analysis /disk/moose/general/asc/Y4_VV_2022/user.achishol.mc16_13TeV.363356.Sherpa_NNPDF30NNLO_ZqqZll.deriv.DAOD_FTAG2.e5525_s3126_r9364_p3801.ATop.PFlowVR.v16_output.root/user.achishol.18108467._000001.output.root
+#./Analysis /disk/moose/general/asc/Y4_VV_2022/user.achishol.mc16_13TeV.363356.Sherpa_NNPDF30NNLO_ZqqZll.deriv.DAOD_FTAG2.e5525_s3126_r9364_p3801.ATop.PFlowVR.v16_output.root/user.achishol.18108467._000002.output.root
+#./Analysis /disk/moose/general/asc/Y4_VV_2022/user.achishol.mc16_13TeV.363356.Sherpa_NNPDF30NNLO_ZqqZll.deriv.DAOD_FTAG2.e5525_s3126_r9364_p3801.ATop.PFlowVR.v16_output.root/user.achishol.18108467._000003.output.root
+
 ./Analysis /disk/moose/general/asc/Y4_VV_2022/user.achishol.mc16_13TeV.363358.Sherpa_NNPDF30NNLO_WqqZll.deriv.DAOD_FTAG2.e5525_s3126_r9364_p3801.ATop.PFlowVR.v16_output.root/user.achishol.18108476._000001.output.root
+#./Analysis /disk/moose/general/asc/Y4_VV_2022/user.achishol.mc16_13TeV.363358.Sherpa_NNPDF30NNLO_WqqZll.deriv.DAOD_FTAG2.e5525_s3126_r9364_p3801.ATop.PFlowVR.v16_output.root/user.achishol.18108476._000002.output.root
+#./Analysis /disk/moose/general/asc/Y4_VV_2022/user.achishol.mc16_13TeV.363358.Sherpa_NNPDF30NNLO_WqqZll.deriv.DAOD_FTAG2.e5525_s3126_r9364_p3801.ATop.PFlowVR.v16_output.root/user.achishol.18108476._000003.output.root
+#./Analysis /disk/moose/general/asc/Y4_VV_2022/user.achishol.mc16_13TeV.363358.Sherpa_NNPDF30NNLO_WqqZll.deriv.DAOD_FTAG2.e5525_s3126_r9364_p3801.ATop.PFlowVR.v16_output.root/user.achishol.18108476._000004.output.root
+
+
 ./Analysis /disk/moose/general/asc/Y4_VV_2022/user.achishol.mc16_13TeV.364100.Sherpa_70_CVetoBVeto.deriv.DAOD_FTAG2.e5271_s3126_r9364_p3801.ATop.PFlowVR.v16_output.root/user.achishol.18107028._000001.output.root
 ./Analysis /disk/moose/general/asc/Y4_VV_2022/user.achishol.mc16_13TeV.364101.Sherpa_70_CFilterBVeto.deriv.DAOD_FTAG2.e5271_s3126_r9364_p3801.ATop.PFlowVR.v16_output.root/user.achishol.18107038._000001.output.root
 ./Analysis /disk/moose/general/asc/Y4_VV_2022/user.achishol.mc16_13TeV.364102.Sherpa_70_BFilter.deriv.DAOD_FTAG2.e5271_s3126_r9364_p3801.ATop.PFlowVR.v16_output.root/user.achishol.18107047._000001.output.root

@@ -52,12 +52,12 @@ int main(int argc, char* argv[]) {
 
 	// DSID -> cross-section [pb]
 
-   crossSection[361108] = 1950.632;
-   crossSection[361107] = 1950.632;
+   crossSection[361108] = 1950.632; //Z+jets
+   crossSection[361107] = 1950.632; //Z+jets
    crossSection[410501] = 452.2944528; //  "ttbar"
-   crossSection[361106] = 1950.529;
+   crossSection[361106] = 1950.529; //Z+jets
 
-   crossSection[410472] = 87.71741;
+   crossSection[410472] = 87.71741; //ttbar
 
    crossSection[363356] = 2.18227464; //  "ZZ"
    crossSection[363358] = 3.433; //  "WZ"
@@ -385,6 +385,8 @@ int main(int argc, char* argv[]) {
 	int jet2_flavour;
 	vector<int> flavour_list;
 	double dijet_mass;
+	float jet1_DL1;
+	float jet2_DL1;
 
 	int index_orig_j1 = -1;
 	int index_orig_j2 = -1;
@@ -420,6 +422,9 @@ int main(int argc, char* argv[]) {
 	jet1_flavour = r->jet_truthflav->at(index_orig_j1);
 	jet2_flavour = r->jet_truthflav->at(index_orig_j2);
 
+	jet1_DL1 = r->jet_DL1->at(index_orig_j1);
+	jet2_DL1 = r->jet_DL1->at(index_orig_j2);
+
 	TString flav_pair = "";
 	
 	if(jet1_flavour == 0 || jet1_flavour == 15) { flav_pair += "l"; }
@@ -430,9 +435,14 @@ int main(int argc, char* argv[]) {
 	if(jet2_flavour == 4) { flav_pair += "c"; }
 	if(jet2_flavour == 5) { flav_pair += "b"; }
 
-	if(DL1 < 0.46){
+	if(jet1_DL1 < 2.02){
 		continue;
 	}
+
+	if(jet2_DL1 < 2.74){
+		continue;
+	}
+	
 
 
 	h_Coll_Dijet_Mass[flav_pair]->Fill(dijet.M()*1e-3,weight);

@@ -90,15 +90,16 @@ void plot_all_flav() {
 
 	map_file[364141] = TFile::Open("Output_364141.root");
 
-	map_file[410472] = TFile::Open("Output_410472.root");
+
+	map_file[410472] = TFile::Open("Output_410472.root"); //ttbar
 
 
-	map_file[363356] = TFile::Open("Output_363356.root");
-	map_file[363358] = TFile::Open("Output_363358.root");
+	map_file[363356] = TFile::Open("Output_363356.root"); //ZZ
+	map_file[363358] = TFile::Open("Output_363358.root"); //WZ
 
 
-	map_file_sig[363356] = TFile::Open("Output_363356.root");
-	map_file_sig[363358] = TFile::Open("Output_363358.root");
+	//map_file_sig[363356] = TFile::Open("Output_363356.root");
+	//map_file_sig[363358] = TFile::Open("Output_363358.root");
 
 
 
@@ -147,7 +148,7 @@ for (std::map<int, TFile*>::iterator it=map_file_sig.begin(); it != map_file_sig
 
 	for(int f=0; f<flav_combs.size(); ++f){
 
-		TH1D* h_Sum = (TH1D*) map_hist[364100]->Clone("h_Sum_"+flav_combs.at(f));
+		TH1D* h_Sum = (TH1D*) map_hist[363356]->Clone("h_Sum_"+flav_combs.at(f));
 		h_Sum->Reset();
 
 		h_Sum_Flavs[flav_combs.at(f)] = h_Sum;
@@ -176,7 +177,7 @@ for (std::map<int, TFile*>::iterator it=map_file_sig.begin(); it != map_file_sig
 
 	//TF1 *fitFcn = new TF1("fitFcn",fitFunction,0,3,6);
 
-	TCanvas* c = new TCanvas("c","c",800,600);
+	TCanvas* c = new TCanvas("c","c",900,600);
 
 	//h_Sum->SetTitle("jets");
 
@@ -190,14 +191,14 @@ for (std::map<int, TFile*>::iterator it=map_file_sig.begin(); it != map_file_sig
 
 	 h_Sum_Flavs["lb"]->SetFillColor(kBlue);
 
-	 h_Sum_Flavs["cl"]->SetFillColor(kOrange+1);
+	 h_Sum_Flavs["cl"]->SetFillColor(kRed);
 
-	 h_Sum_Flavs["cc"]->SetFillColor(kOrange+2);
+	 h_Sum_Flavs["cc"]->SetFillColor(kAzure+1);
 
-	 h_Sum_Flavs["cb"]->SetFillColor(kBlue-1);
-	 h_Sum_Flavs["bl"]->SetFillColor(kBlue+2);
-	 h_Sum_Flavs["bc"]->SetFillColor(kBlue+3);
-	 h_Sum_Flavs["bb"]->SetFillColor(kBlue-4);
+	 h_Sum_Flavs["cb"]->SetFillColor(kViolet-6);
+	 h_Sum_Flavs["bl"]->SetFillColor(kGreen);
+	 h_Sum_Flavs["bc"]->SetFillColor(kPink+10);
+	 h_Sum_Flavs["bb"]->SetFillColor(kGreen+3);
 
 
 	 THStack *h_Stack = new THStack("h_Stack","");
@@ -211,12 +212,12 @@ for (std::map<int, TFile*>::iterator it=map_file_sig.begin(); it != map_file_sig
 		}
 
 		h_Stack->Draw("HIST");
-		h_Stack->SetTitle("Z to jets with loose b tagging");
+		h_Stack->SetTitle("Jets with tight tagging");
 		h_Stack->GetXaxis()->SetTitle("Dijet Mass [GeV]");
  		h_Stack->GetYaxis()->SetTitle("Events / [GeV]");
 
 
-		auto legend = new TLegend(2.5, 1);
+		auto legend = new TLegend(0.7,0.6,0.9, 0.9);
 	   legend->SetHeader("Z Flavour combinations","C"); // option "C" allows to center the header
 	   legend->AddEntry(h_Sum_Flavs["ll"],"light light jets","f");
 	   legend->AddEntry(h_Sum_Flavs["lc"],"light charm jets","f");
