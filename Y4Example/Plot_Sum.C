@@ -37,7 +37,7 @@ void Plot_Sum() {
 //h_JetAsymmetry
 
 	//TString histName = "h_CosThetaHel";
-	TString histName = "h_light_b";
+	TString histName = "h_jet2_pt";
 
 ///TString histName = "h_LeptonAsymmetry";
 
@@ -187,7 +187,7 @@ std::cout<< "number of w signal events = " << sw << std::endl;
 float Fz = fig_of_merit(sz, b);
 float Fw = fig_of_merit(sw, b);
 std::cout<< "Fz = " << Fz << std::endl;
-std::cout<< "Fw = " << Fw << std::endl;
+//std::cout<< "Fw = " << Fw << std::endl;
 
 
 

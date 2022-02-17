@@ -294,9 +294,13 @@ int main(int argc, char* argv[]) {
 	for(int f=0; f<flav_combs.size(); ++f){
 
 		h_Coll_Dijet_Mass[flav_combs.at(f)] = write_hist(flav_combs.at(f), "Dijet_Mass", ";Mass [GeV]; Events/GeV", 30, 0, 300);
-
+		
 
 	}
+
+	TH1D* h_jet1_pt = new TH1D("h_jet1_pt", ";pT [GeV]; Events/GeV", 30, 0, 300);
+
+	TH1D* h_jet2_pt = new TH1D("h_jet2_pt", ";pT [GeV]; Events/GeV", 30, 0, 300);
 
 	// Event loop
 
@@ -387,6 +391,8 @@ int main(int argc, char* argv[]) {
 	double dijet_mass;
 	float jet1_DL1;
 	float jet2_DL1;
+	float jet1_Pt;
+	float jet2_Pt;
 
 	int index_orig_j1 = -1;
 	int index_orig_j2 = -1;
@@ -425,6 +431,9 @@ int main(int argc, char* argv[]) {
 	jet1_DL1 = r->jet_DL1->at(index_orig_j1);
 	jet2_DL1 = r->jet_DL1->at(index_orig_j2);
 
+	jet1_Pt = r->jet_pt->at(index_orig_j1);
+	jet2_Pt = r->jet_pt->at(index_orig_j2);
+
 	TString flav_pair = "";
 	
 	if(jet1_flavour == 0 || jet1_flavour == 15) { flav_pair += "l"; }
@@ -442,10 +451,24 @@ int main(int argc, char* argv[]) {
 	if(jet2_DL1 < 2.74){
 		continue;
 	}
+
+	if(jet1_Pt*1e-3 >110){
+		continue;
+	}
+
+	if(jet2_Pt*1e-3 > 50){
+		continue;
+	}
 	
 
 
 	h_Coll_Dijet_Mass[flav_pair]->Fill(dijet.M()*1e-3,weight);
+
+	//std::cout << "jet pt is " << jet1_Pt << std::endl;
+
+
+	h_jet1_pt->Fill(jet1_Pt*1e-3, weight);
+	h_jet2_pt->Fill(jet2_Pt*1e-3, weight);
 
 
 
@@ -520,31 +543,10 @@ int main(int argc, char* argv[]) {
 		}
 
 
-		if(lepton1.Pt() < 37){
-			continue;
-		}
-		
-		if(jet1.Pt() < 37){
-			continue;
-		}
-
-		if(jet2.Pt() < 30){
-			continue;
-		}
-
-		if(angle_between_jets > 2.7){
-
-			continue;
-		}
-
 
 		const double asym_lep =  ( lepton1.Pt() - lepton2.Pt() ) / ( lepton1.Pt() + lepton2.Pt() );
 		const double asym_jet =  ( jet1.Pt() - jet2.Pt() ) / ( jet1.Pt() + jet2.Pt() );
 
-		if(asym_jet > 2){
-			continue;
-		}
-		
 
 		TLorentzVector diZ;
 		if( dijet.Pt() != 0){
@@ -559,10 +561,6 @@ int main(int argc, char* argv[]) {
 			}
 
 		}
-
-	//	if( dilepton.M() != 0){
-	//		h_Boson_mass->Fill(dilepton.M(), weight);
-	//	}
 
 
 		//histograms filled by here
@@ -583,8 +581,13 @@ int main(int argc, char* argv[]) {
 
 		h_Coll_Dijet_Mass[flav_combs.at(f)] ->Write();
 
-
 	}
+
+
+	h_jet1_pt->Write();
+	h_jet2_pt->Write();
+
+
 
 	outputFile->Close();
 

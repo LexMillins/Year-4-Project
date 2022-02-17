@@ -212,12 +212,12 @@ for (std::map<int, TFile*>::iterator it=map_file_sig.begin(); it != map_file_sig
 		}
 
 		h_Stack->Draw("HIST");
-		h_Stack->SetTitle("Jets with tight tagging");
+		h_Stack->SetTitle("Jets with tight very tight tagging");
 		h_Stack->GetXaxis()->SetTitle("Dijet Mass [GeV]");
  		h_Stack->GetYaxis()->SetTitle("Events / [GeV]");
 
 
-		auto legend = new TLegend(0.7,0.6,0.9, 0.9);
+		auto legend = new TLegend(0.55,0.49,0.9, 0.9);
 	   legend->SetHeader("Z Flavour combinations","C"); // option "C" allows to center the header
 	   legend->AddEntry(h_Sum_Flavs["ll"],"light light jets","f");
 	   legend->AddEntry(h_Sum_Flavs["lc"],"light charm jets","f");
@@ -262,7 +262,7 @@ std::cout<< "bin_low =" << bin_low << std::endl;
 std::cout<< "bin_high =" << bin_high << std::endl;
 
 
-float b = h_Sum->Integral(bin_low,bin_high);
+float b = h_Sum_Flavs.Integral(bin_low,bin_high);
 float sz = map_hist_sig[363356]->Integral(bin_low,bin_high);
 float sw = map_hist_sig[363358]->Integral(bin_low,bin_high);
 
@@ -275,9 +275,9 @@ float Fw = fig_of_merit(sw, b);
 std::cout<< "Fz = " << Fz << std::endl;
 std::cout<< "Fw = " << Fw << std::endl;
 
-
-
 */
+
+
 
 return 0;
 
