@@ -37,7 +37,7 @@ void Plot_Sum() {
 //h_JetAsymmetry
 
 	//TString histName = "h_CosThetaHel";
-	TString histName = "h_jet2_pt";
+	TString histName = "h_Z_mass";
 
 ///TString histName = "h_LeptonAsymmetry";
 
@@ -180,7 +180,7 @@ float b = h_Sum->Integral(bin_low,bin_high);
 float sz = map_hist_sig[363356]->Integral(bin_low,bin_high);
 float sw = map_hist_sig[363358]->Integral(bin_low,bin_high);
 
-std::cout<< "number of background events =" << b << std::endl;
+std::cout<< "number of background events = " << b << std::endl;
 std::cout<< "number of Z signal events = " << sz << std::endl;
 std::cout<< "number of w signal events = " << sw << std::endl;
 

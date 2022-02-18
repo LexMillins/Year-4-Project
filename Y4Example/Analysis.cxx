@@ -302,6 +302,8 @@ int main(int argc, char* argv[]) {
 
 	TH1D* h_jet2_pt = new TH1D("h_jet2_pt", ";pT [GeV]; Events/GeV", 30, 0, 300);
 
+	TH1D* h_Z_mass = new TH1D("h_Z_mass", ";Invariant Mass [GeV]; Events/GeV", 30, 0, 300);
+
 	// Event loop
 
 	const int nEvents = r->fChain->GetEntries();
@@ -452,11 +454,11 @@ int main(int argc, char* argv[]) {
 		continue;
 	}
 
-	if(jet1_Pt*1e-3 >110){
+	if(jet1_Pt*1e-3 < 30){
 		continue;
 	}
 
-	if(jet2_Pt*1e-3 > 50){
+	if(jet2_Pt*1e-3 < 22){
 		continue;
 	}
 	
@@ -469,7 +471,7 @@ int main(int argc, char* argv[]) {
 
 	h_jet1_pt->Fill(jet1_Pt*1e-3, weight);
 	h_jet2_pt->Fill(jet2_Pt*1e-3, weight);
-
+	h_Z_mass->Fill(dijet.M()*1e-3, weight);
 
 
 
@@ -586,6 +588,7 @@ int main(int argc, char* argv[]) {
 
 	h_jet1_pt->Write();
 	h_jet2_pt->Write();
+	h_Z_mass->Write();
 
 
 
