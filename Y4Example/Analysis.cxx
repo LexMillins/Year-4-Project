@@ -304,6 +304,9 @@ int main(int argc, char* argv[]) {
 
 	TH1D* h_Z_mass = new TH1D("h_Z_mass", ";Invariant Mass [GeV]; Events/GeV", 30, 0, 300);
 
+	TH1D* h_angle_between_jets = new TH1D("h_angle_between_jets", ";Theta [rad]; Events/GeV", 10, 0, 1); 
+
+
 	// Event loop
 
 	const int nEvents = r->fChain->GetEntries();
@@ -385,6 +388,7 @@ int main(int argc, char* argv[]) {
 	double angle_between_jets;
 	TLorentzVector jet1;
 	TLorentzVector jet2;
+	TLorentzVector jet3;
 	double jet1_rapidity;
 	double jet2_rapidity;
 	int jet1_flavour;
@@ -393,11 +397,16 @@ int main(int argc, char* argv[]) {
 	double dijet_mass;
 	float jet1_DL1;
 	float jet2_DL1;
+	float jet3_DL1;
 	float jet1_Pt;
 	float jet2_Pt;
+	float dijet_Pt;
+	float jet1_eta;
+	float jet2_eta;
 
 	int index_orig_j1 = -1;
 	int index_orig_j2 = -1;
+	int index_orig_j3 = -1;
 
 	//std::cout << "-------------------" << std::endl;
 
@@ -415,6 +424,10 @@ int main(int argc, char* argv[]) {
 			index_orig_j2 = j;
 		}
 
+		if( fabs(r->jet_pt->at(j) - my_jets.at(2).Pt())/my_jets.at(2).Pt() < 1e-6 ) {
+			index_orig_j3 = j;
+		}
+
 		//std::cout << j << " " << r->jet_pt->at(j) << std::endl;
 
 	}
@@ -427,14 +440,26 @@ int main(int argc, char* argv[]) {
 	//std::cout << "index_orig_j2 = " << index_orig_j2 << std::endl;
 
 	dijet = my_jets.at(0) + my_jets.at(1);
+
+	TLorentzVector jet1_jet_3 = my_jets.at(0) + my_jets.at(2);
+
 	jet1_flavour = r->jet_truthflav->at(index_orig_j1);
 	jet2_flavour = r->jet_truthflav->at(index_orig_j2);
+	jet3_flavour = r->jet_truthflav->at(index_orig_j3);
 
 	jet1_DL1 = r->jet_DL1->at(index_orig_j1);
 	jet2_DL1 = r->jet_DL1->at(index_orig_j2);
+	jet3_DL1 = r->jet_DL1->at(index_orig_j3);
 
 	jet1_Pt = r->jet_pt->at(index_orig_j1);
 	jet2_Pt = r->jet_pt->at(index_orig_j2);
+
+	dijet_Pt = dijet.Pt();
+
+	jet1_eta = jet1.Eta();
+	jet2_eta = jet2.Eta();
+
+	angle_between_jets = jet1.Angle(jet2.Vect()); 
 
 	TString flav_pair = "";
 	
@@ -454,14 +479,15 @@ int main(int argc, char* argv[]) {
 		continue;
 	}
 
+
 	if(jet1_Pt*1e-3 < 30){
 		continue;
 	}
 
-	if(jet2_Pt*1e-3 < 22){
-		continue;
-	}
-	
+
+	//if(fabs(jet2_eta) < 0.5){
+		//continue;
+	//}
 
 
 	h_Coll_Dijet_Mass[flav_pair]->Fill(dijet.M()*1e-3,weight);
@@ -472,6 +498,7 @@ int main(int argc, char* argv[]) {
 	h_jet1_pt->Fill(jet1_Pt*1e-3, weight);
 	h_jet2_pt->Fill(jet2_Pt*1e-3, weight);
 	h_Z_mass->Fill(dijet.M()*1e-3, weight);
+	h_angle_between_jets->Fill(angle_between_jets, weight);
 
 
 
@@ -589,6 +616,7 @@ int main(int argc, char* argv[]) {
 	h_jet1_pt->Write();
 	h_jet2_pt->Write();
 	h_Z_mass->Write();
+	h_angle_between_jets->Write();
 
 
 
