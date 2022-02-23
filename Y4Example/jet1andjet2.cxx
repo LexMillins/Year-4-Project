@@ -248,6 +248,13 @@ int main(int argc, char* argv[]) {
 
 
 
+
+
+
+
+
+
+
 	// Setup an output ROOT file to store histograms
 
 	TString outputFileName = "Output_";
@@ -282,7 +289,7 @@ int main(int argc, char* argv[]) {
 
 
 
-	// Create histograms
+
 
 	for(int f=0; f<flav_combs.size(); ++f){
 
@@ -330,9 +337,9 @@ int main(int argc, char* argv[]) {
 			continue;
 		}
 
+
 		std::vector<TLorentzVector> my_jets;
 		TLorentzVector dijet;
-		TLorentzVector dijet1_3;
 		TLorentzVector jetj;
 		float DL1;
 		int flavour;
@@ -340,6 +347,7 @@ int main(int argc, char* argv[]) {
 		vector<TLorentzVector> b_jets;
 		vector<TLorentzVector> c_jets;
 		vector<TLorentzVector> taus;
+
 
 
 		for( int j = 0; j <(r->jet_pt->size()); ++j){
@@ -375,6 +383,7 @@ int main(int argc, char* argv[]) {
 
 		}
 
+
 	std::sort(my_jets.begin(), my_jets.end(),sortby_pt);
 	double angle_between_jets;
 	TLorentzVector jet1;
@@ -384,7 +393,6 @@ int main(int argc, char* argv[]) {
 	double jet2_rapidity;
 	int jet1_flavour;
 	int jet2_flavour;
-	int jet3_flavour;
 	vector<int> flavour_list;
 	double dijet_mass;
 	float jet1_DL1;
@@ -400,6 +408,11 @@ int main(int argc, char* argv[]) {
 	int index_orig_j2 = -1;
 	int index_orig_j3 = -1;
 
+	//std::cout << "-------------------" << std::endl;
+
+	//std::cout << "TLV 0 = " << my_jets.at(0).Pt() << std::endl;
+	//std::cout << "TLV 1 = " << my_jets.at(1).Pt() << std::endl;
+
 
 	for( int j = 0; j <(r->jet_pt->size()); ++j){
 
@@ -411,23 +424,32 @@ int main(int argc, char* argv[]) {
 			index_orig_j2 = j;
 		}
 
+		if( fabs(r->jet_pt->at(j) - my_jets.at(2).Pt())/my_jets.at(2).Pt() < 1e-6 ) {
+			index_orig_j3 = j;
+		}
 
-
-	//std::cout << j << " " << r->jet_pt->at(j) << std::endl;
+		//std::cout << j << " " << r->jet_pt->at(j) << std::endl;
 
 	}
 
+	if( index_orig_j1 == -1 ) std::cout << "WARNING! index_orig_j1 = " << index_orig_j1 << std::endl;
+	if( index_orig_j2 == -1 ) std::cout << "WARNING! index_orig_21 = " << index_orig_j2 << std::endl;
 
+
+	//s
+	//std::cout << "index_orig_j2 = " << index_orig_j2 << std::endl;
 
 	dijet = my_jets.at(0) + my_jets.at(1);
 
-
+	TLorentzVector jet1_jet_3 = my_jets.at(0) + my_jets.at(2);
 
 	jet1_flavour = r->jet_truthflav->at(index_orig_j1);
 	jet2_flavour = r->jet_truthflav->at(index_orig_j2);
+	jet3_flavour = r->jet_truthflav->at(index_orig_j3);
 
 	jet1_DL1 = r->jet_DL1->at(index_orig_j1);
 	jet2_DL1 = r->jet_DL1->at(index_orig_j2);
+	jet3_DL1 = r->jet_DL1->at(index_orig_j3);
 
 	jet1_Pt = r->jet_pt->at(index_orig_j1);
 	jet2_Pt = r->jet_pt->at(index_orig_j2);
@@ -453,7 +475,7 @@ int main(int argc, char* argv[]) {
 		continue;
 	}
 
-	if(jet2_DL1 < 2.02){
+	if(jet2_DL1 < 2.74){
 		continue;
 	}
 
@@ -462,53 +484,123 @@ int main(int argc, char* argv[]) {
 		continue;
 	}
 
+
+	//if(fabs(jet2_eta) < 0.5){
+		//continue;
+	//}
+
+
 	h_Coll_Dijet_Mass[flav_pair]->Fill(dijet.M()*1e-3,weight);
+
+	//std::cout << "jet pt is " << jet1_Pt << std::endl;
+
+
+	h_jet1_pt->Fill(jet1_Pt*1e-3, weight);
+	h_jet2_pt->Fill(jet2_Pt*1e-3, weight);
 	h_Z_mass->Fill(dijet.M()*1e-3, weight);
+	h_angle_between_jets->Fill(angle_between_jets, weight);
 
 
 
-	if(my_jets.size() >= 3){
+		std::vector<TLorentzVector> muon_vector;
+		std::vector<TLorentzVector> electron_vector;
+		TLorentzVector dielectron;
+		TLorentzVector dimuon;
+		Double_t angle_between_muons;
+		Double_t angle_between_electrons;
+		TLorentzVector muon1;
+		TLorentzVector muon2;
+		TLorentzVector elec1;
+		TLorentzVector elec2;
+
+		TLorentzVector dilepton;
+
+		TLorentzVector lepton1;
+		TLorentzVector lepton2;
+		Double_t angle_between_lep;
 
 
-		for( int j = 0; j <(r->jet_pt->size()); ++j){
+		if( r->mu_pt->size() >= 2) {
 
-			if( fabs(r->jet_pt->at(j) - my_jets.at(2).Pt())/my_jets.at(2).Pt() < 1e-6 ) {
-				index_orig_j3 = j;
+
+			for( int k = 0; k<(r->mu_pt->size()); ++k){
+				TLorentzVector muon;
+
+				muon.SetPtEtaPhiM(r->mu_pt->at(k),r->mu_eta->at(k),r->mu_phi->at(k),105.67);
+				muon_vector.push_back(muon);
+
 			}
+			std::sort(muon_vector.begin(), muon_vector.end(), sortby_pt);
+
+
+			dimuon = muon_vector.at(0) + muon_vector.at(1);
+			dilepton = dimuon;
+
+			muon1 = muon_vector.at(0);
+			muon2 = muon_vector.at(1);
+
+			lepton1 = muon1;
+			lepton2 = muon2;
 
 
 		}
 
-		dijet1_3 = my_jets.at(0) + my_jets.at(2);
 
-		jet3_flavour = r->jet_truthflav->at(index_orig_j3);
+		else if ( r->el_pt->size() >= 2){
 
-		jet3_DL1 = r->jet_DL1->at(index_orig_j3);
+			for(int j = 0; j<(r->el_pt->size()); ++j){
+				TLorentzVector elec;
 
-		if(jet3_flavour == 0 || jet2_flavour == 15) { flav_pair += "l"; }
-		if(jet3_flavour == 4) { flav_pair += "c"; }
-		if(jet3_flavour == 5) { flav_pair += "b"; }
-
-
-		if(jet1_DL1 > 2.02 && jet2_DL1 < 2.02){
-			if(jet3_DL1 > 2.02){
-				h_Coll_Dijet_Mass[flav_pair]->Fill(dijet1_3.M()*1e-3,weight);
-				h_Z_mass->Fill(dijet1_3.M()*1e-3, weight);
+				elec.SetPtEtaPhiM(r->el_pt->at(j),r->el_eta->at(j),r->el_phi->at(j),0.511);
+				electron_vector.push_back(elec);
 
 			}
+
+			std::sort(electron_vector.begin(), electron_vector.end(), sortby_pt);
+
+
+			
+			dielectron = electron_vector.at(0) + electron_vector.at(1);
+			dilepton = dielectron;
+
+			elec1 = electron_vector.at(0);
+			elec2 = electron_vector.at(1);
+
+			lepton1 = elec1;
+			lepton2 = elec2;
+
 		}
 
 
-	}
+
+		const double asym_lep =  ( lepton1.Pt() - lepton2.Pt() ) / ( lepton1.Pt() + lepton2.Pt() );
+		const double asym_jet =  ( jet1.Pt() - jet2.Pt() ) / ( jet1.Pt() + jet2.Pt() );
 
 
+		TLorentzVector diZ;
+		if( dijet.Pt() != 0){
+
+			if (dimuon.Pt() !=0){
+				diZ = dijet + dimuon;     	
+			}
+
+			else if (dielectron.Pt() !=0){
+
+				diZ = dijet + dielectron;
+			}
+
+		}
 
 
+		//histograms filled by here
+	} 
 
+	// Event Loop
 
-} //Event Loop
+//flav_combs
 
-//Write histograms
+	// Write histogram to output file
+
 	outputFile->cd();
 
 	//write histograms here
@@ -519,7 +611,13 @@ int main(int argc, char* argv[]) {
 		h_Coll_Dijet_Mass[flav_combs.at(f)] ->Write();
 
 	}
+
+
+	h_jet1_pt->Write();
+	h_jet2_pt->Write();
 	h_Z_mass->Write();
+	h_angle_between_jets->Write();
+
 
 
 	outputFile->Close();
@@ -532,5 +630,4 @@ int main(int argc, char* argv[]) {
 	std::cout << "Done Analysis!" << std::endl;
 
 	return 0;
-
-}
+} 

@@ -146,7 +146,7 @@ for (std::map < int, TH1D*>::iterator it=map_hist.begin(); it != map_hist.end();
 
 	TCanvas* c = new TCanvas("c","c",800,600);
 
-	h_Sum->SetTitle("jets");
+	h_Sum->SetTitle("Invariant Mass of dijet");
 
 	//h_Sum->Fit(fitFunction);
 
@@ -155,13 +155,13 @@ for (std::map < int, TH1D*>::iterator it=map_hist.begin(); it != map_hist.end();
 
 
 map_hist_sig[363356]->Draw("SAME");
-map_hist_sig[363358]->Draw("SAME");
+//map_hist_sig[363358]->Draw("SAME");
 
 map_hist_sig[363356]->SetLineColor(kRed);
-map_hist_sig[363358]->SetLineColor(kGreen);
+//map_hist_sig[363358]->SetLineColor(kGreen);
 
-//map_hist_sig[363356]->Scale(120);
-//map_hist_sig[363358]->Scale(120);
+map_hist_sig[363356]->Scale(100);
+map_hist_sig[363358]->Scale(100);
 
 
 const double mass_peak = 91.2; // [GeV]
