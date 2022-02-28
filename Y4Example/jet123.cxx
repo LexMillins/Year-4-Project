@@ -29,6 +29,7 @@ bool sortby_pt(const TLorentzVector &lhs, const TLorentzVector &rhs){
 }
 
 
+
 // Need to make a function to create histograms. Will take the quark flavour and property being plotted and return a histogram with a name h_quarkflavour_property
 
 TH1D* write_hist(TString flavour, TString property, TString axes, int bins, int start, int end){
@@ -331,7 +332,9 @@ int main(int argc, char* argv[]) {
 		}
 
 		std::vector<TLorentzVector> my_jets;
+		std::vector<TLorentzVector> DL1_jets;
 		TLorentzVector dijet;
+		TLorentzVector dijet1_3;
 		TLorentzVector jetj;
 		float DL1;
 		int flavour;
@@ -349,23 +352,23 @@ int main(int argc, char* argv[]) {
 			DL1 = r->jet_DL1->at(j);
 			flavour = r->jet_truthflav->at(j);
 
-			if (flavour=0){
+			if (flavour==0){
 
 				light_jets.push_back(jetj);
 			}
 
-			if (flavour=4){
+			if (flavour==4){
 
 				c_jets.push_back(jetj);
 			}
 
 
-			if(flavour = 5){
+			if(flavour == 5){
 
 				b_jets.push_back(jetj);
 			}
 
-			if (flavour=15){
+			if (flavour==15){
 
 				taus.push_back(jetj);
 			}
@@ -374,7 +377,10 @@ int main(int argc, char* argv[]) {
 
 		}
 
+
 	std::sort(my_jets.begin(), my_jets.end(),sortby_pt);
+
+
 	double angle_between_jets;
 	TLorentzVector jet1;
 	TLorentzVector jet2;
@@ -452,7 +458,7 @@ int main(int argc, char* argv[]) {
 		continue;
 	}
 
-	if(jet2_DL1 < 2.74){
+	if(jet2_DL1 < 2.02){
 		continue;
 	}
 
@@ -462,6 +468,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	h_Coll_Dijet_Mass[flav_pair]->Fill(dijet.M()*1e-3,weight);
+	h_Z_mass->Fill(dijet.M()*1e-3, weight);
 
 
 
@@ -477,6 +484,8 @@ int main(int argc, char* argv[]) {
 
 		}
 
+		dijet1_3 = my_jets.at(0) + my_jets.at(2);
+
 		jet3_flavour = r->jet_truthflav->at(index_orig_j3);
 
 		jet3_DL1 = r->jet_DL1->at(index_orig_j3);
@@ -485,6 +494,14 @@ int main(int argc, char* argv[]) {
 		if(jet3_flavour == 4) { flav_pair += "c"; }
 		if(jet3_flavour == 5) { flav_pair += "b"; }
 
+
+		if(jet1_DL1 > 2.02 && jet2_DL1 < 2.02){
+			if(jet3_DL1 > 2.02){
+				h_Coll_Dijet_Mass[flav_pair]->Fill(dijet1_3.M()*1e-3,weight);
+				h_Z_mass->Fill(dijet1_3.M()*1e-3, weight);
+
+			}
+		}
 
 
 	}
@@ -507,6 +524,7 @@ int main(int argc, char* argv[]) {
 		h_Coll_Dijet_Mass[flav_combs.at(f)] ->Write();
 
 	}
+	h_Z_mass->Write();
 
 
 	outputFile->Close();

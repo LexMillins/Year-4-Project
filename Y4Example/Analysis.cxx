@@ -22,10 +22,24 @@ void print_vect_TLor(std::vector <TLorentzVector> const &b) {
 }
 
 
+void print_vect_pair(std::vector< std::pair<int,double>> const &b) {
+   std::cout << "The vector elements are : ";
+ 
+   for(int i=0; i < b.size(); i++){
+   std::cout << b.at(i).first << std::endl;
+   std::cout << b.at(i).second << std::endl;
+   }
+}
+
+
 
 //function to sort TLorentzVectors by transverse momentum
 bool sortby_pt(const TLorentzVector &lhs, const TLorentzVector &rhs){
 	return lhs.Pt() > rhs.Pt();
+}
+
+bool sort_pair(const std::pair<int,double> &lhs, const std::pair<int,double> &rhs){
+	return lhs.second > rhs.second;
 }
 
 
@@ -331,15 +345,22 @@ int main(int argc, char* argv[]) {
 		}
 
 		std::vector<TLorentzVector> my_jets;
+		std::vector<TLorentzVector> DL1_jets;
 		TLorentzVector dijet;
 		TLorentzVector dijet1_3;
+		TLorentzVector jeti;
 		TLorentzVector jetj;
-		float DL1;
+		double DL1;
 		int flavour;
 		vector<TLorentzVector> light_jets;
 		vector<TLorentzVector> b_jets;
 		vector<TLorentzVector> c_jets;
 		vector<TLorentzVector> taus;
+		float jet1_pt;
+
+
+		std::vector< std::pair<int,double> > jet_index_DL1;
+		std::pair<int, double> temp;
 
 
 		for( int j = 0; j <(r->jet_pt->size()); ++j){
@@ -350,97 +371,48 @@ int main(int argc, char* argv[]) {
 			DL1 = r->jet_DL1->at(j);
 			flavour = r->jet_truthflav->at(j);
 
-			if (flavour=0){
 
-				light_jets.push_back(jetj);
-			}
+			temp.first = j;
+			temp.second = DL1;
 
-			if (flavour=4){
+			jet_index_DL1.push_back(temp);
 
-				c_jets.push_back(jetj);
-			}
-
-
-			if(flavour = 5){
-
-				b_jets.push_back(jetj);
-			}
-
-			if (flavour=15){
-
-				taus.push_back(jetj);
-			}
-
-			my_jets.push_back(jetj);
 
 		}
 
-	std::sort(my_jets.begin(), my_jets.end(),sortby_pt);
-	double angle_between_jets;
-	TLorentzVector jet1;
-	TLorentzVector jet2;
-	TLorentzVector jet3;
-	double jet1_rapidity;
-	double jet2_rapidity;
-	int jet1_flavour;
-	int jet2_flavour;
-	int jet3_flavour;
-	vector<int> flavour_list;
-	double dijet_mass;
-	float jet1_DL1;
-	float jet2_DL1;
-	float jet3_DL1;
-	float jet1_Pt;
-	float jet2_Pt;
-	float dijet_Pt;
-	float jet1_eta;
-	float jet2_eta;
 
-	int index_orig_j1 = -1;
-	int index_orig_j2 = -1;
-	int index_orig_j3 = -1;
+	std::sort(jet_index_DL1.begin(), jet_index_DL1.end(),sort_pair);
 
 
-	for( int j = 0; j <(r->jet_pt->size()); ++j){
+	for(unsigned int i = 0; i < jet_index_DL1.size(); ++i ) {
 
-		if( fabs(r->jet_pt->at(j) - my_jets.at(0).Pt())/my_jets.at(0).Pt() < 1e-6 ) {
-			index_orig_j1 = j;
-		}
+		const unsigned int index = jet_index_DL1.at(i).first;
 
-		if( fabs(r->jet_pt->at(j) - my_jets.at(1).Pt())/my_jets.at(1).Pt() < 1e-6 ) {
-			index_orig_j2 = j;
-		}
+		//std::cout << jet_index_DL1.at(i).first << " " << jet_index_DL1.at(i).second << std::endl;
 
+		jeti.SetPtEtaPhiE(r->jet_pt->at(index), r->jet_eta->at(index), r->jet_phi->at(index), r->jet_e->at(index));
 
-
-	//std::cout << j << " " << r->jet_pt->at(j) << std::endl;
+		my_jets.push_back(jeti);
 
 	}
-
 
 
 	dijet = my_jets.at(0) + my_jets.at(1);
 
 
 
-	jet1_flavour = r->jet_truthflav->at(index_orig_j1);
-	jet2_flavour = r->jet_truthflav->at(index_orig_j2);
 
-	jet1_DL1 = r->jet_DL1->at(index_orig_j1);
-	jet2_DL1 = r->jet_DL1->at(index_orig_j2);
+	TLorentzVector jet1 = my_jets.at(0);
 
-	jet1_Pt = r->jet_pt->at(index_orig_j1);
-	jet2_Pt = r->jet_pt->at(index_orig_j2);
+	int jet1_flavour = r->jet_truthflav->at(jet_index_DL1.at(0).first);
 
-	dijet_Pt = dijet.Pt();
+	TLorentzVector jet2 = my_jets.at(1);
 
-	jet1_eta = jet1.Eta();
-	jet2_eta = jet2.Eta();
-
-	angle_between_jets = jet1.Angle(jet2.Vect()); 
+	int jet2_flavour = r->jet_truthflav->at(jet_index_DL1.at(1).first);
 
 	TString flav_pair = "";
-	
+
+
 	if(jet1_flavour == 0 || jet1_flavour == 15) { flav_pair += "l"; }
 	if(jet1_flavour == 4) { flav_pair += "c"; }
 	if(jet1_flavour == 5) { flav_pair += "b"; }
@@ -449,57 +421,27 @@ int main(int argc, char* argv[]) {
 	if(jet2_flavour == 4) { flav_pair += "c"; }
 	if(jet2_flavour == 5) { flav_pair += "b"; }
 
+
+
+
+
+	float jet1_DL1 = jet_index_DL1.at(0).second; 
+
+	float jet2_DL1 = jet_index_DL1.at(1).second;
+
 	if(jet1_DL1 < 2.02){
 		continue;
 	}
-
 	if(jet2_DL1 < 2.02){
 		continue;
 	}
 
-
-	if(jet1_Pt*1e-3 < 30){
-		continue;
-	}
-
 	h_Coll_Dijet_Mass[flav_pair]->Fill(dijet.M()*1e-3,weight);
+
 	h_Z_mass->Fill(dijet.M()*1e-3, weight);
 
 
 
-	if(my_jets.size() >= 3){
-
-
-		for( int j = 0; j <(r->jet_pt->size()); ++j){
-
-			if( fabs(r->jet_pt->at(j) - my_jets.at(2).Pt())/my_jets.at(2).Pt() < 1e-6 ) {
-				index_orig_j3 = j;
-			}
-
-
-		}
-
-		dijet1_3 = my_jets.at(0) + my_jets.at(2);
-
-		jet3_flavour = r->jet_truthflav->at(index_orig_j3);
-
-		jet3_DL1 = r->jet_DL1->at(index_orig_j3);
-
-		if(jet3_flavour == 0 || jet2_flavour == 15) { flav_pair += "l"; }
-		if(jet3_flavour == 4) { flav_pair += "c"; }
-		if(jet3_flavour == 5) { flav_pair += "b"; }
-
-
-		if(jet1_DL1 > 2.02 && jet2_DL1 < 2.02){
-			if(jet3_DL1 > 2.02){
-				h_Coll_Dijet_Mass[flav_pair]->Fill(dijet1_3.M()*1e-3,weight);
-				h_Z_mass->Fill(dijet1_3.M()*1e-3, weight);
-
-			}
-		}
-
-
-	}
 
 
 
