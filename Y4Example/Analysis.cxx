@@ -22,6 +22,7 @@ void print_vect_TLor(std::vector <TLorentzVector> const &b) {
 }
 
 
+//print function for a vector of pairs
 void print_vect_pair(std::vector< std::pair<int,double>> const &b) {
    std::cout << "The vector elements are : ";
  
@@ -38,6 +39,7 @@ bool sortby_pt(const TLorentzVector &lhs, const TLorentzVector &rhs){
 	return lhs.Pt() > rhs.Pt();
 }
 
+//Function to sort pairs by their second element
 bool sort_pair(const std::pair<int,double> &lhs, const std::pair<int,double> &rhs){
 	return lhs.second > rhs.second;
 }
@@ -335,6 +337,8 @@ int main(int argc, char* argv[]) {
 
 		const double weight = weight_mc * S;
 
+		// require 2 jets and 2 leptons in each event
+
 		if (r->jet_pt->size() <2 ){
 
 			continue;
@@ -363,12 +367,16 @@ int main(int argc, char* argv[]) {
 		std::pair<int, double> temp;
 
 
+		// Create pairs of index, DL1 discriminant
+
 		for( int j = 0; j <(r->jet_pt->size()); ++j){
 
 
 			jetj.SetPtEtaPhiE(r->jet_pt->at(j), r->jet_eta->at(j), r->jet_phi->at(j), r->jet_e->at(j));
 
 			DL1 = r->jet_DL1->at(j);
+
+			//record truth flavour of jets (MC only)
 			flavour = r->jet_truthflav->at(j);
 
 
@@ -381,6 +389,8 @@ int main(int argc, char* argv[]) {
 		}
 
 
+	// Sort by b-tag	
+		
 	std::sort(jet_index_DL1.begin(), jet_index_DL1.end(),sort_pair);
 
 
@@ -390,12 +400,15 @@ int main(int argc, char* argv[]) {
 
 		//std::cout << jet_index_DL1.at(i).first << " " << jet_index_DL1.at(i).second << std::endl;
 
+		//create 4-vectors using the original index
+
 		jeti.SetPtEtaPhiE(r->jet_pt->at(index), r->jet_eta->at(index), r->jet_phi->at(index), r->jet_e->at(index));
 
 		my_jets.push_back(jeti);
 
 	}
 
+	//Create dijet using the sorted jet - 2 highest DL1 values
 
 	dijet = my_jets.at(0) + my_jets.at(1);
 
@@ -409,6 +422,9 @@ int main(int argc, char* argv[]) {
 	TLorentzVector jet2 = my_jets.at(1);
 
 	int jet2_flavour = r->jet_truthflav->at(jet_index_DL1.at(1).first);
+
+	
+	//Use truth information to determine flavour of jet for plotting (MC only)
 
 	TString flav_pair = "";
 
@@ -429,6 +445,8 @@ int main(int argc, char* argv[]) {
 
 	float jet2_DL1 = jet_index_DL1.at(1).second;
 
+	// b-tag requirement
+
 	if(jet1_DL1 < 2.02){
 		continue;
 	}
@@ -436,15 +454,12 @@ int main(int argc, char* argv[]) {
 		continue;
 	}
 
+
+	// Fill histograms
+
 	h_Coll_Dijet_Mass[flav_pair]->Fill(dijet.M()*1e-3,weight);
 
 	h_Z_mass->Fill(dijet.M()*1e-3, weight);
-
-
-
-
-
-
 
 
 
