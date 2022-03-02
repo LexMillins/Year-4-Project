@@ -445,6 +445,8 @@ int main(int argc, char* argv[]) {
 
 	float jet2_DL1 = jet_index_DL1.at(1).second;
 
+	float jet1_Pt = jet1.Pt();
+
 	// b-tag requirement
 
 	if(jet1_DL1 < 2.02){

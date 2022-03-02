@@ -13,28 +13,13 @@ float fig_of_merit(float &s, float &b){
 
 }
 
-/*Double_t background(Double_t *x, Double_t *par){
-    return par[0] + par[1]*x[0] + par[2]*x[0]*x[0];
-}
-
-Double_t lorentzianPeak(Double_t *x, Double_t *par){
-    return (0.5*par[0]*par[1]/TMath::Pi()) / TMath::Max(1.e-10,
-    (x[0]-par[2])*(x[0]-par[2])+ .25*par[1]*par[1]);
-}
-
-Double_t fitFunction(Double_t background, Double_t lorentzianPeak){
-
-	background(x, par) + lorentzianPeak(x,&par[3]);
-
-}
-*/
 
 void plot_all_flav() {
 
 
-
-
 	TString histName = "h_Dijet_Mass";
+
+	TString histNameSig = "h_Z_mass";
 
 
 	std::map<int,TFile*>map_file;
@@ -98,8 +83,8 @@ void plot_all_flav() {
 	map_file[363358] = TFile::Open("Output_363358.root"); //WZ
 
 
-	//map_file_sig[363356] = TFile::Open("Output_363356.root");
-	//map_file_sig[363358] = TFile::Open("Output_363358.root");
+	map_file_sig[363356] = TFile::Open("Output_363356.root");
+	map_file_sig[363358] = TFile::Open("Output_363358.root");
 
 
 
@@ -114,12 +99,14 @@ for (std::map<int, TFile*>::iterator it = map_file.begin(); it != map_file.end()
 
 }
 
+std::cout<< "----------------------------------------------signal" << std::endl;
+
 
 for (std::map<int, TFile*>::iterator it=map_file_sig.begin(); it != map_file_sig.end(); it++){
 
 	std::cout<< it->first << ':' << it->second << std::endl;
 
-	map_hist_sig[it->first] = (TH1D*) (it->second)->Get(histName);
+	map_hist_sig[it->first] = (TH1D*) (it->second)->Get(histNameSig);
 
 	std::cout << map_hist_sig[it->first] << std::endl;
 
@@ -175,15 +162,10 @@ for (std::map<int, TFile*>::iterator it=map_file_sig.begin(); it != map_file_sig
 
 	}
 
+
 	//TF1 *fitFcn = new TF1("fitFcn",fitFunction,0,3,6);
 
 	TCanvas* c = new TCanvas("c","c",900,600);
-
-	//h_Sum->SetTitle("jets");
-
-	//h_Sum->Fit(fitFunction);
-
-	//h_Sum_Flavs["ll"]->Draw();
 
 	 h_Sum_Flavs["ll"]->SetFillColor(kGray);
 
@@ -199,6 +181,7 @@ for (std::map<int, TFile*>::iterator it=map_file_sig.begin(); it != map_file_sig
 	 h_Sum_Flavs["bl"]->SetFillColor(kGreen);
 	 h_Sum_Flavs["bc"]->SetFillColor(kPink+10);
 	 h_Sum_Flavs["bb"]->SetFillColor(kGreen+3);
+
 
 
 	 THStack *h_Stack = new THStack("h_Stack","");
@@ -217,6 +200,11 @@ for (std::map<int, TFile*>::iterator it=map_file_sig.begin(); it != map_file_sig
  		h_Stack->GetYaxis()->SetTitle("Events / [GeV]");
 
 
+ 		map_hist_sig[363356]->Draw("SAME");
+	 	map_hist_sig[363356]->SetLineColor(kOrange+1);
+	 	map_hist_sig[363356]->Scale(10);
+
+
 		auto legend = new TLegend(0.55,0.49,0.9, 0.9);
 	   legend->SetHeader("Z Flavour combinations","C"); // option "C" allows to center the header
 	   legend->AddEntry(h_Sum_Flavs["ll"],"light light jets","f");
@@ -231,53 +219,19 @@ for (std::map<int, TFile*>::iterator it=map_file_sig.begin(); it != map_file_sig
 	   legend->AddEntry(h_Sum_Flavs["bc"],"bottom charm jets","f");
 	   legend->AddEntry(h_Sum_Flavs["bb"],"bottom bottom jets","f");
 
-	   
-
-
-
+	  
 
 	   legend->Draw();
 
-/*
 
-map_hist_sig[363356]->Draw("SAME");
-map_hist_sig[363358]->Draw("SAME");
-
-map_hist_sig[363356]->SetLineColor(kRed);
-map_hist_sig[363358]->SetLineColor(kGreen);
-
-//map_hist_sig[363356]->Scale(120);
-//map_hist_sig[363358]->Scale(120);
+ 		/*TH1D* h_sig = (TH1D*) map_hist_sig[363356]->Clone("h_sig");
+ 		h_sig->Reset();
+ 		h_sig->Add(map_hist_sig[363356]);
+	 	map_hist_sig[363356]->SetLineColor(kRed);
+	 	map_hist_sig[363356]->Scale(100);
 
 
-const double mass_peak = 91.2; // [GeV]
-const double mass_sigma = 18.0; // 1 sigma [GeV]
-
-
-int bin_low = map_hist_sig[363356]->FindBin(mass_peak - 2.0*mass_sigma);
-int bin_high = map_hist_sig[363356]->FindBin(mass_peak + 2.0*mass_sigma);
-
-
-std::cout<< "bin_low =" << bin_low << std::endl;
-std::cout<< "bin_high =" << bin_high << std::endl;
-
-
-float b = h_Sum_Flavs.Integral(bin_low,bin_high);
-float sz = map_hist_sig[363356]->Integral(bin_low,bin_high);
-float sw = map_hist_sig[363358]->Integral(bin_low,bin_high);
-
-std::cout<< "number of background events =" << b << std::endl;
-std::cout<< "number of Z signal events = " << sz << std::endl;
-std::cout<< "number of w signal events = " << sw << std::endl;
-
-float Fz = fig_of_merit(sz, b);
-float Fw = fig_of_merit(sw, b);
-std::cout<< "Fz = " << Fz << std::endl;
-std::cout<< "Fw = " << Fw << std::endl;
-
-*/
-
-
+ 		h_sig->Draw("SAME"); */
 
 return 0;
 
