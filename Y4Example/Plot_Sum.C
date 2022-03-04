@@ -103,8 +103,8 @@ void Plot_Sum() {
 	map_file[363358] = TFile::Open("Output_363358.root");
 
 
-	map_file_sig[363356] = TFile::Open("Output_363356.root");
-	map_file_sig[363358] = TFile::Open("Output_363358.root");
+	//map_file_sig[363356] = TFile::Open("Output_363356.root");
+	//map_file_sig[363358] = TFile::Open("Output_363358.root");
 
 
 
@@ -154,10 +154,10 @@ for (std::map < int, TH1D*>::iterator it=map_hist.begin(); it != map_hist.end();
 
 
 
-map_hist_sig[363356]->Draw("SAME");
+//map_hist_sig[363356]->Draw("SAME");
 //map_hist_sig[363358]->Draw("SAME");
 
-map_hist_sig[363356]->SetLineColor(kRed);
+//map_hist_sig[363356]->SetLineColor(kRed);
 //map_hist_sig[363358]->SetLineColor(kGreen);
 
 //map_hist_sig[363356]->Scale(100);

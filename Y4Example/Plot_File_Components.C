@@ -207,7 +207,7 @@ for (std::map<int, TFile*>::iterator it=map_file_ttbar.begin(); it != map_file_t
 
 
 
-		auto legend = new TLegend(0.55,0.49,0.9, 0.9);
+		auto legend = new TLegend(0.5,0.7,0.5, 0.7);
 	   legend->SetHeader("Z Flavour combinations","C"); // option "C" allows to center the header
 	   legend->AddEntry(h_Sum_Sig,"Signal","f");
 	   legend->AddEntry(h_Sum_ttbar,"ttbar","f");
