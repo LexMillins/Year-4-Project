@@ -200,7 +200,7 @@ int main(int argc, char* argv[]) {
 	// Input Analysis, File Name, DSID
 
 	TString inputFileName = argv[1];
-	//TString dsidName = argv[2];
+	TString inputFileNumber = argv[2];
 
 	//int dsid_int = dsidName.Atoi();
 
@@ -244,6 +244,7 @@ int main(int argc, char* argv[]) {
 
 	}
 
+
 	const double lumi = 36.1e3; // pb^-1
 	const double xs = crossSection[dsid_temp]; // pb
 
@@ -268,7 +269,9 @@ int main(int argc, char* argv[]) {
 
 	TString outputFileName = "Output_";
 	outputFileName += dsid_temp;
-	outputFileName += ".root";;
+	outputFileName += "_";
+	outputFileName += inputFileNumber; 
+	outputFileName += ".root";
 
 	std::cout << "outputFileName = " << outputFileName << std::endl;
 
