@@ -99,11 +99,11 @@ void merge_plot_sum() {
 	map_file[410472] = TFile::Open("files_410472.root");
 
 
-	//map_file[363356] = TFile::Open("files_363356.root");
-	//map_file[363358] = TFile::Open("files_363358.root");
+	map_file_sig[363356] = TFile::Open("files_363356.root");
+	map_file_sig[363358] = TFile::Open("files_363358.root");
 
 
-		std::map<int,int> map_nFiles;
+	std::map<int,int> map_nFiles;
 
 	map_nFiles[364100] = 1;
 	map_nFiles[364101] = 1;
@@ -156,10 +156,6 @@ void merge_plot_sum() {
 
 	map_nFiles[363356] = 3;
 	map_nFiles[363358] = 4;
-
-
-	map_file_sig[363356] = TFile::Open("files_363356.root");
-	map_file_sig[363358] = TFile::Open("files_363358.root");
 
 
 
