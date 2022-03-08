@@ -305,7 +305,7 @@ int main(int argc, char* argv[]) {
 
 	for(int f=0; f<flav_combs.size(); ++f){
 
-		h_Coll_Dijet_Mass[flav_combs.at(f)] = write_hist(flav_combs.at(f), "Dijet_Mass", ";Mass [GeV]; Events/GeV", 30, 0, 300);
+		h_Coll_Dijet_Mass[flav_combs.at(f)] = write_hist(flav_combs.at(f), "Dijet_Mass", ";Mass [GeV]; Events/GeV", 50, 0, 300);
 		
 
 	}
@@ -314,7 +314,7 @@ int main(int argc, char* argv[]) {
 
 	TH1D* h_jet2_pt = new TH1D("h_jet2_pt", ";pT [GeV]; Events/GeV", 30, 0, 300);
 
-	TH1D* h_Z_mass = new TH1D("h_Z_mass", ";Invariant Mass [GeV]; Events/GeV", 30, 0, 300);
+	TH1D* h_Z_mass = new TH1D("h_Z_mass", ";Invariant Mass [GeV]; Events/GeV", 50, 0, 300);
 
 	TH1D* h_angle_between_jets = new TH1D("h_angle_between_jets", ";Theta [rad]; Events/GeV", 10, 0, 1); 
 
@@ -450,6 +450,8 @@ int main(int argc, char* argv[]) {
 
 	float jet1_Pt = jet1.Pt();
 
+	float jet2_Pt = jet2.Pt();
+
 	// b-tag requirement
 
 	if(jet1_DL1 < 2.02){
@@ -465,6 +467,10 @@ int main(int argc, char* argv[]) {
 	h_Coll_Dijet_Mass[flav_pair]->Fill(dijet.M()*1e-3,weight);
 
 	h_Z_mass->Fill(dijet.M()*1e-3, weight);
+
+	h_jet1_pt->Fill(jet1_Pt);
+
+	h_jet2_pt->Fill(jet2_Pt);
 
 
 
@@ -482,6 +488,10 @@ int main(int argc, char* argv[]) {
 
 	}
 	h_Z_mass->Write();
+
+	h_jet1_pt->Write();
+
+	h_jet2_pt->Write();
 
 
 	outputFile->Close();

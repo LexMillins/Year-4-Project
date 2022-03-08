@@ -13,13 +13,34 @@ float fig_of_merit(float &s, float &b){
 
 }
 
+/*Double_t background(Double_t *x, Double_t *par){
+    return par[0] + par[1]*x[0] + par[2]*x[0]*x[0];
+}
 
-void mergeplot_flav() {
+Double_t lorentzianPeak(Double_t *x, Double_t *par){
+    return (0.5*par[0]*par[1]/TMath::Pi()) / TMath::Max(1.e-10,
+    (x[0]-par[2])*(x[0]-par[2])+ .25*par[1]*par[1]);
+}
 
+Double_t fitFunction(Double_t background, Double_t lorentzianPeak){
 
-	TString histName = "h_Dijet_Mass";
+	background(x, par) + lorentzianPeak(x,&par[3]);
 
-	TString histNameSig = "h_Z_mass";
+}
+*/
+
+void merge_plot_sum() {
+
+//h_CosThetaHel
+//h_nJet
+//h_LeptonAsymmetry
+//h_JetAsymmetry
+
+	//TString histName = "h_CosThetaHel";
+	TString histName = "h_Z_mass";
+
+///TString histName = "h_LeptonAsymmetry";
+
 
 
 	std::map<int,TFile*>map_file;
@@ -75,19 +96,14 @@ void mergeplot_flav() {
 
 	map_file[364141] = TFile::Open("files_364141.root");
 
-
-	map_file[410472] = TFile::Open("files_410472.root"); //ttbar
-
-
-	map_file[363356] = TFile::Open("files_363356.root"); //ZZ
-	map_file[363358] = TFile::Open("files_363358.root"); //WZ
+	map_file[410472] = TFile::Open("files_410472.root");
 
 
-	map_file_sig[363356] = TFile::Open("Output_363356.root");
-	map_file_sig[363358] = TFile::Open("Output_363358.root");
+	//map_file[363356] = TFile::Open("files_363356.root");
+	//map_file[363358] = TFile::Open("files_363358.root");
 
 
-	std::map<int,int> map_nFiles;
+		std::map<int,int> map_nFiles;
 
 	map_nFiles[364100] = 1;
 	map_nFiles[364101] = 1;
@@ -142,13 +158,16 @@ void mergeplot_flav() {
 	map_nFiles[363358] = 4;
 
 
+	map_file_sig[363356] = TFile::Open("files_363356.root");
+	map_file_sig[363358] = TFile::Open("files_363358.root");
+
 
 
 for (std::map<int, TFile*>::iterator it = map_file.begin(); it != map_file.end(); it++){
 
 	std::cout<< it->first << ':' << it->second << std::endl;
 
-	map_hist[it->first] = (TH1D*) (it->second)->Get(histName+"_ll");
+	map_hist[it->first] = (TH1D*) (it->second)->Get(histName);
 
 	map_hist[it->first] -> Scale(1.0/map_nFiles[it->first]);
 
@@ -157,14 +176,12 @@ for (std::map<int, TFile*>::iterator it = map_file.begin(); it != map_file.end()
 
 }
 
-std::cout<< "----------------------------------------------signal" << std::endl;
-
 
 for (std::map<int, TFile*>::iterator it=map_file_sig.begin(); it != map_file_sig.end(); it++){
 
 	std::cout<< it->first << ':' << it->second << std::endl;
 
-	map_hist_sig[it->first] = (TH1D*) (it->second)->Get(histNameSig);
+	map_hist_sig[it->first] = (TH1D*) (it->second)->Get(histName);
 
 	map_hist_sig[it->first] -> Scale(1.0/map_nFiles[it->first]);
 
@@ -174,126 +191,66 @@ for (std::map<int, TFile*>::iterator it=map_file_sig.begin(); it != map_file_sig
 } 
 
 
+	TH1D* h_Sum = (TH1D*) map_hist[364100]->Clone("h_Sum");
+	h_Sum->Reset();
 
-	std::map<TString, TH1D*> h_Sum_Flavs;
-
-	vector<TString> flav_combs;
-
-	//Flavour combinations to loop through
-
-	flav_combs.push_back("ll");
-	flav_combs.push_back("lc");
-	flav_combs.push_back("lb");
-
-	flav_combs.push_back("cl");
-	flav_combs.push_back("cc");
-	flav_combs.push_back("cb");
-
-	flav_combs.push_back("bl");
-	flav_combs.push_back("bc");
-	flav_combs.push_back("bb");
-
-	for(int f=0; f<flav_combs.size(); ++f){
-
-		TH1D* h_Sum = (TH1D*) map_hist[363356]->Clone("h_Sum_"+flav_combs.at(f));
-		h_Sum->Reset();
-
-		h_Sum_Flavs[flav_combs.at(f)] = h_Sum;
-
-	}
+for (std::map < int, TH1D*>::iterator it=map_hist.begin(); it != map_hist.end(); it++){
+	h_Sum->Add(map_hist[it->first]);
 
 
 
-	for (std::map<int, TFile*>::iterator it = map_file.begin(); it != map_file.end(); it++){
-	
-		std::cout<< it->first << ':' << it->second << std::endl;
-
-		for(int f=0; f<flav_combs.size(); ++f){
-
-			TH1D* h_Contrib = (TH1D*) (it->second)->Get(histName+"_"+flav_combs.at(f));
-
-			h_Contrib->Scale();
-
-
-			std::cout << h_Contrib << std::endl;
-
-			h_Sum_Flavs[flav_combs.at(f)]->Add(h_Contrib);
-
-		}
-
-
-	}
-
+}
 
 	//TF1 *fitFcn = new TF1("fitFcn",fitFunction,0,3,6);
 
-	TCanvas* c = new TCanvas("c","c",900,600);
+	TCanvas* c = new TCanvas("c","c",800,600);
 
-	 h_Sum_Flavs["ll"]->SetFillColor(kGray);
+	h_Sum->SetTitle("Invariant Mass of dijet");
 
-	 h_Sum_Flavs["lc"]->SetFillColor(kOrange);
+	//h_Sum->Fit(fitFunction);
 
-	 h_Sum_Flavs["lb"]->SetFillColor(kBlue);
-
-	 h_Sum_Flavs["cl"]->SetFillColor(kRed);
-
-	 h_Sum_Flavs["cc"]->SetFillColor(kAzure+1);
-
-	 h_Sum_Flavs["cb"]->SetFillColor(kViolet-6);
-	 h_Sum_Flavs["bl"]->SetFillColor(kGreen);
-	 h_Sum_Flavs["bc"]->SetFillColor(kPink+10);
-	 h_Sum_Flavs["bb"]->SetFillColor(kGreen+3);
+	h_Sum->Draw();
 
 
 
-	 THStack *h_Stack = new THStack("h_Stack","");
+//map_hist_sig[363356]->Draw("SAME");
+//map_hist_sig[363358]->Draw("SAME");
+
+//map_hist_sig[363356]->SetLineColor(kRed);
+//map_hist_sig[363358]->SetLineColor(kGreen);
+
+//map_hist_sig[363356]->Scale(100);
+//map_hist_sig[363358]->Scale(100);
 
 
-		for(int f=0; f<flav_combs.size(); ++f){
-
-			h_Sum_Flavs[flav_combs.at(f)]->SetFillStyle(1001);
-
-			h_Stack->Add(h_Sum_Flavs[flav_combs.at(f)]);
-		}
-
-		h_Stack->Draw("HIST");
-		h_Stack->SetTitle("Invariant Mass, 2 jets tagged tight");
-		h_Stack->GetXaxis()->SetTitle("Dijet Mass [GeV]");
- 		h_Stack->GetYaxis()->SetTitle("Events / [GeV]");
+const double mass_peak = 91.2; // [GeV]
+const double mass_sigma = 18.0; // 1 sigma [GeV]
 
 
- 		map_hist_sig[363356]->Draw("SAME");
-	 	map_hist_sig[363356]->SetLineColor(kOrange+1);
-	 	map_hist_sig[363356]->Scale(10);
+int bin_low = map_hist_sig[363356]->FindBin(mass_peak - 2.0*mass_sigma);
+int bin_high = map_hist_sig[363356]->FindBin(mass_peak + 2.0*mass_sigma);
 
 
-		auto legend = new TLegend(0.55,0.49,0.9, 0.9);
-	   legend->SetHeader("Z Flavour combinations","C"); // option "C" allows to center the header
-	   legend->AddEntry(h_Sum_Flavs["ll"],"light light jets","f");
-	   legend->AddEntry(h_Sum_Flavs["lc"],"light charm jets","f");
-	   legend->AddEntry(h_Sum_Flavs["lb"],"light bottom jets","f");
-
-	   legend->AddEntry(h_Sum_Flavs["cl"],"charm light jets","f");
-	   legend->AddEntry(h_Sum_Flavs["cc"],"charm charm jets","f");
-	   legend->AddEntry(h_Sum_Flavs["cb"],"charm bottom jets","f");
-
-	   legend->AddEntry(h_Sum_Flavs["bl"],"bottom light jets","f");
-	   legend->AddEntry(h_Sum_Flavs["bc"],"bottom charm jets","f");
-	   legend->AddEntry(h_Sum_Flavs["bb"],"bottom bottom jets","f");
-
-	  
-
-	   legend->Draw();
+std::cout<< "bin_low =" << bin_low << std::endl;
+std::cout<< "bin_high =" << bin_high << std::endl;
 
 
- 		/*TH1D* h_sig = (TH1D*) map_hist_sig[363356]->Clone("h_sig");
- 		h_sig->Reset();
- 		h_sig->Add(map_hist_sig[363356]);
-	 	map_hist_sig[363356]->SetLineColor(kRed);
-	 	map_hist_sig[363356]->Scale(100);
+float b = h_Sum->Integral(bin_low,bin_high);
+float sz = map_hist_sig[363356]->Integral(bin_low,bin_high);
+float sw = map_hist_sig[363358]->Integral(bin_low,bin_high);
+
+std::cout<< "number of background events = " << b << std::endl;
+std::cout<< "number of Z signal events = " << sz << std::endl;
+std::cout<< "number of w signal events = " << sw << std::endl;
+
+float Fz = fig_of_merit(sz, b);
+float Fw = fig_of_merit(sw, b);
+std::cout<< "Fz = " << Fz << std::endl;
+//std::cout<< "Fw = " << Fw << std::endl;
 
 
- 		h_sig->Draw("SAME"); */
+
+
 
 return 0;
 
