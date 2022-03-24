@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <dirent.h>
 
+
 //print function for vectors of float
 void print_vect_float(std::vector <float> const &a) {
    std::cout << "The vector elements are : ";
@@ -310,6 +311,15 @@ int main(int argc, char* argv[]) {
 
 	}
 
+	//-----------------------------------
+	// Special histogram for bookkeeping of weights
+	//-----------------------------------
+	TH1D* h_weight_track = new TH1D("h_weight_track", ";arb.; weights", 1, 0, 1);
+	h_weight_track->Fill(0.5,sumW);
+	TH1D* h_xs_track = new TH1D("h_xs_track", ";arb.; weights", 1, 0, 1);
+	h_xs_track->Fill(0.5,xs);
+	//-----------------------------------
+
 	TH1D* h_jet1_pt = new TH1D("h_jet1_pt", ";pT [GeV]; Events/GeV", 30, 0, 300);
 
 	TH1D* h_jet2_pt = new TH1D("h_jet2_pt", ";pT [GeV]; Events/GeV", 30, 0, 300);
@@ -338,7 +348,8 @@ int main(int argc, char* argv[]) {
 		const double weight_mc = r->weight_mc;
 
 
-		const double weight = weight_mc * S;
+		//const double weight = weight_mc * S;
+		const double weight = weight_mc; // Don't apply lumi*XS factor anymore, do later
 
 		// require 2 jets and 2 leptons in each event
 
@@ -413,8 +424,6 @@ int main(int argc, char* argv[]) {
 
 	//Create dijet using the sorted jet - 2 highest DL1 values
 
-	dijet = my_jets.at(0) + my_jets.at(1);
-
 
 
 
@@ -461,16 +470,20 @@ int main(int argc, char* argv[]) {
 		continue;
 	}
 
+	dijet = my_jets.at(0) + my_jets.at(1);
+
 
 	// Fill histograms
 
 	h_Coll_Dijet_Mass[flav_pair]->Fill(dijet.M()*1e-3,weight);
 
-	h_Z_mass->Fill(dijet.M()*1e-3, weight);
+	if(dijet.M() != 0){
+		h_Z_mass->Fill(dijet.M()*1e-3, weight);
+	}
 
-	h_jet1_pt->Fill(jet1_Pt);
+	h_jet1_pt->Fill(jet1.Pt()*1e-3, weight);
 
-	h_jet2_pt->Fill(jet2_Pt);
+	h_jet2_pt->Fill(jet2.Pt()*1e-3, weight);
 
 
 
@@ -492,6 +505,10 @@ int main(int argc, char* argv[]) {
 	h_jet1_pt->Write();
 
 	h_jet2_pt->Write();
+
+	h_weight_track->Write();
+
+	h_xs_track->Write();
 
 
 	outputFile->Close();

@@ -91,7 +91,6 @@ for (std::map<int, TFile*>::iterator it = map_file.begin(); it != map_file.end()
 
 }
 
-std::cout<< "----------------------------------------------signal" << std::endl;
 
 
 for (std::map<int, TFile*>::iterator it=map_file_sig.begin(); it != map_file_sig.end(); it++){

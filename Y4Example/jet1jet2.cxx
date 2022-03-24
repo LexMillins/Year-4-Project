@@ -31,22 +31,17 @@ bool sortby_pt(const TLorentzVector &lhs, const TLorentzVector &rhs){
 
 // Need to make a function to create histograms. Will take the quark flavour and property being plotted and return a histogram with a name h_quarkflavour_property
 
-void write_hist(string flavour, string property, string xaxis, string yaxis, int bins, int start, int end){
+TH1D* write_hist(TString flavour, TString property, TString axes, int bins, int start, int end){
 
-	//hist name is h_(append flavour)_(append property)
-	std::string str;
-	std::string str1 = "h_"
-	std::string str2 = flavour;
-	std::string str3 = property;
-	std::string str4 = "_";
+	//hist name is h_(append property)_(append flavour)
 
-	str.append(str1);
-	str.append(str2);
-	str.append(str4);
-	str.append(str3);
+	TString hist_name = "h_";
+	hist_name += property;
+	hist_name += "_";
+	hist_name += flavour;
 
-
-	return TH1D* str = new TH1D("str","; xaxis; yaxis",bins,start,end);
+	TH1D* h = new TH1D(hist_name,axes,bins,start,end);
+	return h;
 
 	//should return histogram when function is called so that it can be filled
 
@@ -57,12 +52,12 @@ int main(int argc, char* argv[]) {
 
 	// DSID -> cross-section [pb]
 
-   crossSection[361108] = 1950.632;
-   crossSection[361107] = 1950.632;
+   crossSection[361108] = 1950.632; //Z+jets
+   crossSection[361107] = 1950.632; //Z+jets
    crossSection[410501] = 452.2944528; //  "ttbar"
-   crossSection[361106] = 1950.529;
+   crossSection[361106] = 1950.529; //Z+jets
 
-   crossSection[410472] = 87.71741;
+   crossSection[410472] = 87.71741; //ttbar
 
    crossSection[363356] = 2.18227464; //  "ZZ"
    crossSection[363358] = 3.433; //  "WZ"
@@ -272,6 +267,44 @@ int main(int argc, char* argv[]) {
 
 	outputFile->cd();
 
+	vector<TString> flav_combs;
+
+	//Flavour combinations to loop through
+
+	flav_combs.push_back("ll");
+	flav_combs.push_back("lc");
+	flav_combs.push_back("lb");
+
+	flav_combs.push_back("cl");
+	flav_combs.push_back("cc");
+	flav_combs.push_back("cb");
+
+	flav_combs.push_back("bl");
+	flav_combs.push_back("bc");
+	flav_combs.push_back("bb");
+	
+	//map
+
+	std::map<TString, TH1D*> h_Coll_Dijet_Mass;
+
+
+
+
+
+	for(int f=0; f<flav_combs.size(); ++f){
+
+		h_Coll_Dijet_Mass[flav_combs.at(f)] = write_hist(flav_combs.at(f), "Dijet_Mass", ";Mass [GeV]; Events/GeV", 30, 0, 300);
+		
+
+	}
+
+	TH1D* h_jet1_pt = new TH1D("h_jet1_pt", ";pT [GeV]; Events/GeV", 30, 0, 300);
+
+	TH1D* h_jet2_pt = new TH1D("h_jet2_pt", ";pT [GeV]; Events/GeV", 30, 0, 300);
+
+	TH1D* h_Z_mass = new TH1D("h_Z_mass", ";Invariant Mass [GeV]; Events/GeV", 30, 0, 300);
+
+	TH1D* h_angle_between_jets = new TH1D("h_angle_between_jets", ";Theta [rad]; Events/GeV", 10, 0, 1); 
 
 
 	// Event loop
@@ -320,7 +353,7 @@ int main(int argc, char* argv[]) {
 		for( int j = 0; j <(r->jet_pt->size()); ++j){
 
 
-			jetj.SetPtEtaPhiE(r->jet_pt->at(j)*1e-3, r->jet_eta->at(j), r->jet_phi->at(j), r->jet_e->at(j)*1e-3);
+			jetj.SetPtEtaPhiE(r->jet_pt->at(j), r->jet_eta->at(j), r->jet_phi->at(j), r->jet_e->at(j));
 
 			DL1 = r->jet_DL1->at(j);
 			flavour = r->jet_truthflav->at(j);
@@ -355,35 +388,116 @@ int main(int argc, char* argv[]) {
 	double angle_between_jets;
 	TLorentzVector jet1;
 	TLorentzVector jet2;
+
 	double jet1_rapidity;
 	double jet2_rapidity;
 	int jet1_flavour;
 	int jet2_flavour;
 	vector<int> flavour_list;
 	double dijet_mass;
+	float jet1_DL1;
+	float jet2_DL1;
+	float jet1_Pt;
+	float jet2_Pt;
+	float dijet_Pt;
+	float jet1_eta;
+	float jet2_eta;
 
+	int index_orig_j1 = -1;
+	int index_orig_j2 = -1;
+	int index_orig_j3 = -1;
+
+	//std::cout << "-------------------" << std::endl;
+
+	//std::cout << "TLV 0 = " << my_jets.at(0).Pt() << std::endl;
+	//std::cout << "TLV 1 = " << my_jets.at(1).Pt() << std::endl;
+
+
+	for( int j = 0; j <(r->jet_pt->size()); ++j){
+
+		if( fabs(r->jet_pt->at(j) - my_jets.at(0).Pt())/my_jets.at(0).Pt() < 1e-6 ) {
+			index_orig_j1 = j;
+		}
+
+		if( fabs(r->jet_pt->at(j) - my_jets.at(1).Pt())/my_jets.at(1).Pt() < 1e-6 ) {
+			index_orig_j2 = j;
+		}
+
+		if( fabs(r->jet_pt->at(j) - my_jets.at(2).Pt())/my_jets.at(2).Pt() < 1e-6 ) {
+			index_orig_j3 = j;
+		}
+
+		//std::cout << j << " " << r->jet_pt->at(j) << std::endl;
+
+	}
+
+	if( index_orig_j1 == -1 ) std::cout << "WARNING! index_orig_j1 = " << index_orig_j1 << std::endl;
+	if( index_orig_j2 == -1 ) std::cout << "WARNING! index_orig_21 = " << index_orig_j2 << std::endl;
+
+
+	//s
+	//std::cout << "index_orig_j2 = " << index_orig_j2 << std::endl;
 
 	dijet = my_jets.at(0) + my_jets.at(1);
 
-	for(int i=0; i<(my_jets.size()); ++i){
+	TLorentzVector jet1_jet_3 = my_jets.at(0) + my_jets.at(2);
 
-		TLorentzVector dijet = my_jets.at(0) + my_jets.at(1);
-
-		jet1_flavour = r->jet_truthflav->at(0);
-		jet2_flavour = r->jet_truthflav->at(1);
+	jet1_flavour = r->jet_truthflav->at(index_orig_j1);
+	jet2_flavour = r->jet_truthflav->at(index_orig_j2);
 
 
+	jet1_DL1 = r->jet_DL1->at(index_orig_j1);
+	jet2_DL1 = r->jet_DL1->at(index_orig_j2);
 
+
+	jet1_Pt = r->jet_pt->at(index_orig_j1);
+	jet2_Pt = r->jet_pt->at(index_orig_j2);
+
+	dijet_Pt = dijet.Pt();
+
+	jet1_eta = jet1.Eta();
+	jet2_eta = jet2.Eta();
+
+	angle_between_jets = jet1.Angle(jet2.Vect()); 
+
+	TString flav_pair = "";
 	
-		jet1 = my_jets.at(0);
-		jet2 = my_jets.at(1);
+	if(jet1_flavour == 0 || jet1_flavour == 15) { flav_pair += "l"; }
+	if(jet1_flavour == 4) { flav_pair += "c"; }
+	if(jet1_flavour == 5) { flav_pair += "b"; }
 
-		angle_between_jets = jet1.Angle(jet2.Vect()); 
+	if(jet2_flavour == 0 || jet2_flavour == 15) { flav_pair += "l"; }
+	if(jet2_flavour == 4) { flav_pair += "c"; }
+	if(jet2_flavour == 5) { flav_pair += "b"; }
 
-		jet1_rapidity = jet1.Rapidity();
-		jet2_rapidity = jet2.Rapidity();
+	/*if(jet1_DL1 < 2.02){
+		continue;
+	}
+
+	if(jet2_DL1 < 2.74){
+		continue;
+	}*/
 
 
+	if(jet1_Pt*1e-3 < 30){
+		continue;
+	}
+
+
+	//if(fabs(jet2_eta) < 0.5){
+		//continue;
+	//}
+
+
+	h_Coll_Dijet_Mass[flav_pair]->Fill(dijet.M()*1e-3,weight);
+
+	//std::cout << "jet pt is " << jet1_Pt << std::endl;
+
+
+	h_jet1_pt->Fill(jet1_Pt*1e-3, weight);
+	h_jet2_pt->Fill(jet2_Pt*1e-3, weight);
+	h_Z_mass->Fill(dijet.M()*1e-3, weight);
+	h_angle_between_jets->Fill(angle_between_jets, weight);
 
 
 
@@ -411,7 +525,7 @@ int main(int argc, char* argv[]) {
 			for( int k = 0; k<(r->mu_pt->size()); ++k){
 				TLorentzVector muon;
 
-				muon.SetPtEtaPhiM(r->mu_pt->at(k)*1e-3,r->mu_eta->at(k),r->mu_phi->at(k),105.67e-3);
+				muon.SetPtEtaPhiM(r->mu_pt->at(k),r->mu_eta->at(k),r->mu_phi->at(k),105.67);
 				muon_vector.push_back(muon);
 
 			}
@@ -436,7 +550,7 @@ int main(int argc, char* argv[]) {
 			for(int j = 0; j<(r->el_pt->size()); ++j){
 				TLorentzVector elec;
 
-				elec.SetPtEtaPhiM(r->el_pt->at(j)*1e-3,r->el_eta->at(j),r->el_phi->at(j),0.511e-3);
+				elec.SetPtEtaPhiM(r->el_pt->at(j),r->el_eta->at(j),r->el_phi->at(j),0.511);
 				electron_vector.push_back(elec);
 
 			}
@@ -457,31 +571,10 @@ int main(int argc, char* argv[]) {
 		}
 
 
-		if(lepton1.Pt() < 37){
-			continue;
-		}
-		
-		if(jet1.Pt() < 37){
-			continue;
-		}
-
-		if(jet2.Pt() < 30){
-			continue;
-		}
-
-		if(angle_between_jets > 2.7){
-
-			continue;
-		}
-
 
 		const double asym_lep =  ( lepton1.Pt() - lepton2.Pt() ) / ( lepton1.Pt() + lepton2.Pt() );
 		const double asym_jet =  ( jet1.Pt() - jet2.Pt() ) / ( jet1.Pt() + jet2.Pt() );
 
-		if(asym_jet > 2){
-			continue;
-		}
-		
 
 		TLorentzVector diZ;
 		if( dijet.Pt() != 0){
@@ -498,13 +591,12 @@ int main(int argc, char* argv[]) {
 		}
 
 
-
 		//histograms filled by here
 	} 
 
 	// Event Loop
 
-
+//flav_combs
 
 	// Write histogram to output file
 
@@ -512,8 +604,22 @@ int main(int argc, char* argv[]) {
 
 	//write histograms here
 
-	outputFile->Close();
 
+	for(int f=0; f<flav_combs.size(); ++f){
+
+		h_Coll_Dijet_Mass[flav_combs.at(f)] ->Write();
+
+	}
+
+
+	h_jet1_pt->Write();
+	h_jet2_pt->Write();
+	h_Z_mass->Write();
+	h_angle_between_jets->Write();
+
+
+
+	outputFile->Close();
 
 
 	std::cout << "Tidy Up..." << std::endl;

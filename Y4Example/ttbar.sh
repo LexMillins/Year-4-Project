@@ -1,6 +1,6 @@
 #!/bin/bash
 
-hadd ttbar.root ~/Year-4-Project/Y4Example/Output_410472_File1.root \
+hadd -f ttbar.root ~/Year-4-Project/Y4Example/Output_410472_File1.root \
 ~/Year-4-Project/Y4Example/Output_410472_File2.root \
 ~/Year-4-Project/Y4Example/Output_410472_File3.root \
 ~/Year-4-Project/Y4Example/Output_410472_File4.root \

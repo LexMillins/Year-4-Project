@@ -1,6 +1,6 @@
 #!/bin/bash
 
-hadd Z+jets.root ~/Year-4-Project/Y4Example/Output_364100_File1.root \
+hadd -f Z+jets.root ~/Year-4-Project/Y4Example/Output_364100_File1.root \
  ~/Year-4-Project/Y4Example/Output_364101_File1.root \
  ~/Year-4-Project/Y4Example/Output_364102_File1.root \
  ~/Year-4-Project/Y4Example/Output_364102_File2.root \

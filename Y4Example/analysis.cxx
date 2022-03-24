@@ -374,6 +374,55 @@ int main(int argc, char* argv[]) {
 
 
 
+
+		if(jet1_flavour == 0 && jet2_flavour == 0){
+
+			h_light_light->Fill(dijet.M(), weight);
+		}
+
+
+		if(jet1_flavour == 0 && jet2_flavour == 5){
+
+			h_light_b->Fill(dijet.M(), weight);
+		}
+
+		if(jet1_flavour == 5 && jet2_flavour == 0){
+
+			h_light_b->Fill(dijet.M(), weight);
+		}
+
+		if(jet1_flavour == 0 && jet2_flavour == 4){
+
+			h_light_c->Fill(dijet.M(), weight);
+		}
+
+		if(jet1_flavour == 4 && jet2_flavour == 0){
+
+			h_light_c->Fill(dijet.M(), weight);
+		}
+
+		if(jet1_flavour == 5 && jet2_flavour == 5){
+
+			h_b_b->Fill(dijet.M(), weight);
+		}
+
+		if(jet1_flavour == 5 && jet2_flavour == 4){
+
+			h_b_c->Fill(dijet.M(), weight);
+		}
+
+		if(jet1_flavour == 4 && jet2_flavour == 5){
+
+			h_b_c->Fill(dijet.M(), weight);
+		}
+
+		if(jet1_flavour == 4 && jet2_flavour == 4){
+
+			h_c_c->Fill(dijet.M(), weight);
+		}
+
+		}
+
 	
 		jet1 = my_jets.at(0);
 		jet2 = my_jets.at(1);
@@ -497,6 +546,9 @@ int main(int argc, char* argv[]) {
 
 		}
 
+		if( dilepton.M() != 0){
+			h_Boson_mass->Fill(dilepton.M(), weight);
+		}
 
 
 		//histograms filled by here

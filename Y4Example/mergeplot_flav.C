@@ -1,3 +1,4 @@
+
 #include <stdio.h>
 #include <math.h>
 
@@ -20,6 +21,8 @@ void mergeplot_flav() {
 	TString histName = "h_Dijet_Mass";
 
 	TString histNameSig = "h_Z_mass";
+
+	const double lumi = 36.1e3; // pb^-1
 
 
 	std::map<int,TFile*>map_file;
@@ -83,65 +86,6 @@ void mergeplot_flav() {
 	map_file[363358] = TFile::Open("files_363358.root"); //WZ
 
 
-	map_file_sig[363356] = TFile::Open("Output_363356.root");
-	map_file_sig[363358] = TFile::Open("Output_363358.root");
-
-
-	std::map<int,int> map_nFiles;
-
-	map_nFiles[364100] = 1;
-	map_nFiles[364101] = 1;
-	map_nFiles[364102] = 3;
-	map_nFiles[364103] = 1;
-	map_nFiles[364104] = 1;
-	map_nFiles[364105] = 4;
-	map_nFiles[364106] = 1;
-	map_nFiles[364107] = 1;
-	map_nFiles[364108] = 3;
-	map_nFiles[364109] = 1;
-	map_nFiles[364110] = 1;
-
-	map_nFiles[364111] = 2;
-	map_nFiles[364112] = 1;
-	map_nFiles[364113] = 1;
-	map_nFiles[364114] = 1;
-	map_nFiles[364115] = 1;
-	map_nFiles[364116] = 3;
-	map_nFiles[364117] = 1;
-	map_nFiles[364118] = 1;
-	map_nFiles[364119] = 3;
-	map_nFiles[364120] = 1;
-
-	map_nFiles[364121] = 1;
-	map_nFiles[364122] = 4;
-	map_nFiles[364123] = 1;
-	map_nFiles[364124] = 1;
-	map_nFiles[364125] = 2;
-	map_nFiles[364126] = 1;
-	map_nFiles[364127] = 1;
-	map_nFiles[364128] = 1;
-	map_nFiles[364129] = 1;
-	map_nFiles[364130] = 2;
-
-	map_nFiles[364131] = 1;
-	map_nFiles[364132] = 1;
-	map_nFiles[364133] = 2;
-	map_nFiles[364134] = 1;
-	map_nFiles[364135] = 1;
-	map_nFiles[364136] = 2;
-	map_nFiles[364137] = 1;
-	map_nFiles[364138] = 1;
-	map_nFiles[364139] = 2;
-	map_nFiles[364140] = 1;
-
-	map_nFiles[364141] = 1;
-
-	map_nFiles[410472] = 15;
-
-	map_nFiles[363356] = 3;
-	map_nFiles[363358] = 4;
-
-
 
 
 for (std::map<int, TFile*>::iterator it = map_file.begin(); it != map_file.end(); it++){
@@ -150,30 +94,23 @@ for (std::map<int, TFile*>::iterator it = map_file.begin(); it != map_file.end()
 
 	map_hist[it->first] = (TH1D*) (it->second)->Get(histName+"_ll");
 
-	map_hist[it->first] -> Scale(1.0/map_nFiles[it->first]);
+	// Perform lumi*xs/sumw scaling
+	TH1D* h_weight_track = (TH1D*) (it->second)->Get("h_weight_track");
+	TH1D* h_xs_track = (TH1D*) (it->second)->Get("h_xs_track");
 
-	std::cout << map_hist[it->first] << std::endl;
+	// Undo the artificial growth of xs due to nFiles
+	const double xs = h_xs_track->GetBinContent(1)/h_xs_track->GetEntries();
+
+	const double sumw = h_weight_track->GetBinContent(1);
+
+	std::cout << "DSID = " << map_hist[it->first] << ", xs = " << xs << " pb" << std::endl;
+
+	const double scale_factor = lumi*xs/sumw;
+
+	map_hist[it->first]->Scale(scale_factor);
 
 
 }
-
-std::cout<< "----------------------------------------------signal" << std::endl;
-
-
-for (std::map<int, TFile*>::iterator it=map_file_sig.begin(); it != map_file_sig.end(); it++){
-
-	std::cout<< it->first << ':' << it->second << std::endl;
-
-	map_hist_sig[it->first] = (TH1D*) (it->second)->Get(histNameSig);
-
-	map_hist_sig[it->first] -> Scale(1.0/map_nFiles[it->first]);
-
-	std::cout << map_hist_sig[it->first] << std::endl;
-
-
-} 
-
-
 
 	std::map<TString, TH1D*> h_Sum_Flavs;
 
@@ -205,17 +142,12 @@ for (std::map<int, TFile*>::iterator it=map_file_sig.begin(); it != map_file_sig
 
 
 	for (std::map<int, TFile*>::iterator it = map_file.begin(); it != map_file.end(); it++){
-	
+
 		std::cout<< it->first << ':' << it->second << std::endl;
 
 		for(int f=0; f<flav_combs.size(); ++f){
 
 			TH1D* h_Contrib = (TH1D*) (it->second)->Get(histName+"_"+flav_combs.at(f));
-
-			h_Contrib->Scale();
-
-
-			std::cout << h_Contrib << std::endl;
 
 			h_Sum_Flavs[flav_combs.at(f)]->Add(h_Contrib);
 
@@ -224,8 +156,6 @@ for (std::map<int, TFile*>::iterator it=map_file_sig.begin(); it != map_file_sig
 
 	}
 
-
-	//TF1 *fitFcn = new TF1("fitFcn",fitFunction,0,3,6);
 
 	TCanvas* c = new TCanvas("c","c",900,600);
 
@@ -262,12 +192,12 @@ for (std::map<int, TFile*>::iterator it=map_file_sig.begin(); it != map_file_sig
  		h_Stack->GetYaxis()->SetTitle("Events / [GeV]");
 
 
- 		map_hist_sig[363356]->Draw("SAME");
-	 	map_hist_sig[363356]->SetLineColor(kOrange+1);
-	 	map_hist_sig[363356]->Scale(10);
+ 		map_hist[363356]->Draw("SAME");
+	 	map_hist[363356]->SetLineColor(kOrange+1);
+	 	map_hist[363356]->Scale(10);
 
 
-		auto legend = new TLegend(0.55,0.49,0.9, 0.9);
+		auto legend = new TLegend(0.65,0.49,0.9, 0.9);
 	   legend->SetHeader("Z Flavour combinations","C"); // option "C" allows to center the header
 	   legend->AddEntry(h_Sum_Flavs["ll"],"light light jets","f");
 	   legend->AddEntry(h_Sum_Flavs["lc"],"light charm jets","f");
@@ -281,19 +211,9 @@ for (std::map<int, TFile*>::iterator it=map_file_sig.begin(); it != map_file_sig
 	   legend->AddEntry(h_Sum_Flavs["bc"],"bottom charm jets","f");
 	   legend->AddEntry(h_Sum_Flavs["bb"],"bottom bottom jets","f");
 
-	  
+
 
 	   legend->Draw();
-
-
- 		/*TH1D* h_sig = (TH1D*) map_hist_sig[363356]->Clone("h_sig");
- 		h_sig->Reset();
- 		h_sig->Add(map_hist_sig[363356]);
-	 	map_hist_sig[363356]->SetLineColor(kRed);
-	 	map_hist_sig[363356]->Scale(100);
-
-
- 		h_sig->Draw("SAME"); */
 
 return 0;
 

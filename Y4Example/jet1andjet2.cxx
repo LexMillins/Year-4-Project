@@ -471,13 +471,13 @@ int main(int argc, char* argv[]) {
 	if(jet2_flavour == 4) { flav_pair += "c"; }
 	if(jet2_flavour == 5) { flav_pair += "b"; }
 
-	if(jet1_DL1 < 2.02){
+	/*if(jet1_DL1 < 2.02){
 		continue;
 	}
 
 	if(jet2_DL1 < 2.74){
 		continue;
-	}
+	}*/
 
 
 	if(jet1_Pt*1e-3 < 30){
