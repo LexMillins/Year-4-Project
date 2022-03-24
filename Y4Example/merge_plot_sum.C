@@ -136,6 +136,50 @@ for (std::map<int, TFile*>::iterator it = map_file.begin(); it != map_file.end()
 
 
 
+	std::map<TString, TH1D*> h_Sum_Flavs;
+
+	vector<TString> flav_combs;
+
+	//Flavour combinations to loop through
+
+	flav_combs.push_back("ll");
+	flav_combs.push_back("lc");
+	flav_combs.push_back("lb");
+
+	flav_combs.push_back("cl");
+	flav_combs.push_back("cc");
+	flav_combs.push_back("cb");
+
+	flav_combs.push_back("bl");
+	flav_combs.push_back("bc");
+	flav_combs.push_back("bb");
+
+	for(int f=0; f<flav_combs.size(); ++f){
+
+		TH1D* h_Sum = (TH1D*) map_hist[363356]->Clone("h_Sum_"+flav_combs.at(f));
+		h_Sum->Reset();
+
+		h_Sum_Flavs[flav_combs.at(f)] = h_Sum;
+
+	}
+
+
+
+	for (std::map<int, TFile*>::iterator it = map_file.begin(); it != map_file.end(); it++){
+
+		std::cout<< it->first << ':' << it->second << std::endl;
+
+		for(int f=0; f<flav_combs.size(); ++f){
+
+			TH1D* h_Contrib = (TH1D*) (it->second)->Get(histName+"_"+flav_combs.at(f));
+
+			h_Sum_Flavs[flav_combs.at(f)]->Add(h_Contrib);
+
+		}
+
+
+	}
+
 
 
 const double mass_peak = 91.2; // [GeV]

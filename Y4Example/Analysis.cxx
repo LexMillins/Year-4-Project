@@ -477,9 +477,7 @@ int main(int argc, char* argv[]) {
 
 	h_Coll_Dijet_Mass[flav_pair]->Fill(dijet.M()*1e-3,weight);
 
-	if(dijet.M() != 0){
-		h_Z_mass->Fill(dijet.M()*1e-3, weight);
-	}
+	h_Z_mass->Fill(dijet.M()*1e-3, weight);
 
 	h_jet1_pt->Fill(jet1.Pt()*1e-3, weight);
 
