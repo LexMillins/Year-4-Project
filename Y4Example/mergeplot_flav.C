@@ -149,7 +149,23 @@ for (std::map<int, TFile*>::iterator it = map_file.begin(); it != map_file.end()
 
 			TH1D* h_Contrib = (TH1D*) (it->second)->Get(histName+"_"+flav_combs.at(f));
 
+			// Perform lumi*xs/sumw scaling
+			TH1D* h_weight_track = (TH1D*) (it->second)->Get("h_weight_track");
+			TH1D* h_xs_track = (TH1D*) (it->second)->Get("h_xs_track");
+
+			// Undo the artificial growth of xs due to nFiles
+			const double xs = h_xs_track->GetBinContent(1)/h_xs_track->GetEntries();
+
+			const double sumw = h_weight_track->GetBinContent(1);
+
+			std::cout << "DSID = " << map_hist[it->first] << ", xs = " << xs << " pb" << std::endl;
+
+			const double scale_factor = lumi*xs/sumw;
+
+			h_Contrib->Scale(scale_factor);
+
 			h_Sum_Flavs[flav_combs.at(f)]->Add(h_Contrib);
+
 
 		}
 
@@ -157,7 +173,7 @@ for (std::map<int, TFile*>::iterator it = map_file.begin(); it != map_file.end()
 	}
 
 
-	TCanvas* c = new TCanvas("c","c",900,600);
+	TCanvas* c = new TCanvas("c","c");
 
 	 h_Sum_Flavs["ll"]->SetFillColor(kGray);
 
