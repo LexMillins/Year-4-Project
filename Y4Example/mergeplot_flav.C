@@ -94,22 +94,6 @@ for (std::map<int, TFile*>::iterator it = map_file.begin(); it != map_file.end()
 
 	map_hist[it->first] = (TH1D*) (it->second)->Get(histName+"_ll");
 
-	// Perform lumi*xs/sumw scaling
-	TH1D* h_weight_track = (TH1D*) (it->second)->Get("h_weight_track");
-	TH1D* h_xs_track = (TH1D*) (it->second)->Get("h_xs_track");
-
-	// Undo the artificial growth of xs due to nFiles
-	const double xs = h_xs_track->GetBinContent(1)/h_xs_track->GetEntries();
-
-	const double sumw = h_weight_track->GetBinContent(1);
-
-	std::cout << "DSID = " << map_hist[it->first] << ", xs = " << xs << " pb" << std::endl;
-
-	const double scale_factor = lumi*xs/sumw;
-
-	map_hist[it->first]->Scale(scale_factor);
-
-
 }
 
 	std::map<TString, TH1D*> h_Sum_Flavs;
