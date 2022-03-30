@@ -34,6 +34,9 @@ void Write_TFile(){
 	std::map<int, TH1D*> map_hist_sig;
 
 
+	std::map<int, int>map_files_N;
+
+
 	map_file[364100] = TFile::Open("files_364100.root");	
 	map_file[364101] = TFile::Open("files_364101.root");
 	map_file[364102] = TFile::Open("files_364102.root");
@@ -88,6 +91,60 @@ void Write_TFile(){
 	map_file[363358] = TFile::Open("files_363358.root");
 
 
+
+	map_files_N[364100] = 1;
+	map_files_N[364101] = 2;
+	map_files_N[364102] = 3;
+	map_files_N[364103] = 4;
+	map_files_N[364104] = 5;
+	map_files_N[364105] = 6;
+	map_files_N[364106] = 7;
+	map_files_N[364107] = 8;
+	map_files_N[364108] = 9;
+	map_files_N[364109] = 10;
+	map_files_N[364110] = 11;
+
+	map_files_N[364111] = 12;
+	map_files_N[364112] = 13;
+	map_files_N[364113] = 14;
+	map_files_N[364114] = 15;
+	map_files_N[364115] = 16;
+	map_files_N[364116] = 17;
+	map_files_N[364117] = 18;
+	map_files_N[364118] = 19;
+	map_files_N[364119] = 20;
+	map_files_N[364120] = 21;
+
+	map_files_N[364121] = 22;
+	map_files_N[364122] = 23;
+	map_files_N[364123] = 24;
+	map_files_N[364124] = 25;
+	map_files_N[364125] = 26;
+	map_files_N[364126] = 27;
+	map_files_N[364127] = 28;
+	map_files_N[364128] = 29;
+	map_files_N[364129] = 30;
+	map_files_N[364130] = 31;
+
+	map_files_N[364131] = 32;
+	map_files_N[364132] = 33;
+	map_files_N[364133] = 34;
+	map_files_N[364134] = 35;
+	map_files_N[364135] = 36;
+	map_files_N[364136] = 37;
+	map_files_N[364137] = 38;
+	map_files_N[364138] = 39;
+	map_files_N[364139] = 40;
+	map_files_N[364140] = 41;
+
+	map_files_N[364141] = 42;
+
+	map_files_N[410472] = 43;
+
+	map_files_N[363356] = 44;
+	map_files_N[363358] = 45;
+
+
 	// Get histograms
 
 	for (std::map<int, TFile*>::iterator it = map_file.begin(); it != map_file.end(); it++){
@@ -95,6 +152,10 @@ void Write_TFile(){
 		std::cout<< it->first << ':' << it->second << std::endl;
 
 		map_hist[it->first] = (TH1D*) (it->second)->Get(histName);
+
+		TString newhistName = histName;
+
+		newhistName += map_files_N[it->first];
 
 		// Perform lumi*xs/sumw scaling
 		TH1D* h_weight_track = (TH1D*) (it->second)->Get("h_weight_track");
@@ -115,7 +176,9 @@ void Write_TFile(){
 
 		// Write histograms here 
 
-		map_hist[it->first]->Write();
+		map_hist[it->first]->SetName(newhistName);
+
+		map_hist[it->first]->Write(newhistName);
 
 
 	}

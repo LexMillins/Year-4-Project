@@ -8,9 +8,9 @@ void Plot_hists(){
 
 	TString outputFileName = "plots.root";
 
-	TFile * inputFile = TFile::Open(inputFileName);
+	TFile* inputFile = TFile::Open(inputFileName);
 
-	TFile * outputFile = new TFile(outputFileName, "recreate");
+	TFile* outputFile = new TFile(outputFileName, "recreate");
 
 	outputFile -> cd();
 
@@ -18,11 +18,11 @@ void Plot_hists(){
 
 	TString histCloneName = histName;
 
-	histCloneName+= ";1";
+	histCloneName += 1;
 
-	TH1D* histClone = inputFile->Get(histName);
+	TH1D* histClone = (TH1D *) inputFile->Get(histCloneName);
 
-	TH1D * h_Bckgd = histClone->Clone("h_Bckgd");
+	TH1D * h_Bckgd = (TH1D *) histClone->Clone("h_Bckgd");
 
 	h_Bckgd->Reset();
 
@@ -30,10 +30,10 @@ void Plot_hists(){
 
 	for( int n: a){
 
-		TString histName_n = histName=+ ";";
-		histName_n += n; 
+		TString histName_N = histName;
+		histName_N += n;
 
-		TH1D* hist_n = inputFile->Get(histName_n);
+		TH1D* hist_n = (TH1D *) inputFile->Get(histName_N);
 		h_Bckgd->Add(hist_n);
 	}
 
