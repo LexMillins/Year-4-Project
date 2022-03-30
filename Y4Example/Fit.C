@@ -59,7 +59,17 @@ void Fit() {
     // then set them to the pointers h_Signal and h_Bkgd
     // and comment out "MakeExample"
 
-    
+    TString inputFileName = "plots.root";
+
+    TFile* inputFile = TFile::Open(inputFileName);
+
+    TString histNameSig = "h_Sig";
+
+    TString histNameBkgd = "h_Bckgd";
+
+    h_Signal = (TH1D*)inputFile->Get(histNameSig);
+
+    h_Bkgd = (TH1D*)inputFile->Get(histNameBkgd);
     
     //----------
 
