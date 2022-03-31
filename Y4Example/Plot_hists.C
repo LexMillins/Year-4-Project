@@ -43,9 +43,21 @@ void Plot_hists(){
 
 	TH1D * h_Sig = (TH1D *) inputFile->Get(histNameSig);
 
+	TString histNameW = histName;
+
+	histNameW += 45;
+
+	TH1D* h_W_mass = (TH1D*) inputFile->Get(histNameW);
+
+	outputFile->cd();
+
+	h_W_mass->SetName("h_W_mass");
+
 	h_Sig->SetName("h_Sig");
 
 	h_Bckgd->Write();
+
+	h_W_mass->Write("h_W_mass");
 
 	h_Sig->Write("h_Sig");
 

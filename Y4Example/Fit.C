@@ -126,7 +126,8 @@ void Fit() {
     // Make a plot
     TCanvas* c = new TCanvas("c","",800,600);
 
-    RooPlot* frame = m_Mass.frame();
+    RooPlot* frame = m_Mass.frame(Title("Fit for dijet mass after b-tag"));
+
 
     // Plot data and PDF overlaid, use expected number of events for p.d.f projection normalization
     // rather than observed number of events (==data->numEntries())

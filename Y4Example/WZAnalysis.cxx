@@ -168,7 +168,6 @@ int main(int argc, char* argv[]) {
 
 	TString inputFileName = argv[1];
 	TString inputFileNumber = argv[2];
-	
 	//TString dsidName = argv[2];
 
 	//int dsid_int = dsidName.Atoi();
@@ -268,7 +267,7 @@ int main(int argc, char* argv[]) {
 
 	TH1D* h_DiBoson_Pt = new TH1D("h_DiBoson_Pt", ";pt [GeV]; Events /GeV", 25, 0, 500);
 
-	TH1D* h_Boson_mass = new TH1D("h_Boson_Mass", ";Mass [GeV]; Events/GeV",50,0,300);
+	TH1D* h_Z_mass = new TH1D("h_Z_mass", ";Mass [GeV]; Events/GeV",50,0,300);
 
 	TH1D* h_Boson_pseudorap = new TH1D("h_Boson_psuedorap", "psuedorapidity; Events /GeV", 100, 0, 500);
 
@@ -363,13 +362,6 @@ int main(int argc, char* argv[]) {
 		std::vector<TLorentzVector> my_jets;
 		TLorentzVector dijet;
 		TLorentzVector jetj;
-		float DL1;
-		int flavour;
-		vector<TLorentzVector> light_jets;
-		vector<TLorentzVector> b_jets;
-		vector<TLorentzVector> c_jets;
-		vector<TLorentzVector> taus;
-
 
 
 		for( int j = 0; j <(r->jet_pt->size()); ++j){
@@ -377,29 +369,6 @@ int main(int argc, char* argv[]) {
 
 			jetj.SetPtEtaPhiE(r->jet_pt->at(j)*1e-3, r->jet_eta->at(j), r->jet_phi->at(j), r->jet_e->at(j)*1e-3);
 
-			DL1 = r->jet_DL1->at(j);
-			flavour = r->jet_truthflav->at(j);
-
-			if (flavour=0){
-
-				light_jets.push_back(jetj);
-			}
-
-			if (flavour=4){
-
-				c_jets.push_back(jetj);
-			}
-
-
-			if(flavour = 5){
-
-				b_jets.push_back(jetj);
-			}
-
-			if (flavour=15){
-
-				taus.push_back(jetj);
-			}
 
 			my_jets.push_back(jetj);
 
@@ -412,9 +381,6 @@ int main(int argc, char* argv[]) {
 	TLorentzVector jet2;
 	double jet1_rapidity;
 	double jet2_rapidity;
-	int jet1_flavour;
-	int jet2_flavour;
-	vector<int> flavour_list;
 	double dijet_mass;
 
 
@@ -424,101 +390,17 @@ int main(int argc, char* argv[]) {
 
 		TLorentzVector dijet = my_jets.at(0) + my_jets.at(1);
 
-		jet1_flavour = r->jet_truthflav->at(0);
-		jet2_flavour = r->jet_truthflav->at(1);
 
-
-
-
-		if(jet1_flavour == 0 && jet2_flavour == 0){
-
-			h_light_light->Fill(dijet.M(), weight);
-		}
-
-
-		if(jet1_flavour == 0 && jet2_flavour == 5){
-
-			h_light_b->Fill(dijet.M(), weight);
-		}
-
-		if(jet1_flavour == 5 && jet2_flavour == 0){
-
-			h_light_b->Fill(dijet.M(), weight);
-		}
-
-		if(jet1_flavour == 0 && jet2_flavour == 4){
-
-			h_light_c->Fill(dijet.M(), weight);
-		}
-
-		if(jet1_flavour == 4 && jet2_flavour == 0){
-
-			h_light_c->Fill(dijet.M(), weight);
-		}
-
-		if(jet1_flavour == 5 && jet2_flavour == 5){
-
-			h_b_b->Fill(dijet.M(), weight);
-		}
-
-		if(jet1_flavour == 5 && jet2_flavour == 4){
-
-			h_b_c->Fill(dijet.M(), weight);
-		}
-
-		if(jet1_flavour == 4 && jet2_flavour == 5){
-
-			h_b_c->Fill(dijet.M(), weight);
-		}
-
-		if(jet1_flavour == 4 && jet2_flavour == 4){
-
-			h_c_c->Fill(dijet.M(), weight);
-		}
 
 		}
 
-
-		//print_vect_TLor(my_jets);
-		
-			
-		/*if( dijet.M() < 40){
-			continue;
-		}
-		if(dijet.M() > 160){
-			continue;
-		}
-
-		*/
-		
 		jet1 = my_jets.at(0);
 		jet2 = my_jets.at(1);
 
-		
-
-
-
-
-
-
-
 		angle_between_jets = jet1.Angle(jet2.Vect()); 
-
-		//if(angle_between_jets > 2.2){
-
-		//	continue;
-		//}
-
-		//if( (jet1.Pt() < 40) && (jet2.Pt() < 33)){
-		//	continue;
-		//}
-
 
 		jet1_rapidity = jet1.Rapidity();
 		jet2_rapidity = jet2.Rapidity();
-
-
-
 
 
 		std::vector<TLorentzVector> muon_vector;
@@ -562,22 +444,6 @@ int main(int argc, char* argv[]) {
 			angle_between_muons = muon1.Angle(muon2.Vect());
 			angle_between_lep = angle_between_muons;
 
-			/*if(angle_between_muons < 1){
-
-				continue;
-			}
-*/
-			//if(angle_between_muons > 5){
-			//	continue;
-			//}
-
-			//if(fabs(muon1.Rapidity()) > 2.5){
-				//continue;
-			//}
-			
-			//if(fabs(muon2.Rapidity()) > 2.5){
-				//continue;
-			//}
 
 			lepton1 = muon1;
 			lepton2 = muon2;
@@ -609,25 +475,6 @@ int main(int argc, char* argv[]) {
 			angle_between_lep = angle_between_electrons;
 
 
-		/*	if(angle_between_electrons < 1){
-
-				continue;
-			}
-*/
-			//if(angle_between_electrons > 5){
-
-				//continue;
-			//}
-
-
-			//if(fabs(elec1.Rapidity()) > 2.5){
-			//	continue;
-			//}
-
-			//if(fabs(elec2.Rapidity()) > 2.5){
-			//	continue;
-			//}
-
 			lepton1 = elec1;
 			lepton2 = elec2;
 
@@ -645,11 +492,6 @@ int main(int argc, char* argv[]) {
 		}
 
 		if(jet2.Pt() < 30){
-			continue;
-		}
-
-		if(angle_between_jets > 2.7){
-
 			continue;
 		}
 
@@ -693,9 +535,7 @@ int main(int argc, char* argv[]) {
 		const double asym_lep =  ( lepton1.Pt() - lepton2.Pt() ) / ( lepton1.Pt() + lepton2.Pt() );
 		const double asym_jet =  ( jet1.Pt() - jet2.Pt() ) / ( jet1.Pt() + jet2.Pt() );
 
-		if(asym_jet > 2){
-			continue;
-		}
+	
 		
 
 		// If here, we keep the event
@@ -720,10 +560,10 @@ int main(int argc, char* argv[]) {
 		}
 
 		if( dilepton.M() != 0){
-			h_Boson_mass->Fill(dilepton.M(), weight);
+			h_Z_mass->Fill(dilepton.M(), weight);
 		}
 
-		h_Boson_mass->Fill(dijet.M(), weight);
+		h_Z_mass->Fill(dijet.M(), weight);
 
 		h_Di_Boson_Mass->Fill(diZ.M(),weight);
 		h_DiBoson_Pt->Fill(diZ.Pt(),weight);
@@ -799,7 +639,7 @@ int main(int argc, char* argv[]) {
 
 
 	h_DiLepton_Mass->Write();
-	h_Boson_mass->Write();
+	h_Z_mass->Write();
 
 	h_CosThetaHel_lep_1->Write();
 	h_CosThetaHel2_lep_1->Write();
