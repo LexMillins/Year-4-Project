@@ -61,9 +61,15 @@ void Plot_hists(){
 
 	h_Sig->Write("h_Sig");
 
+	TCanvas* c = new TCanvas("c", "c", 800, 600);
+
+	h_W_mass->Draw();
+	
+	h_W_mass->Print();
+
+	c->SaveAs("h_W_mass.pdf");
+
 	outputFile->Close();
-
-
 
 	return 0;
 

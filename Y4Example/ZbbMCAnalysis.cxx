@@ -1,7 +1,6 @@
 #include "Analysis.h"
 #include <algorithm>
 #include <dirent.h>
-#include <string>
 
 
 //print function for vectors of float
@@ -204,27 +203,7 @@ int main(int argc, char* argv[]) {
 	TString inputFileName = argv[1];
 	TString inputFileNumber = argv[2];
 
-	// Need to distinguish between Data files and MC Files
-
-	//Boolean variable that is true for data, false for MC
-
-	bool isdata;
-
-	TString inputFileNameData = "d";
-
-	TString inputFileNameMC = "m";
-
-	TString inputFileNameChar = inputFileName[14];
-
-	if(inputFileNameData.CompareTo(inputFileNameChar) == 0){
-
-		isdata = true;
-	}
-
-	if(inputFileNameMC.CompareTo(inputFileNameChar) == 0){
-
-		isdata = false;
-	}
+	//int dsid_int = dsidName.Atoi();
 
 	std::cout << "Opening: " << inputFileName  << std::endl;
 

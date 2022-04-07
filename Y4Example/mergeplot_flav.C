@@ -82,7 +82,7 @@ void mergeplot_flav() {
 	map_file[410472] = TFile::Open("files_410472.root"); //ttbar
 
 
-	map_file[363356] = TFile::Open("files_363356.root"); //ZZ
+	//map_file[363356] = TFile::Open("files_363356.root"); //ZZ
 	map_file[363358] = TFile::Open("files_363358.root"); //WZ
 
 
@@ -116,7 +116,7 @@ for (std::map<int, TFile*>::iterator it = map_file.begin(); it != map_file.end()
 
 	for(int f=0; f<flav_combs.size(); ++f){
 
-		TH1D* h_Sum = (TH1D*) map_hist[363356]->Clone("h_Sum_"+flav_combs.at(f));
+		TH1D* h_Sum = (TH1D*) map_hist[363358]->Clone("h_Sum_"+flav_combs.at(f));
 		h_Sum->Reset();
 
 		h_Sum_Flavs[flav_combs.at(f)] = h_Sum;
@@ -187,18 +187,18 @@ for (std::map<int, TFile*>::iterator it = map_file.begin(); it != map_file.end()
 		}
 
 		h_Stack->Draw("HIST");
-		h_Stack->SetTitle("Invariant Mass, 2 jets tagged tight");
+		h_Stack->SetTitle("Invariant Mass WZ, no b-tagging");
 		h_Stack->GetXaxis()->SetTitle("Dijet Mass [GeV]");
  		h_Stack->GetYaxis()->SetTitle("Events / [GeV]");
 
 
- 		map_hist[363356]->Draw("SAME");
+ 		/*map_hist[363356]->Draw("SAME");
 	 	map_hist[363356]->SetLineColor(kOrange+1);
-	 	map_hist[363356]->Scale(10);
+	 	map_hist[363356]->Scale(10);*/
 
 
 		auto legend = new TLegend(0.65,0.49,0.9, 0.9);
-	   legend->SetHeader("Z Flavour combinations","C"); // option "C" allows to center the header
+	   legend->SetHeader("jj Flavour combinations","C"); // option "C" allows to center the header
 	   legend->AddEntry(h_Sum_Flavs["ll"],"light light jets","f");
 	   legend->AddEntry(h_Sum_Flavs["lc"],"light charm jets","f");
 	   legend->AddEntry(h_Sum_Flavs["lb"],"light bottom jets","f");
@@ -214,6 +214,10 @@ for (std::map<int, TFile*>::iterator it = map_file.begin(); it != map_file.end()
 
 
 	   legend->Draw();
+
+	   h_Stack->Print();
+
+	   c->SaveAs("THStacknotag.pdf");
 
 return 0;
 
