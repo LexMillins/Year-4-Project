@@ -239,61 +239,89 @@ int main(int argc, char* argv[]) {
 
 	Reader* r = new Reader(tree);
 
-	// Get weight tree
-	TTree* tree_w = (TTree*) inputFile->Get("sumWeights");
+	if(isdata == false){
 
-	WeightReader* r_w = new WeightReader(tree_w);
+		// Get weight tree
+		TTree* tree_w = (TTree*) inputFile->Get("sumWeights");
 
-
-
-	// Work out our normalisation factor "S"
+		WeightReader* r_w = new WeightReader(tree_w);
 
 
-	int dsid_temp = 0;
+
+		// Work out our normalisation factor "S"
 
 
-	double sumW = 0.0;
-
-	for(unsigned int i = 0; i < tree_w->GetEntries(); ++i) {
+		int dsid_temp = 0;
 
 
-		r_w->GetEntry(i);
+		double sumW = 0.0;
 
-		sumW += r_w->totalEventsWeighted;
+		for(unsigned int i = 0; i < tree_w->GetEntries(); ++i) {
 
-		if(i == 0) dsid_temp = r_w->dsid;
+
+			r_w->GetEntry(i);
+
+			sumW += r_w->totalEventsWeighted;
+
+			if(i == 0) dsid_temp = r_w->dsid;
+
+
+		}
+
+
+		const double lumi = 36.1e3; // pb^-1
+		const double xs = crossSection[dsid_temp]; // pb
+
+
+		std::cout << "DSID: " << dsid_temp  << std::endl;
+		std::cout << "Cross-section = " << crossSection[dsid_temp]  << " pb " << std::endl;
+
+
+
+		std::cout << "Normalisation ingredients..."  << std::endl;
+		std::cout << "Lumi = " << lumi  << std::endl;
+		std::cout << "sigma = " << xs  << std::endl;
+		std::cout << "sumW = " << sumW  << std::endl;
+
+		const double S = lumi*xs/sumW;
+
+		std::cout << "Scale Factor = " << S  << std::endl;
+
+
+
+		// Setup an output ROOT file to store histograms
+
+		TString outputFileName = "Output_";
+		outputFileName += dsid_temp;
+		outputFileName += "_";
+		outputFileName += inputFileNumber; 
+		outputFileName += ".root";
+
+		//-----------------------------------
+		// Special histogram for bookkeeping of weights
+		//-----------------------------------
+		TH1D* h_weight_track = new TH1D("h_weight_track", ";arb.; weights", 1, 0, 1);
+		h_weight_track->Fill(0.5,sumW);
+		TH1D* h_xs_track = new TH1D("h_xs_track", ";arb.; weights", 1, 0, 1);
+		h_xs_track->Fill(0.5,xs);
+		//-----------------------------------
 
 
 	}
 
 
-	const double lumi = 36.1e3; // pb^-1
-	const double xs = crossSection[dsid_temp]; // pb
+	if(isdata == true){
+		
+		TString Datarun = inputFileName[18];
+		Datarun += inputFileName[19];
+		TString outputFileName = "Output_";
+		outputFileName += Datarun;
+		outputFileName += "_";
+		outputFileName += inputFileNumber; 
+		outputFileName += ".root";
 
+	}
 
-	std::cout << "DSID: " << dsid_temp  << std::endl;
-	std::cout << "Cross-section = " << crossSection[dsid_temp]  << " pb " << std::endl;
-
-
-
-	std::cout << "Normalisation ingredients..."  << std::endl;
-	std::cout << "Lumi = " << lumi  << std::endl;
-	std::cout << "sigma = " << xs  << std::endl;
-	std::cout << "sumW = " << sumW  << std::endl;
-
-	const double S = lumi*xs/sumW;
-
-	std::cout << "Scale Factor = " << S  << std::endl;
-
-
-
-	// Setup an output ROOT file to store histograms
-
-	TString outputFileName = "Output_";
-	outputFileName += dsid_temp;
-	outputFileName += "_";
-	outputFileName += inputFileNumber; 
-	outputFileName += ".root";
 
 	std::cout << "outputFileName = " << outputFileName << std::endl;
 
@@ -332,15 +360,6 @@ int main(int argc, char* argv[]) {
 
 	}
 
-	//-----------------------------------
-	// Special histogram for bookkeeping of weights
-	//-----------------------------------
-	TH1D* h_weight_track = new TH1D("h_weight_track", ";arb.; weights", 1, 0, 1);
-	h_weight_track->Fill(0.5,sumW);
-	TH1D* h_xs_track = new TH1D("h_xs_track", ";arb.; weights", 1, 0, 1);
-	h_xs_track->Fill(0.5,xs);
-	//-----------------------------------
-
 	TH1D* h_jet1_pt = new TH1D("h_jet1_pt", ";pT [GeV]; Events/GeV", 30, 0, 300);
 
 	TH1D* h_jet2_pt = new TH1D("h_jet2_pt", ";pT [GeV]; Events/GeV", 30, 0, 300);
@@ -364,13 +383,25 @@ int main(int argc, char* argv[]) {
 
 		r->GetEntry(n);
 
-		// Find Scale Factor for each event
+		// Find Scale Factor for each event in MC
+
+		if(isdata == false){
 
 		const double weight_mc = r->weight_mc;
 
 
 		//const double weight = weight_mc * S;
 		const double weight = weight_mc; // Don't apply lumi*XS factor anymore, do later
+
+		}
+
+		// For data set weight to one
+
+		if(isdata == true){
+
+			const double weight = 1;
+
+		}
 
 		// require 2 jets and 2 leptons in each event
 
@@ -411,9 +442,12 @@ int main(int argc, char* argv[]) {
 
 			DL1 = r->jet_DL1->at(j);
 
+			if(isdata == false){
+				
 			//record truth flavour of jets (MC only)
 			flavour = r->jet_truthflav->at(j);
 
+			}
 
 			temp.first = j;
 			temp.second = DL1;
@@ -445,9 +479,6 @@ int main(int argc, char* argv[]) {
 
 	//Create dijet using the sorted jet - 2 highest DL1 values
 
-
-
-
 	TLorentzVector jet1 = my_jets.at(0);
 
 	int jet1_flavour = r->jet_truthflav->at(jet_index_DL1.at(0).first);
@@ -459,20 +490,19 @@ int main(int argc, char* argv[]) {
 	
 	//Use truth information to determine flavour of jet for plotting (MC only)
 
-	TString flav_pair = "";
+	if(isdata == false){
+		TString flav_pair = "";
 
 
-	if(jet1_flavour == 0 || jet1_flavour == 15) { flav_pair += "l"; }
-	if(jet1_flavour == 4) { flav_pair += "c"; }
-	if(jet1_flavour == 5) { flav_pair += "b"; }
+		if(jet1_flavour == 0 || jet1_flavour == 15) { flav_pair += "l"; }
+		if(jet1_flavour == 4) { flav_pair += "c"; }
+		if(jet1_flavour == 5) { flav_pair += "b"; }
 
-	if(jet2_flavour == 0 || jet2_flavour == 15) { flav_pair += "l"; }
-	if(jet2_flavour == 4) { flav_pair += "c"; }
-	if(jet2_flavour == 5) { flav_pair += "b"; }
+		if(jet2_flavour == 0 || jet2_flavour == 15) { flav_pair += "l"; }
+		if(jet2_flavour == 4) { flav_pair += "c"; }
+		if(jet2_flavour == 5) { flav_pair += "b"; }
 
-
-
-
+	}
 
 	float jet1_DL1 = jet_index_DL1.at(0).second; 
 
@@ -525,9 +555,14 @@ int main(int argc, char* argv[]) {
 
 	h_jet2_pt->Write();
 
-	h_weight_track->Write();
+	if(isdata == false){
 
-	h_xs_track->Write();
+		h_weight_track->Write();
+
+		h_xs_track->Write();
+
+
+	}
 
 
 	outputFile->Close();
