@@ -239,6 +239,14 @@ int main(int argc, char* argv[]) {
 
 	Reader* r = new Reader(tree);
 
+	TH1D* h_weight_track = new TH1D("h_weight_track", ";arb.; weights", 1, 0, 1);
+
+	TH1D* h_xs_track = new TH1D("h_xs_track", ";arb.; weights", 1, 0, 1);
+
+	double weight = 0.0;
+
+	TString outputFileName = "";
+
 	if(isdata == false){
 
 		// Get weight tree
@@ -252,7 +260,6 @@ int main(int argc, char* argv[]) {
 
 
 		int dsid_temp = 0;
-
 
 		double sumW = 0.0;
 
@@ -291,7 +298,7 @@ int main(int argc, char* argv[]) {
 
 		// Setup an output ROOT file to store histograms
 
-		TString outputFileName = "Output_";
+		outputFileName += "Output_";
 		outputFileName += dsid_temp;
 		outputFileName += "_";
 		outputFileName += inputFileNumber; 
@@ -300,9 +307,7 @@ int main(int argc, char* argv[]) {
 		//-----------------------------------
 		// Special histogram for bookkeeping of weights
 		//-----------------------------------
-		TH1D* h_weight_track = new TH1D("h_weight_track", ";arb.; weights", 1, 0, 1);
 		h_weight_track->Fill(0.5,sumW);
-		TH1D* h_xs_track = new TH1D("h_xs_track", ";arb.; weights", 1, 0, 1);
 		h_xs_track->Fill(0.5,xs);
 		//-----------------------------------
 
@@ -314,11 +319,15 @@ int main(int argc, char* argv[]) {
 		
 		TString Datarun = inputFileName[18];
 		Datarun += inputFileName[19];
-		TString outputFileName = "Output_";
+		TString period = inputFileName[32];
+		outputFileName += "Output_";
 		outputFileName += Datarun;
+		outputFileName += "_";
+		outputFileName += period;
 		outputFileName += "_";
 		outputFileName += inputFileNumber; 
 		outputFileName += ".root";
+
 
 	}
 
@@ -387,11 +396,11 @@ int main(int argc, char* argv[]) {
 
 		if(isdata == false){
 
-		const double weight_mc = r->weight_mc;
+			const double weight_mc = r->weight_mc;
 
 
-		//const double weight = weight_mc * S;
-		const double weight = weight_mc; // Don't apply lumi*XS factor anymore, do later
+			//const double weight = weight_mc * S;
+			weight = weight_mc; // Don't apply lumi*XS factor anymore, do later
 
 		}
 
@@ -399,7 +408,7 @@ int main(int argc, char* argv[]) {
 
 		if(isdata == true){
 
-			const double weight = 1;
+			weight = 1.0;
 
 		}
 
@@ -444,8 +453,8 @@ int main(int argc, char* argv[]) {
 
 			if(isdata == false){
 				
-			//record truth flavour of jets (MC only)
-			flavour = r->jet_truthflav->at(j);
+				//record truth flavour of jets (MC only)
+				flavour = r->jet_truthflav->at(j);
 
 			}
 
@@ -481,17 +490,27 @@ int main(int argc, char* argv[]) {
 
 	TLorentzVector jet1 = my_jets.at(0);
 
-	int jet1_flavour = r->jet_truthflav->at(jet_index_DL1.at(0).first);
-
 	TLorentzVector jet2 = my_jets.at(1);
 
-	int jet2_flavour = r->jet_truthflav->at(jet_index_DL1.at(1).first);
+	int jet1_flavour;
 
+	int jet2_flavour;
+
+	// Get truth flavour info for MC only
+
+	if(isdata == false){
+		
+		jet1_flavour = r->jet_truthflav->at(jet_index_DL1.at(0).first);
+
+		jet2_flavour = r->jet_truthflav->at(jet_index_DL1.at(1).first);
+
+	}
 	
 	//Use truth information to determine flavour of jet for plotting (MC only)
 
+	TString flav_pair = "";
+
 	if(isdata == false){
-		TString flav_pair = "";
 
 
 		if(jet1_flavour == 0 || jet1_flavour == 15) { flav_pair += "l"; }
@@ -526,7 +545,11 @@ int main(int argc, char* argv[]) {
 
 	// Fill histograms
 
-	h_Coll_Dijet_Mass[flav_pair]->Fill(dijet.M()*1e-3,weight);
+	if(isdata == false){
+
+		h_Coll_Dijet_Mass[flav_pair]->Fill(dijet.M()*1e-3,weight);
+
+	}
 
 	h_Z_mass->Fill(dijet.M()*1e-3, weight);
 
@@ -538,17 +561,19 @@ int main(int argc, char* argv[]) {
 
 } //Event Loop
 
-//Write histograms
 	outputFile->cd();
 
 	//write histograms here
 
+	if(isdata == false){
 
-	for(int f=0; f<flav_combs.size(); ++f){
+		for(int f=0; f<flav_combs.size(); ++f){
 
-		h_Coll_Dijet_Mass[flav_combs.at(f)] ->Write();
+			h_Coll_Dijet_Mass[flav_combs.at(f)] ->Write();
 
+		}
 	}
+
 	h_Z_mass->Write();
 
 	h_jet1_pt->Write();
