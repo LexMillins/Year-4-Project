@@ -217,7 +217,6 @@ int main(int argc, char* argv[]) {
         isdata = false;
     }
 
-
 	std::cout << "Opening: " << inputFileName  << std::endl;
 
 
@@ -309,12 +308,14 @@ int main(int argc, char* argv[]) {
 
 	if(isdata == true){
 		
-		TString Datarun = inputFileName[18];
-		Datarun += inputFileName[19];
-		TString period = inputFileName[32];
+		TString Datarun = inputFileName[53];
+		Datarun += inputFileName[54];
+		TString period = inputFileName[68];
 		outputFileName += "Output_";
+		outputFileName += "Datarun_";
 		outputFileName += Datarun;
 		outputFileName += "_";
+		outputFileName += "period_";
 		outputFileName += period;
 		outputFileName += "_";
 		outputFileName += inputFileNumber; 
