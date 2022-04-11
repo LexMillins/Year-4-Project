@@ -210,21 +210,13 @@ int main(int argc, char* argv[]) {
 
 	bool isdata;
 
-	TString inputFileNameData = "d";
+	if(inputFileName.Contains("data15") or inputFileName.Contains("data16")){
+        isdata = true;
+    }
+	else {
+        isdata = false;
+    }
 
-	TString inputFileNameMC = "m";
-
-	TString inputFileNameChar = inputFileName[14];
-
-	if(inputFileNameData.CompareTo(inputFileNameChar) == 0){
-
-		isdata = true;
-	}
-
-	if(inputFileNameMC.CompareTo(inputFileNameChar) == 0){
-
-		isdata = false;
-	}
 
 	std::cout << "Opening: " << inputFileName  << std::endl;
 
