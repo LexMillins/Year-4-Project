@@ -4,9 +4,9 @@
 void Plot_Data(){
 
 
-	TString inputFileName = "data15_13TeV_Output.root";
+	TString inputFileName = "data_total_13TeV_Output.root";
 
-	TString outputFileName = "data_hists.root";
+	TString outputFileName = "data_total_hists.root";
 
 	TFile* inputFile = TFile::Open(inputFileName);
 
