@@ -1,0 +1,137 @@
+#include <stdio.h>
+#include <math.h>
+
+
+void Write_MadGraph_TFile(){
+
+
+	// Create a new TFile to store hist objects
+
+	TString outputFileName = "MadGraphHists.root";
+
+	TFile * outputFile = new TFile(outputFileName, "recreate");
+
+	outputFile -> cd();
+
+	// Histogram creation here
+
+
+	// Get histogram
+
+	TString histName = "h_Z_mass";
+
+
+	// Define luminosity for weighting
+
+	const double lumi = 36.1e3; // pb^-1
+
+
+	// Create map
+
+	std::map<int,TFile*>map_file;
+	std::map<int, TH1D*> map_hist;
+	std::map<int,TFile*>map_file_sig;
+	std::map<int, TH1D*> map_hist_sig;
+
+
+	std::map<int, int>map_files_N;
+
+
+
+	map_file[363125] = TFile::Open("files_363125.root");
+	map_file[363128] = TFile::Open("files_363128.root"); 
+	map_file[363131] = TFile::Open("files_363131.root");
+	map_file[363134] = TFile::Open("files_363134.root");
+	map_file[363137] = TFile::Open("files_363137.root"); 
+	map_file[363140] = TFile::Open("files_363140.root");
+	map_file[363143] = TFile::Open("files_363143.root"); 
+	map_file[363146] = TFile::Open("files_363146.root"); 
+
+	// Zee 
+	map_file[363149] = TFile::Open("files_363149.root"); 
+	map_file[363152] = TFile::Open("files_363152.root");
+	map_file[363155] = TFile::Open("files_363155.root");
+	map_file[363158] = TFile::Open("files_363158.root");
+	map_file[363161] = TFile::Open("files_363161.root"); 
+	map_file[363164] = TFile::Open("files_363164.root");
+	map_file[363167] = TFile::Open("files_363167.root");
+	map_file[363170] = TFile::Open("files_363170.root");
+
+	map_file[410472] = TFile::Open("files_410472.root");
+
+
+	map_file[363356] = TFile::Open("files_363356.root");
+	map_file[363358] = TFile::Open("files_363358.root");
+
+
+
+
+
+	map_files_N[410472] = 43;
+
+	map_files_N[363356] = 44;
+	map_files_N[363358] = 45;
+
+	map_files_N[363125] = 46;
+	map_files_N[363128] = 47;
+	map_files_N[363131] = 48;
+	map_files_N[363134] = 49;
+	map_files_N[363137] = 50;
+	map_files_N[363140] = 51;
+	map_files_N[363143] = 52;
+	map_files_N[363146] = 53;
+
+	// Zee 
+	map_files_N[363149] = 54;
+	map_files_N[363152] = 55;
+	map_files_N[363155] = 56;
+	map_files_N[363158] = 57;
+	map_files_N[363161] = 58;
+	map_files_N[363164] = 59;
+	map_files_N[363167] = 60;
+	map_files_N[363170] = 63;
+
+	// Get histograms
+
+	for (std::map<int, TFile*>::iterator it = map_file.begin(); it != map_file.end(); it++){
+
+		std::cout<< it->first << ':' << it->second << std::endl;
+
+		map_hist[it->first] = (TH1D*) (it->second)->Get(histName);
+
+		TString newhistName = histName;
+
+		newhistName += map_files_N[it->first];
+
+		// Perform lumi*xs/sumw scaling
+		TH1D* h_weight_track = (TH1D*) (it->second)->Get("h_weight_track");
+		TH1D* h_xs_track = (TH1D*) (it->second)->Get("h_xs_track");
+
+		// Undo the artificial growth of xs due to nFiles
+		const double xs = h_xs_track->GetBinContent(1)/h_xs_track->GetEntries();
+
+		const double sumw = h_weight_track->GetBinContent(1);
+
+		std::cout << "DSID = " << map_hist[it->first] << ", xs = " << xs << " pb" << std::endl;
+
+		const double scale_factor = lumi*xs/sumw;
+
+		map_hist[it->first]->Scale(scale_factor);
+
+		outputFile -> cd();
+
+		// Write histograms here 
+
+		map_hist[it->first]->SetName(newhistName);
+
+		map_hist[it->first]->Write(newhistName);
+
+
+	}
+
+	outputFile -> Close();
+
+
+	return 0;
+
+}

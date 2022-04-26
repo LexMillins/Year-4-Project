@@ -50,6 +50,7 @@ void Fit() {
 
     TH1D* h_Signal = NULL;
     TH1D* h_Bkgd = NULL;
+    TH1D* h_Data = NULL;
 
     // For standalone example, make some "toy" signal and background histogram
     //MakeExample(h_Signal,h_Bkgd);
@@ -61,7 +62,15 @@ void Fit() {
 
     TString inputFileName = "plots.root";
 
-    TFile* inputFile = TFile::Open(inputFileName);
+    TString inputFileNameData = "data_total_13TeV_Output.root";
+
+    TString inputFileNameMG = "MadGraphplots.root";
+
+    TFile* inputFile = TFile::Open(inputFileNameMG);
+
+    TFile* inputFileData = TFile::Open(inputFileNameData);
+
+    TString histNameData = "h_Z_mass";
 
     TString histNameSig = "h_Sig";
 
@@ -70,15 +79,18 @@ void Fit() {
     h_Signal = (TH1D*)inputFile->Get(histNameSig);
 
     h_Bkgd = (TH1D*)inputFile->Get(histNameBkgd);
+
+
+    h_Data = (TH1D*)inputFileData->Get(histNameData);
     
     //----------
-
+/*
     // Make a "dummy" dataset from the expected data and background
-    TH1D* h_Data = (TH1D*) h_Bkgd->Clone("h_Data");
+    h_Data = (TH1D*) h_Bkgd->Clone("h_Data");
     h_Data->Reset();
     h_Data->Add(h_Signal);
     h_Data->Add(h_Bkgd);
-
+*/
     //----------
     // When you get the "real" data, you can simply load it from the file and
     // set the h_Data pointer to that histogram and comment out the code above
@@ -101,6 +113,7 @@ void Fit() {
     RooHistPdf pdf_Signal("pdf_Signal","",m_Mass,m_Hist_Signal);
     RooHistPdf pdf_Bkgd("pdf_Bkgd","",m_Mass,m_Hist_Bkgd);
 
+
     // Signal Strength parameters for signal and background
     RooRealVar mu_Signal("mu_Signal","",1.0,-1000.0,1000.0);
     RooRealVar mu_Bkgd("mu_Bkgd","",1.0,-1000.0,1000.0);
@@ -118,6 +131,8 @@ void Fit() {
     RooExtendPdf epdf_Bkgd("epdf_Bkgd","",pdf_Bkgd,N_Bkgd);
 
     RooAddPdf pdf_Total("pdf_Total","",RooArgList(epdf_Signal,epdf_Bkgd));
+
+    //mu_Bkgd.setConstant(kTRUE);
 
     // Run the fit
     RooFitResult* fit_result = pdf_Total.fitTo(m_Hist_Data,Save());
@@ -138,7 +153,7 @@ void Fit() {
     // Overlay the background component of model with a dashed line
     pdf_Total.plotOn(frame,Components(epdf_Bkgd),LineStyle(kDashed),Normalization(1.0,RooAbsReal::RelativeExpected),Name("BOnly")) ;
     // Overlay the signal components
-    pdf_Total.plotOn(frame,Components(RooArgSet(epdf_Signal)),LineColor(kRed),Normalization(10.0,RooAbsReal::RelativeExpected),Name("SOnly")) ;
+    pdf_Total.plotOn(frame,Components(RooArgSet(epdf_Signal)),LineColor(kRed),Normalization(1.0,RooAbsReal::RelativeExpected),Name("SOnly")) ;
 
     frame->Draw();
 

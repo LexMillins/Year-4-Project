@@ -197,6 +197,61 @@ int main(int argc, char* argv[]) {
 
 
 
+   //Madgraph MC generated files
+
+	crossSection[363123] = 1627.05549938; 
+	crossSection[363124] = 212.234137612;
+	crossSection[363125] = 115.867239676;
+	crossSection[363126] = 69.3063656744; 
+	crossSection[363127] = 16.7738146771; 
+	crossSection[363128] = 10.4410415888; 
+	crossSection[363129] = 27.6014492698; 
+	crossSection[363130] = 8.17763119439; 
+	crossSection[363131] = 5.16031502231; 
+	crossSection[363132] = 5.87007931406; 
+	crossSection[363133] = 2.12860741152; 
+	crossSection[363134] = 1.33177380798; 
+	crossSection[363135] = 0.864774186115; 
+	crossSection[363136] = 0.360773876232; 
+	crossSection[363137] = 0.220740938418; 
+	crossSection[363138] = 0.287942570138; 
+	crossSection[363139] = 0.133775886529; 
+	crossSection[363140] = 0.08110283909; 
+	crossSection[363141] = 0.093795915954;
+	crossSection[363142] = 0.044430101856;
+	crossSection[363143] = 0.028714102038; 
+	crossSection[363144] = 0.003493780443; 
+	crossSection[363145] = 0.001813103676;
+	crossSection[363146] = 0.001105508894; 
+
+	// Zee 
+	crossSection[363147] = 1634.592133; 
+	crossSection[363148] = 213.155455; 
+	crossSection[363149] = 118.312407; 
+	crossSection[363150] = 69.771049; 
+	crossSection[363151] = 17.160109;
+	crossSection[363152] = 11.002726; 
+	crossSection[363153] = 27.695231;
+	crossSection[363154] = 8.372705; 
+	crossSection[363155] = 5.430767; 
+	crossSection[363156] = 5.897428; 
+	crossSection[363157] = 2.172475; 
+	crossSection[363158] = 1.41238;
+	crossSection[363159] = 0.871643; 
+	crossSection[363160] = 0.367826; 
+	crossSection[363161] = 0.234049; 
+	crossSection[363162] = 0.293262; 
+	crossSection[363163] = 0.135603; 
+	crossSection[363164] = 0.086362;
+	crossSection[363165] = 0.09762; 
+	crossSection[363166] = 0.049845; 
+	crossSection[363167] = 0.032079; 
+	crossSection[363168] = 0.003461; 
+	crossSection[363169] = 0.00199;
+	crossSection[363170] = 0.00127; 
+
+
+
 	std::cout << "Starting Analysis!" << std::endl;
 
 	// Input Analysis, File Name, DSID
