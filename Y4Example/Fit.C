@@ -126,7 +126,7 @@ void Fit() {
     // Make a plot
     TCanvas* c = new TCanvas("c","",800,600);
 
-    RooPlot* frame = m_Mass.frame(Title("Fit for dijet mass after b tagging"));
+    RooPlot* frame = m_Mass.frame(Title("Fit for dijet mass of Z boson"));
 
 
     // Plot data and PDF overlaid, use expected number of events for p.d.f projection normalization
@@ -138,7 +138,7 @@ void Fit() {
     // Overlay the background component of model with a dashed line
     pdf_Total.plotOn(frame,Components(epdf_Bkgd),LineStyle(kDashed),Normalization(1.0,RooAbsReal::RelativeExpected),Name("BOnly")) ;
     // Overlay the signal components
-    pdf_Total.plotOn(frame,Components(RooArgSet(epdf_Signal)),LineColor(kRed),Normalization(1.0,RooAbsReal::RelativeExpected),Name("SOnly")) ;
+    pdf_Total.plotOn(frame,Components(RooArgSet(epdf_Signal)),LineColor(kRed),Normalization(10.0,RooAbsReal::RelativeExpected),Name("SOnly")) ;
 
     frame->Draw();
 
