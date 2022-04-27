@@ -51,6 +51,7 @@ void Fit() {
     TH1D* h_Signal = NULL;
     TH1D* h_Bkgd = NULL;
     TH1D* h_Data = NULL;
+    TH1D* h_ttbar = NULL;
 
     // For standalone example, make some "toy" signal and background histogram
     //MakeExample(h_Signal,h_Bkgd);
@@ -76,10 +77,13 @@ void Fit() {
 
     TString histNameBkgd = "h_Bckgd";
 
+    TString histNamettBkgd = "h_ttbar";
+
     h_Signal = (TH1D*)inputFile->Get(histNameSig);
 
     h_Bkgd = (TH1D*)inputFile->Get(histNameBkgd);
 
+    h_ttbar = (TH1D*)inputFile->Get(histNamettBkgd);
 
     h_Data = (TH1D*)inputFileData->Get(histNameData);
     
@@ -97,7 +101,8 @@ void Fit() {
     //----------
 
     // Build fit observable from the range in the input histograms
-    RooRealVar m_Mass("Mass","m_{jj}",h_Bkgd->GetBinLowEdge(1),h_Bkgd->GetBinLowEdge(h_Bkgd->GetNbinsX()+1),"GeV");
+    //RooRealVar m_Mass("Mass","m_{jj}",h_Bkgd->GetBinLowEdge(1),h_Bkgd->GetBinLowEdge(h_Bkgd->GetNbinsX()+1),"GeV");
+    RooRealVar m_Mass("Mass","m_{jj}",20.0,h_Bkgd->GetBinLowEdge(h_Bkgd->GetNbinsX()+1),"GeV");
 
     m_Mass.Print();
 
@@ -109,28 +114,39 @@ void Fit() {
     // Do the same for signal and background histograms, used to build PDFs
     RooDataHist m_Hist_Signal("m_Hist_Signal","",m_Mass,h_Signal);
     RooDataHist m_Hist_Bkgd("m_Hist_Bkgd","",m_Mass,h_Bkgd);
+    RooDataHist m_Hist_Bkgd_ttbar("m_Hist_Bkgd_ttbar","",m_Mass,h_ttbar);
 
     RooHistPdf pdf_Signal("pdf_Signal","",m_Mass,m_Hist_Signal);
     RooHistPdf pdf_Bkgd("pdf_Bkgd","",m_Mass,m_Hist_Bkgd);
+    RooHistPdf pdf_Bkgd_ttbar("pdf_Bkgd_ttbar","",m_Mass,m_Hist_Bkgd_ttbar);
 
 
     // Signal Strength parameters for signal and background
     RooRealVar mu_Signal("mu_Signal","",1.0,-1000.0,1000.0);
     RooRealVar mu_Bkgd("mu_Bkgd","",1.0,-1000.0,1000.0);
+    RooRealVar mu_Bkgd_ttbar("mu_Bkgd_ttbar","",1.0,-1000.0,1000.0);
+
+    //mu_Bkgd.setConstant(kTRUE);
+    //mu_Bkgd.setVal(1.0873e+00);
+
+    
 
     // Number of events (after weighting / scaling) for MC prediction
     RooRealVar N_Signal_MC("N_Signal_MC","",h_Signal->Integral());
     RooRealVar N_Bkgd_MC("N_Bkgd_MC","",h_Bkgd->Integral());
+    RooRealVar N_Bkgd_ttbar_MC("N_Bkgd_ttbar_MC","",h_ttbar->Integral());
 
     // Our number of events in the fit for S and B: mu*N_Events for S and B, separately
     RooFormulaVar N_Signal("N_Signal","mu_Signal*N_Signal_MC",RooArgSet(mu_Signal,N_Signal_MC));
     RooFormulaVar N_Bkgd("N_Bkgd","mu_Bkgd*N_Bkgd_MC",RooArgSet(mu_Bkgd,N_Bkgd_MC));
+    RooFormulaVar N_Bkgd_ttbar("N_Bkgd_ttbar","mu_Bkgd_ttbar*N_Bkgd_ttbar_MC",RooArgSet(mu_Bkgd_ttbar,N_Bkgd_ttbar_MC));
 
     // Build Poisson terms for N_Signal and N_Bkgd and associate them with relevant PDFs
     RooExtendPdf epdf_Signal("epdf_Signal","",pdf_Signal,N_Signal);
     RooExtendPdf epdf_Bkgd("epdf_Bkgd","",pdf_Bkgd,N_Bkgd);
+    RooExtendPdf epdf_Bkgd_ttbar("epdf_Bkgd_ttbar","",pdf_Bkgd_ttbar,N_Bkgd_ttbar);
 
-    RooAddPdf pdf_Total("pdf_Total","",RooArgList(epdf_Signal,epdf_Bkgd));
+    RooAddPdf pdf_Total("pdf_Total","",RooArgList(epdf_Signal,epdf_Bkgd, epdf_Bkgd_ttbar));
 
     //mu_Bkgd.setConstant(kTRUE);
 
@@ -141,7 +157,7 @@ void Fit() {
     // Make a plot
     TCanvas* c = new TCanvas("c","",800,600);
 
-    RooPlot* frame = m_Mass.frame(Title("Fit for dijet mass of Z boson"));
+    RooPlot* frame = m_Mass.frame(Title("Invariant Mass of Z Fit Data (after b-tag)"));
 
 
     // Plot data and PDF overlaid, use expected number of events for p.d.f projection normalization
@@ -152,6 +168,7 @@ void Fit() {
     pdf_Total.plotOn(frame,Normalization(1.0,RooAbsReal::RelativeExpected),Name("Total")) ;
     // Overlay the background component of model with a dashed line
     pdf_Total.plotOn(frame,Components(epdf_Bkgd),LineStyle(kDashed),Normalization(1.0,RooAbsReal::RelativeExpected),Name("BOnly")) ;
+    pdf_Total.plotOn(frame,Components(epdf_Bkgd_ttbar),LineStyle(kDotted),Normalization(1.0,RooAbsReal::RelativeExpected),Name("ttBOnly")) ;
     // Overlay the signal components
     pdf_Total.plotOn(frame,Components(RooArgSet(epdf_Signal)),LineColor(kRed),Normalization(1.0,RooAbsReal::RelativeExpected),Name("SOnly")) ;
 
@@ -166,7 +183,8 @@ void Fit() {
 
     Leg->AddEntry("Data", "Data" , "lep");
     Leg->AddEntry("Total", "Fit Result" , "l");
-    Leg->AddEntry("BOnly", "Bkgd. Component" , "l");
+    Leg->AddEntry("BOnly", "Z+jets Bkgd. Component" , "l");
+    Leg->AddEntry("ttBOnly", "ttbar Bkgd. Component" , "l");
     Leg->AddEntry("SOnly", "Signal Component" , "l");
 
     Leg->Draw();

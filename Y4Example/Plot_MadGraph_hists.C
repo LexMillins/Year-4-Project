@@ -26,7 +26,7 @@ void Plot_MadGraph_hists(){
 
 	h_Bckgd->Reset();
 
-	int b[] = {43, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 63};
+	int b[] = {45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 63};
 
 	for( int n: b){
 
@@ -51,9 +51,19 @@ void Plot_MadGraph_hists(){
 
 	TH1D* h_W_mass = (TH1D*) inputFile->Get(histNameW);
 
+	TString histNamettbgd = histName;
+
+	histNamettbgd += 43;
+
+	TH1D * h_ttbar = (TH1D*) inputFile->Get(histNamettbgd);
+
+
+
 	outputFile->cd();
 
 	h_W_mass->SetName("h_W_mass");
+
+	h_ttbar->SetName("h_ttbar");
 
 	h_Sig->SetName("h_Sig");
 
@@ -61,20 +71,10 @@ void Plot_MadGraph_hists(){
 
 	h_W_mass->Write("h_W_mass");
 
+	h_ttbar->Write();
+
 	h_Sig->Write("h_Sig");
 
-	/*TCanvas* c = new TCanvas("c", "c", 800, 600);
-
-	h_Sig->Draw();
-
-	h_Sig->Print();
-
-	h_Bckgd->Draw();
-	
-	h_Bckgd->Print();
-
-	c->SaveAs("h_Sig.pdf");
-	*/
 
 	outputFile->Close();
 
