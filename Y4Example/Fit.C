@@ -52,6 +52,8 @@ void Fit() {
     TH1D* h_Bkgd = NULL;
     TH1D* h_Data = NULL;
     TH1D* h_ttbar = NULL;
+    TH1D* h_light_Bckgd = NULL;
+    TH1D* h_bb_bckgd = NULL;
 
     // For standalone example, make some "toy" signal and background histogram
     //MakeExample(h_Signal,h_Bkgd);
@@ -79,6 +81,10 @@ void Fit() {
 
     TString histNamettBkgd = "h_ttbar";
 
+    TString histNamelightBkgd = "h_light_Bckgd";
+
+    TString histNamebbBkgd = "h_bb_Bckgd";
+
     h_Signal = (TH1D*)inputFile->Get(histNameSig);
 
     h_Bkgd = (TH1D*)inputFile->Get(histNameBkgd);
@@ -86,6 +92,10 @@ void Fit() {
     h_ttbar = (TH1D*)inputFile->Get(histNamettBkgd);
 
     h_Data = (TH1D*)inputFileData->Get(histNameData);
+
+    h_light_Bckgd = (TH1D*)inputFile->Get(histNamelightBkgd);
+
+    h_bb_bckgd = (TH1D*)inputFile->Get(histNamebbBkgd);
     
     //----------
 /*
@@ -113,18 +123,24 @@ void Fit() {
 
     // Do the same for signal and background histograms, used to build PDFs
     RooDataHist m_Hist_Signal("m_Hist_Signal","",m_Mass,h_Signal);
-    RooDataHist m_Hist_Bkgd("m_Hist_Bkgd","",m_Mass,h_Bkgd);
+    //RooDataHist m_Hist_Bkgd("m_Hist_Bkgd","",m_Mass,h_Bkgd);
     RooDataHist m_Hist_Bkgd_ttbar("m_Hist_Bkgd_ttbar","",m_Mass,h_ttbar);
+    RooDataHist m_Hist_Bkgd_light("m_Hist_Bkgd_light","",m_Mass,h_light_Bckgd);
+    RooDataHist m_Hist_Bkgd_bb("m_Hist_Bkgd_bb","",m_Mass,h_bb_bckgd);
 
     RooHistPdf pdf_Signal("pdf_Signal","",m_Mass,m_Hist_Signal);
-    RooHistPdf pdf_Bkgd("pdf_Bkgd","",m_Mass,m_Hist_Bkgd);
+    //RooHistPdf pdf_Bkgd("pdf_Bkgd","",m_Mass,m_Hist_Bkgd);
     RooHistPdf pdf_Bkgd_ttbar("pdf_Bkgd_ttbar","",m_Mass,m_Hist_Bkgd_ttbar);
+    RooHistPdf pdf_Bkgd_light("pdf_Bkgd_light","",m_Mass,m_Hist_Bkgd_light);
+    RooHistPdf pdf_Bkgd_bb("pdf_Bkgd_bb","",m_Mass,m_Hist_Bkgd_bb);
 
 
     // Signal Strength parameters for signal and background
     RooRealVar mu_Signal("mu_Signal","",1.0,-1000.0,1000.0);
-    RooRealVar mu_Bkgd("mu_Bkgd","",1.0,-1000.0,1000.0);
+    //RooRealVar mu_Bkgd("mu_Bkgd","",1.0,-1000.0,1000.0);
     RooRealVar mu_Bkgd_ttbar("mu_Bkgd_ttbar","",1.0,-1000.0,1000.0);
+    RooRealVar mu_Bkgd_light("mu_Bkgd_light","",1.0,-1000.0,1000.0);
+    RooRealVar mu_Bkgd_bb("mu_Bkgd_bb","",1.0,-1000.0,1000.0);
 
     //mu_Bkgd.setConstant(kTRUE);
     //mu_Bkgd.setVal(1.0873e+00);
@@ -133,20 +149,26 @@ void Fit() {
 
     // Number of events (after weighting / scaling) for MC prediction
     RooRealVar N_Signal_MC("N_Signal_MC","",h_Signal->Integral());
-    RooRealVar N_Bkgd_MC("N_Bkgd_MC","",h_Bkgd->Integral());
+    //RooRealVar N_Bkgd_MC("N_Bkgd_MC","",h_Bkgd->Integral());
     RooRealVar N_Bkgd_ttbar_MC("N_Bkgd_ttbar_MC","",h_ttbar->Integral());
+    RooRealVar N_Bkgd_light_MC("N_Bkgd_light_MC","",h_light_Bckgd->Integral());
+    RooRealVar N_Bkgd_bb_MC("N_Bkgd_bb_MC","",h_bb_bckgd->Integral());
 
     // Our number of events in the fit for S and B: mu*N_Events for S and B, separately
     RooFormulaVar N_Signal("N_Signal","mu_Signal*N_Signal_MC",RooArgSet(mu_Signal,N_Signal_MC));
-    RooFormulaVar N_Bkgd("N_Bkgd","mu_Bkgd*N_Bkgd_MC",RooArgSet(mu_Bkgd,N_Bkgd_MC));
+    //RooFormulaVar N_Bkgd("N_Bkgd","mu_Bkgd*N_Bkgd_MC",RooArgSet(mu_Bkgd,N_Bkgd_MC));
     RooFormulaVar N_Bkgd_ttbar("N_Bkgd_ttbar","mu_Bkgd_ttbar*N_Bkgd_ttbar_MC",RooArgSet(mu_Bkgd_ttbar,N_Bkgd_ttbar_MC));
+    RooFormulaVar N_Bkgd_light("N_Bkgd_light","mu_Bkgd_light*N_Bkgd_light_MC",RooArgSet(mu_Bkgd_light,N_Bkgd_light_MC));
+    RooFormulaVar N_Bkgd_bb("N_Bkgd_bb","mu_Bkgd_bb*N_Bkgd_bb_MC",RooArgSet(mu_Bkgd_bb,N_Bkgd_bb_MC));
 
     // Build Poisson terms for N_Signal and N_Bkgd and associate them with relevant PDFs
     RooExtendPdf epdf_Signal("epdf_Signal","",pdf_Signal,N_Signal);
-    RooExtendPdf epdf_Bkgd("epdf_Bkgd","",pdf_Bkgd,N_Bkgd);
+    //RooExtendPdf epdf_Bkgd("epdf_Bkgd","",pdf_Bkgd,N_Bkgd);
     RooExtendPdf epdf_Bkgd_ttbar("epdf_Bkgd_ttbar","",pdf_Bkgd_ttbar,N_Bkgd_ttbar);
+    RooExtendPdf epdf_Bkgd_light("epdf_Bkgd_light","",pdf_Bkgd_light,N_Bkgd_light);
+    RooExtendPdf epdf_Bkgd_bb("epdf_Bkgd_bb","",pdf_Bkgd_bb,N_Bkgd_bb);
 
-    RooAddPdf pdf_Total("pdf_Total","",RooArgList(epdf_Signal,epdf_Bkgd, epdf_Bkgd_ttbar));
+    RooAddPdf pdf_Total("pdf_Total","",RooArgList(epdf_Signal,epdf_Bkgd_bb, epdf_Bkgd_light, epdf_Bkgd_ttbar));
 
     //mu_Bkgd.setConstant(kTRUE);
 
@@ -167,7 +189,9 @@ void Fit() {
 
     pdf_Total.plotOn(frame,Normalization(1.0,RooAbsReal::RelativeExpected),Name("Total")) ;
     // Overlay the background component of model with a dashed line
-    pdf_Total.plotOn(frame,Components(epdf_Bkgd),LineStyle(kDashed),Normalization(1.0,RooAbsReal::RelativeExpected),Name("BOnly")) ;
+    //pdf_Total.plotOn(frame,Components(epdf_Bkgd),LineStyle(kDashed),Normalization(1.0,RooAbsReal::RelativeExpected),Name("BOnly")) ;
+    pdf_Total.plotOn(frame,Components(epdf_Bkgd_light),LineColor(kGreen), LineStyle(kDashed),Normalization(1.0,RooAbsReal::RelativeExpected),Name("lightBOnly")) ;
+    pdf_Total.plotOn(frame,Components(epdf_Bkgd_bb),LineColor(kOrange), LineStyle(kDashed),Normalization(1.0,RooAbsReal::RelativeExpected),Name("bbBOnly")) ;
     pdf_Total.plotOn(frame,Components(epdf_Bkgd_ttbar),LineStyle(kDotted),Normalization(1.0,RooAbsReal::RelativeExpected),Name("ttBOnly")) ;
     // Overlay the signal components
     pdf_Total.plotOn(frame,Components(RooArgSet(epdf_Signal)),LineColor(kRed),Normalization(1.0,RooAbsReal::RelativeExpected),Name("SOnly")) ;
@@ -183,8 +207,10 @@ void Fit() {
 
     Leg->AddEntry("Data", "Data" , "lep");
     Leg->AddEntry("Total", "Fit Result" , "l");
-    Leg->AddEntry("BOnly", "Z+jets Bkgd. Component" , "l");
+    //Leg->AddEntry("BOnly", "Z+jets Bkgd. Component" , "l");
     Leg->AddEntry("ttBOnly", "ttbar Bkgd. Component" , "l");
+    Leg->AddEntry("lightBOnly", "light Z+jets Bkgd. Component" , "l");
+    Leg->AddEntry("bbBOnly", "bb Z+jets Bkgd. Component" , "l");
     Leg->AddEntry("SOnly", "Signal Component" , "l");
 
     Leg->Draw();

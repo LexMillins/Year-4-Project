@@ -24,6 +24,14 @@ void Plot_MadGraph_hists(){
 
 	TH1D * h_Bckgd = (TH1D *) histClone->Clone("h_Bckgd");
 
+	TH1D * h_light_Bckgd = (TH1D *) histClone->Clone("h_light_Bckgd");
+
+	TH1D * h_bb_Bckgd = (TH1D *) histClone->Clone("h_bb_Bckgd");
+
+	h_Bckgd->Reset();
+
+	h_light_Bckgd->Reset();
+
 	h_Bckgd->Reset();
 
 	int b[] = {45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 63};
@@ -51,15 +59,42 @@ void Plot_MadGraph_hists(){
 
 	TH1D* h_W_mass = (TH1D*) inputFile->Get(histNameW);
 
+	
 	TString histNamettbgd = histName;
 
 	histNamettbgd += 43;
 
 	TH1D * h_ttbar = (TH1D*) inputFile->Get(histNamettbgd);
 
+	TString histNamelightflav = "h_light_flav";
+
+	for( int n: b){
+
+		TString histNamelightflav_N = histNamelightflav;
+		histNamelightflav_N += n;
+
+		TH1D* hist_lightn = (TH1D *) inputFile->Get(histNamelightflav_N);
+		h_light_Bckgd->Add(hist_lightn);
+
+	}
+
+	for( int n: b){
+
+		TString histNamebb_N = "h_Dijet_Mass_bb";
+		histNamebb_N += n;
+
+		TH1D* hist_bbn = (TH1D *) inputFile->Get(histNamebb_N);
+		h_bb_Bckgd->Add(hist_bbn);
+
+	}
+
 
 
 	outputFile->cd();
+
+	h_light_Bckgd->Write();
+
+	h_bb_Bckgd->Write();
 
 	h_W_mass->SetName("h_W_mass");
 
