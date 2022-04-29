@@ -28,12 +28,28 @@ void Plot_hists(){
 
 	TH1D * h_bb_Bckgd = (TH1D *) histClone->Clone("h_bb_Bckgd");
 
+	TH1D * h_jet1_pt = (TH1D *) histClone->Clone("h_jet1_pt");
+
+	TH1D * h_jet2_pt = (TH1D *) histClone->Clone("h_jet2_pt");
+
+	TH1D * h_dilepton_mass = (TH1D *) histClone->Clone("h_dilepton_mass");
+
+	TH1D * h_diboson_mass = (TH1D *) histClone->Clone("h_diboson_mass");
+
+	TH1D * h_hadronic_boson_pt = (TH1D *) histClone->Clone("h_hadronic_boson_pt");
+
+	TH1D * h_leptonic_boson_pt = (TH1D *) histClone->Clone("h_leptonic_boson_pt");
+
 
 	h_bb_Bckgd->Reset();
 
 	h_light_Bckgd->Reset();
 
 	h_Bckgd->Reset();
+
+	h_jet1_pt->Reset();
+
+	h_jet2_pt->Reset();
 
 	int b[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 45};
 
@@ -66,6 +82,18 @@ void Plot_hists(){
 
 	TString histNamelightflav = "h_light_flav";
 
+	TString histNamejet1pT = "h_jet1_pt";
+
+	TString histNamejet2pT = "h_jet2_pt";
+
+	TString histNamedilep = "h_dilepton_mass";
+
+	TString histNamediboson = "h_diboson_mass";
+
+	TString histNamehadpt = "h_hadronic_boson_pt";
+
+	TString histNameleppt = "h_leptonic_boson_pt";
+
 	for( int n: b){
 
 		TString histNamelightflav_N = histNamelightflav;
@@ -75,6 +103,67 @@ void Plot_hists(){
 		h_light_Bckgd->Add(hist_lightn);
 
 	}
+
+	for( int n: b){
+
+		TString histNamedilep_N = histNamedilep;
+		histNamedilep_N += n;
+
+		TH1D* hist_dilep = (TH1D *) inputFile->Get(histNamedilep_N);
+		h_dilepton_mass->Add(hist_dilep);
+
+	}
+
+	for( int n: b){
+
+		TString histNamediboson_N = histNamediboson;
+		histNamediboson_N += n;
+
+		TH1D* hist_diboson = (TH1D *) inputFile->Get(histNamediboson_N);
+		h_diboson_mass->Add(hist_diboson);
+
+	}
+
+	for( int n: b){
+
+		TString histNamehadpt_N = histNamehadpt;
+		histNamehadpt_N += n;
+
+		TH1D* hist_hadpt = (TH1D *) inputFile->Get(histNamehadpt_N);
+		h_hadronic_boson_pt->Add(hist_hadpt);
+
+	}
+
+	for( int n: b){
+
+		TString histNameleppt_N = histNameleppt;
+		histNameleppt_N += n;
+
+		TH1D* hist_leppt = (TH1D *) inputFile->Get(histNameleppt_N);
+		h_leptonic_boson_pt->Add(hist_hadpt);
+
+	}
+
+	for( int n: b){
+
+		TString histNamejet1pT_N = histNamejet1pT;
+		histNamejet1pT_N += n;
+
+		TH1D* hist_jet1pTn = (TH1D *) inputFile->Get(histNamejet1pT_N);
+		h_jet1_pt->Add(hist_jet1pTn);
+
+	}
+
+	for( int n: b){
+
+		TString histNamejet2pT_N = histNamejet2pT;
+		histNamejet2pT_N += n;
+
+		TH1D* hist_jet2pTn = (TH1D *) inputFile->Get(histNamejet2pT_N);
+		h_jet2_pt->Add(hist_jet2pTn);
+
+	}
+
 
 	for( int n: b){
 
@@ -108,6 +197,10 @@ void Plot_hists(){
 	h_W_mass->Write("h_W_mass");
 
 	h_Sig->Write("h_Sig");
+
+	h_jet1_pt->Write();
+
+	h_jet2_pt->Write();
 
 	/*TCanvas* c = new TCanvas("c", "c", 800, 600);
 

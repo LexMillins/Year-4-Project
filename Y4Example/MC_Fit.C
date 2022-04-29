@@ -53,6 +53,12 @@ void MC_Fit() {
     TH1D* h_Data = NULL;
     TH1D* h_MG_Bkgd = NULL;
     TH1D* h_MG_Sig = NULL;
+    TH1D* h_jet1_pT = NULL;
+    TH1D* h_jet1_pT_MG = NULL;
+    TH1D* h_jet1_pT_Data = NULL;
+    TH1D* h_jet2_pT = NULL;
+    TH1D* h_jet2_pT_MG = NULL;
+    TH1D* h_jet2_pT_Data = NULL;
 
 
     // For standalone example, make some "toy" signal and background histogram
@@ -81,24 +87,41 @@ void MC_Fit() {
 
     TString histNameBkgd = "h_Bckgd";
 
+    TString histNamejet1pT = "h_jet1_pt";
+
+    TString histNamejet2pT = "h_jet2_pt";
+
     h_Signal = (TH1D*)inputFile->Get(histNameSig);
 
     h_Bkgd = (TH1D*)inputFile->Get(histNameBkgd);
 
+    h_jet1_pT = (TH1D*)inputFile->Get(histNamejet1pT);
+
+    h_jet1_pT_MG = (TH1D*)inputFileMG->Get(histNamejet1pT);
+
+    h_jet1_pT_Data = (TH1D*)inputFileData->Get(histNamejet1pT);
+
+    h_jet2_pT = (TH1D*)inputFile->Get(histNamejet2pT);
+
+    h_jet2_pT_MG = (TH1D*)inputFileMG->Get(histNamejet2pT);
+
+    h_jet2_pT_Data = (TH1D*)inputFileData->Get(histNamejet2pT);
+
     //h_Data = (TH1D*)inputFileData->Get(histNameData);
 
-    h_MG_Sig = (TH1D*)inputFile->Get(histNameSig);
+    //h_MG_Sig = (TH1D*)inputFileMG->Get(histNameSig);
 
-    h_MG_Bkgd = (TH1D*)inputFile->Get(histNameBkgd);
+    h_MG_Bkgd = (TH1D*)inputFileMG->Get(histNameBkgd);
 
     
     //----------
 
     // Make a "dummy" dataset from the expected data and background
-    h_Data = (TH1D*) h_Bkgd->Clone("h_Data");
+    /*h_Data = (TH1D*) h_Bkgd->Clone("h_Data");
     h_Data->Reset();
-    h_Data->Add(h_MG_Sig);
-    h_Data->Add(h_MG_Bkgd);
+    //h_Data->Add(h_MG_Sig);
+    //h_Data->Add(h_MG_Bkgd);
+    h_Data->Add(h_jet1_pT_MG);*/
 
     //----------
     // When you get the "real" data, you can simply load it from the file and
@@ -107,24 +130,24 @@ void MC_Fit() {
 
     // Build fit observable from the range in the input histograms
     //RooRealVar m_Mass("Mass","m_{jj}",h_Bkgd->GetBinLowEdge(1),h_Bkgd->GetBinLowEdge(h_Bkgd->GetNbinsX()+1),"GeV");
-    RooRealVar m_Mass("Mass","m_{jj}",20.0,h_Bkgd->GetBinLowEdge(h_Bkgd->GetNbinsX()+1),"GeV");
+    RooRealVar m_Mass("Mass","m_{jj}",120.0,h_Bkgd->GetBinLowEdge(h_Bkgd->GetNbinsX()+1),"GeV");
 
     m_Mass.Print();
 
     // Build dataset object from real or dummy data
-    RooDataHist m_Hist_Data("m_Hist_Data","",m_Mass,h_Data);
+    RooDataHist m_Hist_Data("m_Hist_Data","",m_Mass,h_jet2_pT_Data);
 
     m_Hist_Data.Print();
 
     // Do the same for signal and background histograms, used to build PDFs
-    RooDataHist m_Hist_Signal("m_Hist_Signal","",m_Mass,h_Signal);
-    RooDataHist m_Hist_Bkgd("m_Hist_Bkgd","",m_Mass,h_Bkgd);
+    //RooDataHist m_Hist_Signal("m_Hist_Signal","",m_Mass,h_Signal);
+    RooDataHist m_Hist_Bkgd("m_Hist_Bkgd","",m_Mass,h_jet2_pT_MG);
     
-    RooHistPdf pdf_Signal("pdf_Signal","",m_Mass,m_Hist_Signal);
+    //RooHistPdf pdf_Signal("pdf_Signal","",m_Mass,m_Hist_Signal);
     RooHistPdf pdf_Bkgd("pdf_Bkgd","",m_Mass,m_Hist_Bkgd);
 
     // Signal Strength parameters for signal and background
-    RooRealVar mu_Signal("mu_Signal","",1.0,-1000.0,1000.0);
+    //RooRealVar mu_Signal("mu_Signal","",1.0,-1000.0,1000.0);
     RooRealVar mu_Bkgd("mu_Bkgd","",1.0,-1000.0,1000.0);
 
     //mu_Bkgd.setConstant(kTRUE);
@@ -133,18 +156,18 @@ void MC_Fit() {
     
 
     // Number of events (after weighting / scaling) for MC prediction
-    RooRealVar N_Signal_MC("N_Signal_MC","",h_Signal->Integral());
-    RooRealVar N_Bkgd_MC("N_Bkgd_MC","",h_Bkgd->Integral());
+    //RooRealVar N_Signal_MC("N_Signal_MC","",h_Signal->Integral());
+    RooRealVar N_Bkgd_MC("N_Bkgd_MC","",h_jet2_pT_MG->Integral());
     
     // Our number of events in the fit for S and B: mu*N_Events for S and B, separately
-    RooFormulaVar N_Signal("N_Signal","mu_Signal*N_Signal_MC",RooArgSet(mu_Signal,N_Signal_MC));
+    //RooFormulaVar N_Signal("N_Signal","mu_Signal*N_Signal_MC",RooArgSet(mu_Signal,N_Signal_MC));
     RooFormulaVar N_Bkgd("N_Bkgd","mu_Bkgd*N_Bkgd_MC",RooArgSet(mu_Bkgd,N_Bkgd_MC));
     
     // Build Poisson terms for N_Signal and N_Bkgd and associate them with relevant PDFs
-    RooExtendPdf epdf_Signal("epdf_Signal","",pdf_Signal,N_Signal);
+    //RooExtendPdf epdf_Signal("epdf_Signal","",pdf_Signal,N_Signal);
     RooExtendPdf epdf_Bkgd("epdf_Bkgd","",pdf_Bkgd,N_Bkgd);
 
-    RooAddPdf pdf_Total("pdf_Total","",RooArgList(epdf_Signal,epdf_Bkgd));
+    RooAddPdf pdf_Total("pdf_Total","",RooArgList(epdf_Bkgd));
 
     //mu_Bkgd.setConstant(kTRUE);
 
@@ -155,7 +178,7 @@ void MC_Fit() {
     // Make a plot
     TCanvas* c = new TCanvas("c","",800,600);
 
-    RooPlot* frame = m_Mass.frame(Title("MadGraph fitted with Sherpa"));
+    RooPlot* frame = m_Mass.frame(Title("Data fitted with MadGraph jet 2 pT "));
 
 
     // Plot data and PDF overlaid, use expected number of events for p.d.f projection normalization
@@ -167,7 +190,15 @@ void MC_Fit() {
     // Overlay the background component of model with a dashed line
     pdf_Total.plotOn(frame,Components(epdf_Bkgd),LineStyle(kDashed),Normalization(1.0,RooAbsReal::RelativeExpected),Name("BOnly")) ;
     // Overlay the signal components
-    pdf_Total.plotOn(frame,Components(RooArgSet(epdf_Signal)),LineColor(kRed),Normalization(1.0,RooAbsReal::RelativeExpected),Name("SOnly")) ;
+    //pdf_Total.plotOn(frame,Components(RooArgSet(epdf_Signal)),LineColor(kRed),Normalization(1.0,RooAbsReal::RelativeExpected),Name("SOnly")) ;
+
+    pdf_Total->plotOn(frame, LineColor(kRed), NormRange("full"), Range("chi2")); 
+    Int_t npar = gauss->getParameters(h_Bkgd)->selectByAttrib("Constant",kFALSE)->getSize(); 
+    Double_t chi2ndf = frame->chiSquare(npar); 
+    TLatex *latex = new TLatex(); 
+    latex->SetTextSize(0.035);
+    latex->SetNDC();
+    latex->DrawLatex(0.25, 0.82, Form("#frac{#chi^{2}}{N_{dof}} = %.2f", chi2ndf));
 
     frame->Draw();
 
@@ -181,7 +212,7 @@ void MC_Fit() {
     Leg->AddEntry("Data", "Data" , "lep");
     Leg->AddEntry("Total", "Fit Result" , "l");
     Leg->AddEntry("BOnly", "Z+jets Bkgd. Component" , "l");
-    Leg->AddEntry("SOnly", "Signal Component" , "l");
+    //Leg->AddEntry("SOnly", "Signal Component" , "l");
 
     Leg->Draw();
 

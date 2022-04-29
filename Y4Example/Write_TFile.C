@@ -24,6 +24,18 @@ void Write_TFile(){
 
 	TString histNameflav = "h_Dijet_Mass";
 
+	TString histNamejet1pT = "h_jet1_pt";
+
+	TString histNamejet2pT = "h_jet2_pt";
+
+	TString histNamedilepmass = "h_dilepton_mass";
+
+	TString histNamediboson = "h_diboson_mass";
+
+	TString histNamehadpT = "h_hadronic_boson_pt";
+
+	TString histNameleppT = "h_leptonic_boson_pt";
+
 
 	// Define luminosity for weighting
 
@@ -33,10 +45,27 @@ void Write_TFile(){
 	// Create map
 
 	std::map<int,TFile*>map_file;
+
 	std::map<int, TH1D*> map_hist;
+
 	std::map<int, TH1D*> map_histb;
+
+	std::map<int, TH1D*> map_histjet1pT;
+
+	std::map<int, TH1D*> map_histjet2pT;
+	
+	std::map<int, TH1D*> map_histdilepmass;
+
+	std::map<int, TH1D*> map_histdiboson;
+
+	std::map<int, TH1D*> map_histhadpT;
+
+	std::map<int, TH1D*> map_histleppT;
+
 	std::map<int, TH1D*> map_histflav;
+
 	std::map<int,TFile*>map_file_sig;
+
 	std::map<int, TH1D*> map_hist_sig;
 
 
@@ -160,6 +189,12 @@ void Write_TFile(){
 		map_hist[it->first] = (TH1D*) (it->second)->Get(histName);
 		map_histb[it->first] = (TH1D*) (it->second)->Get(histNameb);
 		map_histflav[it->first] = (TH1D*) (it->second)->Get(histNameflav);
+		map_histjet1pT[it->first] = (TH1D*) (it->second)->Get(histNamejet1pT);
+		map_histjet2pT[it->first] = (TH1D*) (it->second)->Get(histNamejet2pT);
+		map_histdilepmass[it->first] = (TH1D*) (it->second)->Get(histNamedilepmass);
+		map_histdiboson[it->first] = (TH1D*) (it->second)->Get(histNamediboson);
+		map_histhadpT[it->first] = (TH1D*) (it->second)->Get(histNamehadpT);
+		map_histleppT[it->first] = (TH1D*) (it->second)->Get(histNameleppT);
 
 		TString newhistName = histName;
 
@@ -172,6 +207,30 @@ void Write_TFile(){
 		TString newhistNameflav = histNameflav;
 
 		newhistNameflav += map_files_N[it->first];
+
+		TString newhistNamejet1 = histNamejet1pT;
+
+		newhistNamejet1 += map_files_N[it->first];
+
+		TString newhistNamejet2 = histNamejet2pT;
+
+		newhistNamejet2 += map_files_N[it->first];
+
+		TString newhistNamedilepmass = histNamedilepmass;
+
+		newhistNamedilepmass += map_files_N[it->first];
+
+		TString newhistNamediboson = histNamediboson;
+
+		newhistNamediboson += map_files_N[it->first];
+
+		TString newhistNamehadpT = histNamehadpT;
+
+		newhistNamehadpT += map_files_N[it->first];
+
+		TString newhistNameleppT = histNameleppT;
+
+		newhistNameleppT += map_files_N[it->first];
 
 		// Perform lumi*xs/sumw scaling
 		TH1D* h_weight_track = (TH1D*) (it->second)->Get("h_weight_track");
@@ -188,6 +247,12 @@ void Write_TFile(){
 
 		map_hist[it->first]->Scale(scale_factor);
 		map_histb[it->first]->Scale(scale_factor);
+		map_histjet1pT[it->first]->Scale(scale_factor);
+		map_histjet2pT[it->first]->Scale(scale_factor);
+		map_histdilepmass[it->first]->Scale(scale_factor);
+		map_histdiboson[it->first]->Scale(scale_factor);
+		map_histhadpT[it->first]->Scale(scale_factor);
+		map_histleppT[it->first]->Scale(scale_factor);
 
 		outputFile -> cd();
 
@@ -201,6 +266,29 @@ void Write_TFile(){
 
 		map_histb[it->first]->Write(newhistNameb);
 
+		map_histjet1pT[it->first]->SetName(newhistNamejet1);
+		
+		map_histjet1pT[it->first]->Write();
+		
+		map_histjet2pT[it->first]->SetName(newhistNamejet2);
+
+		map_histjet2pT[it->first]->Write();
+
+		map_histdilepmass[it->first]->SetName(newhistNamedilepmass);
+
+		map_histdilepmass[it->first]->Write();
+
+		map_histdiboson[it->first]->SetName(newhistNamediboson);
+
+		map_histdiboson[it->first]->Write();
+
+		map_histhadpT[it->first]->SetName(newhistNamehadpT);
+
+		map_histhadpT[it->first]->Write();
+
+		map_histleppT[it->first]->SetName(newhistNameleppT);
+
+		map_histleppT[it->first]->Write();
 
 
 	}

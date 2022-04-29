@@ -417,13 +417,21 @@ int main(int argc, char* argv[]) {
 
 	}
 
-	TH1D* h_jet1_pt = new TH1D("h_jet1_pt", ";pT [GeV]; Events/GeV", 30, 0, 300);
+	TH1D* h_jet1_pt = new TH1D("h_jet1_pt", ";pT [GeV]; Events/GeV", 50, 0, 300);
 
-	TH1D* h_jet2_pt = new TH1D("h_jet2_pt", ";pT [GeV]; Events/GeV", 30, 0, 300);
+	TH1D* h_jet2_pt = new TH1D("h_jet2_pt", ";pT [GeV]; Events/GeV", 50, 0, 300);
 
 	TH1D* h_Z_mass = new TH1D("h_Z_mass", ";Invariant Mass [GeV]; Events/GeV", 50, 0, 300);
 
 	TH1D* h_angle_between_jets = new TH1D("h_angle_between_jets", ";Theta [rad]; Events/GeV", 10, 0, 1); 
+
+	TH1D* h_dilepton_mass = new TH1D("h_dilepton_mass", ";Invariant Mass [GeV]; Events/GeV", 50, 0, 300);
+
+	TH1D* h_diboson_mass = new TH1D("h_diboson_mass", ";Invariant Mass [GeV]; Events/GeV", 50, 0, 300);
+
+	TH1D* h_leptonic_boson_pt = new TH1D("h_leptonic_boson_pt", ";pT [GeV]; Events/GeV", 50, 0, 300);
+
+	TH1D* h_hadronic_boson_pt = new TH1D("h_hadronic_boson_pt", ";pT [GeV]; Events/GeV", 50, 0, 300);
 
 
 	// Event loop
@@ -599,6 +607,83 @@ int main(int argc, char* argv[]) {
 
 	}
 
+		std::vector<TLorentzVector> muon_vector;
+		std::vector<TLorentzVector> electron_vector;
+		TLorentzVector dielectron;
+		TLorentzVector dimuon;
+		Double_t angle_between_muons;
+		Double_t angle_between_electrons;
+		TLorentzVector muon1;
+		TLorentzVector muon2;
+		TLorentzVector elec1;
+		TLorentzVector elec2;
+
+		TLorentzVector dilepton;
+
+		TLorentzVector lepton1;
+		TLorentzVector lepton2;
+
+		if( r->mu_pt->size() >= 2) {
+
+
+			for( int k = 0; k<(r->mu_pt->size()); ++k){
+				TLorentzVector muon;
+
+				muon.SetPtEtaPhiM(r->mu_pt->at(k)*1e-3,r->mu_eta->at(k),r->mu_phi->at(k),105.67e-3);
+				muon_vector.push_back(muon);
+
+			}
+			std::sort(muon_vector.begin(), muon_vector.end(), sortby_pt);
+
+
+			dimuon = muon_vector.at(0) + muon_vector.at(1);
+			dilepton = dimuon;
+
+			muon1 = muon_vector.at(0);
+			muon2 = muon_vector.at(1);
+
+
+			lepton1 = muon1;
+			lepton2 = muon2;
+
+		}
+
+
+		else if ( r->el_pt->size() >= 2){
+
+			for(int j = 0; j<(r->el_pt->size()); ++j){
+				TLorentzVector elec;
+
+				elec.SetPtEtaPhiM(r->el_pt->at(j)*1e-3,r->el_eta->at(j),r->el_phi->at(j),0.511e-3);
+				electron_vector.push_back(elec);
+
+			}
+
+			std::sort(electron_vector.begin(), electron_vector.end(), sortby_pt);
+
+
+			
+			dielectron = electron_vector.at(0) + electron_vector.at(1);
+			dilepton = dielectron;
+
+			elec1 = electron_vector.at(0);
+			elec2 = electron_vector.at(1);
+
+			lepton1 = elec1;
+			lepton2 = elec2;
+
+		}
+
+	TLorentzVector diboson = dilepton + dijet;
+
+	h_leptonic_boson_pt->Fill(dilepton.Pt()*1e-3, weight);
+
+	h_hadronic_boson_pt->Fill(dijet.Pt()*1e-3, weight);
+
+	h_diboson_mass->Fill(diboson.M()*1e-3, weight);
+
+	h_dilepton_mass->Fill(dilepton.M()*1e-3, weight);
+
 	h_Z_mass->Fill(dijet.M()*1e-3, weight);
 
 	h_jet1_pt->Fill(jet1.Pt()*1e-3, weight);
@@ -621,6 +706,14 @@ int main(int argc, char* argv[]) {
 
 		}
 	}
+
+	h_dilepton_mass->Write();
+
+	h_leptonic_boson_pt->Write();
+
+	h_hadronic_boson_pt->Write();
+
+	h_diboson_mass->Write();
 
 	h_Z_mass->Write();
 

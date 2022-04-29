@@ -28,11 +28,21 @@ void Plot_MadGraph_hists(){
 
 	TH1D * h_bb_Bckgd = (TH1D *) histClone->Clone("h_bb_Bckgd");
 
+	TH1D * h_jet1_pt = (TH1D *) histClone->Clone("h_jet1_pt");
+
+	TH1D * h_jet2_pt = (TH1D *) histClone->Clone("h_jet2_pt");
+
 	h_Bckgd->Reset();
 
 	h_light_Bckgd->Reset();
 
 	h_Bckgd->Reset();
+
+	h_jet1_pt->Reset();
+
+	h_jet2_pt->Reset();
+
+
 
 	int b[] = {45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 63};
 
@@ -68,6 +78,10 @@ void Plot_MadGraph_hists(){
 
 	TString histNamelightflav = "h_light_flav";
 
+	TString histNamejet1pT = "h_jet1_pt";
+
+	TString histNamejet2pT = "h_jet2_pt";
+
 	for( int n: b){
 
 		TString histNamelightflav_N = histNamelightflav;
@@ -75,6 +89,26 @@ void Plot_MadGraph_hists(){
 
 		TH1D* hist_lightn = (TH1D *) inputFile->Get(histNamelightflav_N);
 		h_light_Bckgd->Add(hist_lightn);
+
+	}
+
+	for( int n: b){
+
+		TString histNamejet1pT_N = histNamejet1pT;
+		histNamejet1pT_N += n;
+
+		TH1D* hist_jet1pTn = (TH1D *) inputFile->Get(histNamejet1pT_N);
+		h_jet1_pt->Add(hist_jet1pTn);
+
+	}
+
+	for( int n: b){
+
+		TString histNamejet2pT_N = histNamejet2pT;
+		histNamejet2pT_N += n;
+
+		TH1D* hist_jet2pTn = (TH1D *) inputFile->Get(histNamejet2pT_N);
+		h_jet2_pt->Add(hist_jet2pTn);
 
 	}
 
@@ -109,6 +143,10 @@ void Plot_MadGraph_hists(){
 	h_ttbar->Write();
 
 	h_Sig->Write("h_Sig");
+
+	h_jet1_pt->Write();
+
+	h_jet2_pt->Write();
 
 
 	outputFile->Close();

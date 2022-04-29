@@ -69,7 +69,7 @@ void Fit() {
 
     TString inputFileNameMG = "MadGraphplots.root";
 
-    TFile* inputFile = TFile::Open(inputFileNameMG);
+    TFile* inputFile = TFile::Open(inputFileName);
 
     TFile* inputFileData = TFile::Open(inputFileNameData);
 
@@ -100,10 +100,10 @@ void Fit() {
     //----------
 
     // Make a "dummy" dataset from the expected data and background
-    h_Data = (TH1D*) h_Bkgd->Clone("h_Data");
+    /*h_Data = (TH1D*) h_Bkgd->Clone("h_Data");
     h_Data->Reset();
     h_Data->Add(h_Signal);
-    h_Data->Add(h_Bkgd);
+    h_Data->Add(h_Bkgd);*/
 
     //----------
     // When you get the "real" data, you can simply load it from the file and
@@ -142,8 +142,8 @@ void Fit() {
     RooRealVar mu_Bkgd_light("mu_Bkgd_light","",1.0,-1000.0,1000.0);
     RooRealVar mu_Bkgd_bb("mu_Bkgd_bb","",1.0,-1000.0,1000.0);
 
-    //mu_Bkgd.setConstant(kTRUE);
-    //mu_Bkgd.setVal(1.0873e+00);
+    mu_Signal.setConstant(kTRUE);
+    mu_Signal.setVal(0);
 
     
 
