@@ -59,6 +59,18 @@ void MC_Fit() {
     TH1D* h_jet2_pT = NULL;
     TH1D* h_jet2_pT_MG = NULL;
     TH1D* h_jet2_pT_Data = NULL;
+    TH1D* h_dilepton_mass_Data = NULL;
+    TH1D* h_dilepton_mass = NULL;
+    TH1D* h_dilepton_mass_MG = NULL;
+    TH1D* h_diboson_mass = NULL;
+    TH1D* h_diboson_mass_Data = NULL;
+    TH1D* h_diboson_mass_MG = NULL;
+    TH1D* h_hadronic_boson_pt = NULL;
+    TH1D* h_hadronic_boson_pt_Data = NULL;
+    TH1D* h_hadronic_boson_pt_MG = NULL;
+    TH1D* h_leptonic_boson_pt = NULL;
+    TH1D* h_leptonic_boson_pt_Data = NULL;
+    TH1D* h_leptonic_boson_pt_MG = NULL;
 
 
     // For standalone example, make some "toy" signal and background histogram
@@ -91,6 +103,14 @@ void MC_Fit() {
 
     TString histNamejet2pT = "h_jet2_pt";
 
+    TString histNamedilep = "h_dilepton_mass";
+
+    TString histNamedibos = "h_diboson_mass";
+
+    TString histNameHadpt = "h_hadronic_boson_pt";
+
+    TString histNameLeppt = "h_leptonic_boson_pt";
+
     h_Signal = (TH1D*)inputFile->Get(histNameSig);
 
     h_Bkgd = (TH1D*)inputFile->Get(histNameBkgd);
@@ -107,7 +127,31 @@ void MC_Fit() {
 
     h_jet2_pT_Data = (TH1D*)inputFileData->Get(histNamejet2pT);
 
-    //h_Data = (TH1D*)inputFileData->Get(histNameData);
+    h_dilepton_mass = (TH1D*)inputFile->Get(histNamedilep);
+
+    h_dilepton_mass_Data = (TH1D*)inputFileData->Get(histNamedilep);
+
+    h_dilepton_mass_MG = (TH1D*)inputFileMG->Get(histNamedilep);
+
+    h_diboson_mass = (TH1D*)inputFile->Get(histNamedibos);
+
+    h_diboson_mass_Data = (TH1D*)inputFileData->Get(histNamedibos);
+
+    h_diboson_mass_MG = (TH1D*)inputFileMG->Get(histNamedibos);
+
+    h_hadronic_boson_pt = (TH1D*)inputFile->Get(histNameHadpt);
+
+    h_hadronic_boson_pt_Data = (TH1D*)inputFileData->Get(histNameHadpt);
+
+    h_hadronic_boson_pt_MG = (TH1D*)inputFileMG->Get(histNameHadpt);
+
+    h_leptonic_boson_pt = (TH1D*)inputFile->Get(histNameLeppt);
+
+    h_leptonic_boson_pt_Data = (TH1D*)inputFileData->Get(histNameLeppt);
+
+    h_leptonic_boson_pt_MG = (TH1D*)inputFileMG->Get(histNameLeppt);
+
+    h_Data = (TH1D*)inputFileData->Get(histNameData);
 
     //h_MG_Sig = (TH1D*)inputFileMG->Get(histNameSig);
 
@@ -135,13 +179,13 @@ void MC_Fit() {
     m_Mass.Print();
 
     // Build dataset object from real or dummy data
-    RooDataHist m_Hist_Data("m_Hist_Data","",m_Mass,h_jet2_pT_Data);
+    RooDataHist m_Hist_Data("m_Hist_Data","",m_Mass,h_Data);
 
     m_Hist_Data.Print();
 
     // Do the same for signal and background histograms, used to build PDFs
     //RooDataHist m_Hist_Signal("m_Hist_Signal","",m_Mass,h_Signal);
-    RooDataHist m_Hist_Bkgd("m_Hist_Bkgd","",m_Mass,h_jet2_pT_MG);
+    RooDataHist m_Hist_Bkgd("m_Hist_Bkgd","",m_Mass,h_MG_Bkgd);
     
     //RooHistPdf pdf_Signal("pdf_Signal","",m_Mass,m_Hist_Signal);
     RooHistPdf pdf_Bkgd("pdf_Bkgd","",m_Mass,m_Hist_Bkgd);
@@ -157,7 +201,7 @@ void MC_Fit() {
 
     // Number of events (after weighting / scaling) for MC prediction
     //RooRealVar N_Signal_MC("N_Signal_MC","",h_Signal->Integral());
-    RooRealVar N_Bkgd_MC("N_Bkgd_MC","",h_jet2_pT_MG->Integral());
+    RooRealVar N_Bkgd_MC("N_Bkgd_MC","",h_MG_Bkgd->Integral());
     
     // Our number of events in the fit for S and B: mu*N_Events for S and B, separately
     //RooFormulaVar N_Signal("N_Signal","mu_Signal*N_Signal_MC",RooArgSet(mu_Signal,N_Signal_MC));
@@ -178,7 +222,7 @@ void MC_Fit() {
     // Make a plot
     TCanvas* c = new TCanvas("c","",800,600);
 
-    RooPlot* frame = m_Mass.frame(Title("Data fitted with MadGraph jet 2 pT "));
+    RooPlot* frame = m_Mass.frame(Title("Data fitted with MadGraph dijet mass"));
 
 
     // Plot data and PDF overlaid, use expected number of events for p.d.f projection normalization
@@ -191,14 +235,6 @@ void MC_Fit() {
     pdf_Total.plotOn(frame,Components(epdf_Bkgd),LineStyle(kDashed),Normalization(1.0,RooAbsReal::RelativeExpected),Name("BOnly")) ;
     // Overlay the signal components
     //pdf_Total.plotOn(frame,Components(RooArgSet(epdf_Signal)),LineColor(kRed),Normalization(1.0,RooAbsReal::RelativeExpected),Name("SOnly")) ;
-
-    pdf_Total->plotOn(frame, LineColor(kRed), NormRange("full"), Range("chi2")); 
-    Int_t npar = gauss->getParameters(h_Bkgd)->selectByAttrib("Constant",kFALSE)->getSize(); 
-    Double_t chi2ndf = frame->chiSquare(npar); 
-    TLatex *latex = new TLatex(); 
-    latex->SetTextSize(0.035);
-    latex->SetNDC();
-    latex->DrawLatex(0.25, 0.82, Form("#frac{#chi^{2}}{N_{dof}} = %.2f", chi2ndf));
 
     frame->Draw();
 

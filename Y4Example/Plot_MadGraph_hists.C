@@ -32,6 +32,14 @@ void Plot_MadGraph_hists(){
 
 	TH1D * h_jet2_pt = (TH1D *) histClone->Clone("h_jet2_pt");
 
+	TH1D * h_dilepton_mass = (TH1D *) histClone->Clone("h_dilepton_mass");
+
+	TH1D * h_diboson_mass = (TH1D *) histClone->Clone("h_diboson_mass");
+
+	TH1D * h_hadronic_boson_pt = (TH1D *) histClone->Clone("h_hadronic_boson_pt");
+
+	TH1D * h_leptonic_boson_pt = (TH1D *) histClone->Clone("h_leptonic_boson_pt");
+
 	h_Bckgd->Reset();
 
 	h_light_Bckgd->Reset();
@@ -82,6 +90,14 @@ void Plot_MadGraph_hists(){
 
 	TString histNamejet2pT = "h_jet2_pt";
 
+	TString histNamedilep = "h_dilepton_mass";
+
+	TString histNamediboson = "h_diboson_mass";
+
+	TString histNamehadpt = "h_hadronic_boson_pt";
+
+	TString histNameleppt = "h_leptonic_boson_pt";
+
 	for( int n: b){
 
 		TString histNamelightflav_N = histNamelightflav;
@@ -122,6 +138,46 @@ void Plot_MadGraph_hists(){
 
 	}
 
+		for( int n: b){
+
+		TString histNamedilep_N = histNamedilep;
+		histNamedilep_N += n;
+
+		TH1D* hist_dilep = (TH1D *) inputFile->Get(histNamedilep_N);
+		h_dilepton_mass->Add(hist_dilep);
+
+	}
+
+	for( int n: b){
+
+		TString histNamediboson_N = histNamediboson;
+		histNamediboson_N += n;
+
+		TH1D* hist_diboson = (TH1D *) inputFile->Get(histNamediboson_N);
+		h_diboson_mass->Add(hist_diboson);
+
+	}
+
+	for( int n: b){
+
+		TString histNamehadpt_N = histNamehadpt;
+		histNamehadpt_N += n;
+
+		TH1D* hist_hadpt = (TH1D *) inputFile->Get(histNamehadpt_N);
+		h_hadronic_boson_pt->Add(hist_hadpt);
+
+	}
+
+	for( int n: b){
+
+		TString histNameleppt_N = histNameleppt;
+		histNameleppt_N += n;
+
+		TH1D* hist_leppt = (TH1D *) inputFile->Get(histNameleppt_N);
+		h_leptonic_boson_pt->Add(hist_leppt);
+
+	}
+
 
 
 	outputFile->cd();
@@ -147,6 +203,14 @@ void Plot_MadGraph_hists(){
 	h_jet1_pt->Write();
 
 	h_jet2_pt->Write();
+
+	h_dilepton_mass->Write();
+
+	h_diboson_mass->Write();
+
+	h_hadronic_boson_pt->Write();
+
+	h_leptonic_boson_pt->Write();
 
 
 	outputFile->Close();
