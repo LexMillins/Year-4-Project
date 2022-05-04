@@ -412,26 +412,24 @@ int main(int argc, char* argv[]) {
 
 	for(int f=0; f<flav_combs.size(); ++f){
 
-		h_Coll_Dijet_Mass[flav_combs.at(f)] = write_hist(flav_combs.at(f), "Dijet_Mass", ";Mass [GeV]; Events/GeV", 50, 0, 300);
+		h_Coll_Dijet_Mass[flav_combs.at(f)] = write_hist(flav_combs.at(f), "Dijet_Mass", ";Mass [GeV]; Events/GeV", 30, 0, 300);
 		
 
 	}
 
-	TH1D* h_jet1_pt = new TH1D("h_jet1_pt", ";pT [GeV]; Events/GeV", 50, 0, 300);
+	TH1D* h_jet1_pt = new TH1D("h_jet1_pt", ";pT [GeV]; Events/GeV", 30, 0, 300);
 
-	TH1D* h_jet2_pt = new TH1D("h_jet2_pt", ";pT [GeV]; Events/GeV", 50, 0, 300);
+	TH1D* h_jet2_pt = new TH1D("h_jet2_pt", ";pT [GeV]; Events/GeV", 30, 0, 300);
 
-	TH1D* h_Z_mass = new TH1D("h_Z_mass", ";Invariant Mass [GeV]; Events/GeV", 50, 0, 300);
+	TH1D* h_Z_mass = new TH1D("h_Z_mass", ";Invariant Mass [GeV]; Events/GeV", 30, 0, 300);
 
-	TH1D* h_angle_between_jets = new TH1D("h_angle_between_jets", ";Theta [rad]; Events/GeV", 10, 0, 1); 
+	TH1D* h_dilepton_mass = new TH1D("h_dilepton_mass", ";Invariant Mass [GeV]; Events/GeV", 30, 0, 300);
 
-	TH1D* h_dilepton_mass = new TH1D("h_dilepton_mass", ";Invariant Mass [GeV]; Events/GeV", 50, 0, 300);
+	TH1D* h_diboson_mass = new TH1D("h_diboson_mass", ";Invariant Mass [GeV]; Events/GeV", 30, 0, 300);
 
-	TH1D* h_diboson_mass = new TH1D("h_diboson_mass", ";Invariant Mass [GeV]; Events/GeV", 50, 0, 300);
+	TH1D* h_leptonic_boson_pt = new TH1D("h_leptonic_boson_pt", ";pT [GeV]; Events/GeV", 30, 0, 300);
 
-	TH1D* h_leptonic_boson_pt = new TH1D("h_leptonic_boson_pt", ";pT [GeV]; Events/GeV", 50, 0, 300);
-
-	TH1D* h_hadronic_boson_pt = new TH1D("h_hadronic_boson_pt", ";pT [GeV]; Events/GeV", 50, 0, 300);
+	TH1D* h_hadronic_boson_pt = new TH1D("h_hadronic_boson_pt", ";pT [GeV]; Events/GeV", 30, 0, 300);
 
 
 	// Event loop
@@ -597,6 +595,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	dijet = my_jets.at(0) + my_jets.at(1);
+
 
 
 	// Fill histograms

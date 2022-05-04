@@ -173,19 +173,26 @@ void MC_Fit() {
     //----------
 
     // Build fit observable from the range in the input histograms
-    //RooRealVar m_Mass("Mass","m_{jj}",h_Bkgd->GetBinLowEdge(1),h_Bkgd->GetBinLowEdge(h_Bkgd->GetNbinsX()+1),"GeV");
-    RooRealVar m_Mass("Mass","m_{jj}",120.0,h_Bkgd->GetBinLowEdge(h_Bkgd->GetNbinsX()+1),"GeV");
+    //RooRealVar m_Mass("Mass","m_{jj}",120.00,h_Bkgd->GetBinLowEdge(h_Bkgd->GetNbinsX()+1),"GeV");
+    //RooRealVar m_Mass("Mass","m_{jj}",120.0,h_MG_Bkgd->GetBinLowEdge(h_MG_Bkgd->GetNbinsX()+1),"GeV");
+    //RooRealVar m_Mass("Mass", "jet 1 p_T", 20.0, h_jet1_pT->GetBinLowEdge(h_jet1_pT->GetNbinsX()+1), "GeV");
+    //RooRealVar m_Mass("Mass", "jet 1 p_T", 20.0, h_jet1_pT_MG->GetBinLowEdge(h_jet1_pT_MG->GetNbinsX()+1), "GeV");
+    //RooRealVar m_Mass("Mass", "Diboson Mass", 120.0, h_diboson_mass->GetBinLowEdge(h_diboson_mass->GetNbinsX()+1), "GeV");
+    //RooRealVar m_Mass("Mass", "Diboson Mass", 120.0, h_diboson_mass_MG->GetBinLowEdge(h_diboson_mass_MG->GetNbinsX()+1), "GeV");
+    //RooRealVar m_Mass("Mass", "hadronic boson p_T", h_hadronic_boson_pt->GetBinLowEdge(1), h_hadronic_boson_pt->GetBinLowEdge(h_hadronic_boson_pt->GetNbinsX()+1), "GeV");
+    RooRealVar m_Mass("Mass", "hadronic boson p_T", h_hadronic_boson_pt_MG->GetBinLowEdge(1), h_hadronic_boson_pt_MG->GetBinLowEdge(h_hadronic_boson_pt_MG->GetNbinsX()+1), "GeV");
+
 
     m_Mass.Print();
 
     // Build dataset object from real or dummy data
-    RooDataHist m_Hist_Data("m_Hist_Data","",m_Mass,h_Data);
+    RooDataHist m_Hist_Data("m_Hist_Data","",m_Mass,h_hadronic_boson_pt_Data);
 
     m_Hist_Data.Print();
 
     // Do the same for signal and background histograms, used to build PDFs
     //RooDataHist m_Hist_Signal("m_Hist_Signal","",m_Mass,h_Signal);
-    RooDataHist m_Hist_Bkgd("m_Hist_Bkgd","",m_Mass,h_MG_Bkgd);
+    RooDataHist m_Hist_Bkgd("m_Hist_Bkgd","",m_Mass,h_hadronic_boson_pt_MG);
     
     //RooHistPdf pdf_Signal("pdf_Signal","",m_Mass,m_Hist_Signal);
     RooHistPdf pdf_Bkgd("pdf_Bkgd","",m_Mass,m_Hist_Bkgd);
@@ -201,7 +208,7 @@ void MC_Fit() {
 
     // Number of events (after weighting / scaling) for MC prediction
     //RooRealVar N_Signal_MC("N_Signal_MC","",h_Signal->Integral());
-    RooRealVar N_Bkgd_MC("N_Bkgd_MC","",h_MG_Bkgd->Integral());
+    RooRealVar N_Bkgd_MC("N_Bkgd_MC","",h_hadronic_boson_pt_MG->Integral());
     
     // Our number of events in the fit for S and B: mu*N_Events for S and B, separately
     //RooFormulaVar N_Signal("N_Signal","mu_Signal*N_Signal_MC",RooArgSet(mu_Signal,N_Signal_MC));
@@ -222,7 +229,7 @@ void MC_Fit() {
     // Make a plot
     TCanvas* c = new TCanvas("c","",800,600);
 
-    RooPlot* frame = m_Mass.frame(Title("Data fitted with MadGraph dijet mass"));
+    RooPlot* frame = m_Mass.frame(Title("Data fitted with MadGraph hadronic boson p_T"));
 
 
     // Plot data and PDF overlaid, use expected number of events for p.d.f projection normalization
@@ -238,6 +245,8 @@ void MC_Fit() {
 
     frame->Draw();
 
+    std::cout<< "Chi squared  = " << frame->chiSquare() << std::endl;
+
     TLegend * Leg = new TLegend(0.65,0.2+0.5,0.9,0.4+0.5);
 
     Leg->SetTextFont(42);
@@ -246,8 +255,8 @@ void MC_Fit() {
     Leg->SetFillStyle(0);
 
     Leg->AddEntry("Data", "Data" , "lep");
-    Leg->AddEntry("Total", "Fit Result" , "l");
-    Leg->AddEntry("BOnly", "Z+jets Bkgd. Component" , "l");
+    Leg->AddEntry("Total", "Z + jets MC" , "l");
+    //Leg->AddEntry("BOnly", "Z+jets Bkgd. Component" , "l");
     //Leg->AddEntry("SOnly", "Signal Component" , "l");
 
     Leg->Draw();
